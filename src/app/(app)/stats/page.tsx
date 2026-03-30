@@ -42,7 +42,9 @@ export default async function StatsPage() {
   const daySet = new Set(completions.map((c) => c.completedAt.toISOString().slice(0, 10)))
   let streak = 0
   const today = new Date()
-  for (let i = 0; i < 365; i++) {
+  const todayKey = today.toISOString().slice(0, 10)
+  const startDay = daySet.has(todayKey) ? 0 : 1
+  for (let i = startDay; i < 365; i++) {
     const d = new Date(today)
     d.setUTCDate(d.getUTCDate() - i)
     if (daySet.has(d.toISOString().slice(0, 10))) streak++

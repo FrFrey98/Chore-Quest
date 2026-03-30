@@ -1,3 +1,4 @@
+'use client'
 type HeatmapProps = { data: Record<string, number> }
 
 const MAX_WEEKS = 26 // half year

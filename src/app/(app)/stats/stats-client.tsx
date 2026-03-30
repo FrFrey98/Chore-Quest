@@ -28,24 +28,16 @@ export function StatsClient({
       <h1 className="text-xl font-bold mb-6">Statistiken</h1>
 
       {/* Tab switcher */}
-      <div className="flex gap-1 bg-slate-100 p-1 rounded-lg mb-6">
-        <button
-          onClick={() => setTab('personal')}
-          className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-            tab === 'personal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
-          }`}
-        >
-          Meine Stats
-        </button>
-        <button
-          onClick={() => setTab('comparison')}
-          className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-            tab === 'comparison' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
-          }`}
-        >
-          Vergleich
-        </button>
-      </div>
+      {(() => {
+        const activeTab = 'flex-1 py-2 text-sm font-medium rounded-md transition-colors bg-white text-slate-900 shadow-sm'
+        const inactiveTab = 'flex-1 py-2 text-sm font-medium rounded-md transition-colors text-slate-500'
+        return (
+          <div className="flex gap-1 bg-slate-100 p-1 rounded-lg mb-6">
+            <button onClick={() => setTab('personal')} className={tab === 'personal' ? activeTab : inactiveTab}>Meine Stats</button>
+            <button onClick={() => setTab('comparison')} className={tab === 'comparison' ? activeTab : inactiveTab}>Vergleich</button>
+          </div>
+        )
+      })()}
 
       {tab === 'personal' && (
         <div className="space-y-6">
@@ -147,40 +139,57 @@ export function StatsClient({
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
               Punkte pro Woche
             </p>
-            <ComparisonChart byWeek={comparison.byWeek} />
+            {Object.keys(comparison.byWeek).length === 0 ? (
+              <p className="text-slate-400 text-sm">Noch keine Daten.</p>
+            ) : (
+              <ComparisonChart byWeek={comparison.byWeek} />
+            )}
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
               Aufgaben nach Kategorie
             </p>
-            <CategoryPieChart byCategory={comparison.byCategory} categories={categories} />
+            {Object.keys(comparison.byCategory).length === 0 ? (
+              <p className="text-slate-400 text-sm">Noch keine Daten.</p>
+            ) : (
+              <CategoryPieChart byCategory={comparison.byCategory} categories={categories} />
+            )}
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-sm overflow-x-auto">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
               Monatliche Übersicht
             </p>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-slate-500 text-xs">
-                  <th className="text-left pb-2">Monat</th>
-                  {Object.values(comparison.byWeek)[0] && Object.keys(Object.values(comparison.byWeek)[0]).map(name => (
-                    <th key={name} className="text-right pb-2">{name}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(comparison.byMonth).sort(([a],[b]) => b.localeCompare(a)).slice(0,6).map(([month, users]) => (
-                  <tr key={month} className="border-t border-slate-100">
-                    <td className="py-2 text-slate-600">{month}</td>
-                    {Object.entries(users).map(([name, pts]) => (
-                      <td key={name} className="py-2 text-right font-medium">{pts}</td>
+            {Object.keys(comparison.byMonth).length === 0 ? (
+              <p className="text-slate-400 text-sm">Noch keine Daten.</p>
+            ) : (() => {
+              const monthUserNames = Array.from(
+                new Set(Object.values(comparison.byMonth).flatMap(Object.keys))
+              )
+              return (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-slate-500 text-xs">
+                      <th className="text-left pb-2">Monat</th>
+                      {monthUserNames.map(name => (
+                        <th key={name} className="text-right pb-2">{name}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(comparison.byMonth).sort(([a],[b]) => b.localeCompare(a)).slice(0,6).map(([month, users]) => (
+                      <tr key={month} className="border-t border-slate-100">
+                        <td className="py-2 text-slate-600">{month}</td>
+                        {monthUserNames.map((name) => (
+                          <td key={name} className="py-2 text-right font-medium">{users[name] ?? 0}</td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  </tbody>
+                </table>
+              )
+            })()}
           </div>
         </div>
       )}
