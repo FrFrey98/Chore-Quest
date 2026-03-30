@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { action } = await req.json()
+  if (action !== 'approve' && action !== 'reject') {
+    return NextResponse.json({ error: 'Ungültige Aktion' }, { status: 400 })
+  }
+
+  const approval = await prisma.taskApproval.findUnique({ where: { id: params.id } })
+  if (!approval || approval.status !== 'pending') {
+    return NextResponse.json({ error: 'Genehmigung nicht gefunden' }, { status: 404 })
+  }
+
+  // User cannot approve their own task
+  if (approval.requestedById === session.user.id) {
+    return NextResponse.json({ error: 'Eigene Aufgaben können nicht genehmigt werden' }, { status: 403 })
+  }
+
+  await prisma.taskApproval.update({
+    where: { id: params.id },
+    data: { status: action === 'approve' ? 'approved' : 'rejected' },
+  })
+
+  await prisma.task.update({
+    where: { id: approval.taskId },
+    data: {
+      status: action === 'approve' ? 'active' : 'rejected',
+      approvedById: action === 'approve' ? session.user.id : undefined,
+    },
+  })
+
+  return NextResponse.json({ success: true })
+}
