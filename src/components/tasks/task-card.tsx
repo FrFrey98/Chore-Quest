@@ -14,9 +14,14 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
 
   async function handleComplete() {
     setLoading(true)
-    await onComplete(task.id)
-    setDone(true)
-    setLoading(false)
+    try {
+      await onComplete(task.id)
+      setDone(true)
+    } catch {
+      // API failed — keep the card visible
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (done) return null
@@ -38,7 +43,7 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
         +{task.points} Pkt
       </Badge>
       <Button size="sm" onClick={handleComplete} disabled={loading}>
-        {loading ? '…' : '✓'}
+        {loading ? '…' : 'Erledigt'}
       </Button>
     </div>
   )

@@ -1,10 +1,12 @@
 import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { TasksClient } from './tasks-client'
 
 export default async function TasksPage() {
   const session = await getServerSession(authOptions)
+  if (!session) redirect('/login')
 
   const now = new Date()
   const tasks = await prisma.task.findMany({
@@ -24,5 +26,5 @@ export default async function TasksPage() {
     tasks: visible.filter((t) => t.categoryId === cat.id),
   }))
 
-  return <TasksClient grouped={grouped} userId={session!.user.id} />
+  return <TasksClient grouped={grouped} />
 }
