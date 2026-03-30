@@ -1,0 +1,89 @@
+<h2>Aufgaben-Ansicht — wie sollen Aufgaben dargestellt werden?</h2>
+<p class="subtitle">Die Liste der offenen Aufgaben</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Einfache Liste</h3>
+      <p>Alle Aufgaben als scrollbare Liste, sortiert nach Punkten. Schnell und übersichtlich.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Aufgaben</div>
+        <div class="mockup-body" style="padding:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:6px;background:#f8fafc;margin-bottom:6px;font-size:12px">
+            <div>🧹 Wohnung saugen <span style="color:#64748b;font-size:10px">· wöchentlich</span></div>
+            <div style="background:#6366f1;color:white;border-radius:12px;padding:2px 8px;font-size:10px">+80 Pkt</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:6px;background:#f8fafc;margin-bottom:6px;font-size:12px">
+            <div>🍽️ Abwasch machen</div>
+            <div style="background:#6366f1;color:white;border-radius:12px;padding:2px 8px;font-size:10px">+30 Pkt</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:6px;background:#f8fafc;margin-bottom:6px;font-size:12px">
+            <div>🛒 Einkaufen gehen</div>
+            <div style="background:#6366f1;color:white;border-radius:12px;padding:2px 8px;font-size:10px">+50 Pkt</div>
+          </div>
+          <div style="text-align:center;margin-top:8px">
+            <div style="display:inline-block;background:#6366f1;color:white;border-radius:6px;padding:6px 16px;font-size:11px">+ Aufgabe erledigt</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Karten-Grid</h3>
+      <p>Aufgaben als Karten mit Emoji, Titel und Punkten. Macht mehr Spaß, besonders auf dem Handy.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Aufgaben</div>
+        <div class="mockup-body" style="padding:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="border-radius:10px;background:#f1f5f9;padding:12px;text-align:center">
+              <div style="font-size:24px">🧹</div>
+              <div style="font-size:11px;font-weight:600;margin:4px 0">Saugen</div>
+              <div style="background:#6366f1;color:white;border-radius:10px;padding:2px 8px;font-size:10px;display:inline-block">+80 Pkt</div>
+            </div>
+            <div style="border-radius:10px;background:#f1f5f9;padding:12px;text-align:center">
+              <div style="font-size:24px">🍽️</div>
+              <div style="font-size:11px;font-weight:600;margin:4px 0">Abwasch</div>
+              <div style="background:#6366f1;color:white;border-radius:10px;padding:2px 8px;font-size:10px;display:inline-block">+30 Pkt</div>
+            </div>
+            <div style="border-radius:10px;background:#f1f5f9;padding:12px;text-align:center">
+              <div style="font-size:24px">🛒</div>
+              <div style="font-size:11px;font-weight:600;margin:4px 0">Einkaufen</div>
+              <div style="background:#6366f1;color:white;border-radius:10px;padding:2px 8px;font-size:10px;display:inline-block">+50 Pkt</div>
+            </div>
+            <div style="border-radius:10px;border:2px dashed #cbd5e1;padding:12px;text-align:center;color:#94a3b8">
+              <div style="font-size:24px">+</div>
+              <div style="font-size:11px">Neue Aufgabe</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Kategorien</h3>
+      <p>Aufgaben gruppiert nach Bereich (Küche, Bad, Allgemein…). Gut wenn viele Aufgaben vorhanden sind.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Aufgaben</div>
+        <div class="mockup-body" style="padding:10px">
+          <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px">🍳 KÜCHE</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+            <div style="background:#fef3c7;border-radius:6px;padding:4px 8px;font-size:11px">🍽️ Abwasch <span style="color:#92400e">+30</span></div>
+            <div style="background:#fef3c7;border-radius:6px;padding:4px 8px;font-size:11px">🧽 Herd putzen <span style="color:#92400e">+40</span></div>
+          </div>
+          <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px">🏠 ALLGEMEIN</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <div style="background:#ede9fe;border-radius:6px;padding:4px 8px;font-size:11px">🧹 Saugen <span style="color:#5b21b6">+80</span></div>
+            <div style="background:#ede9fe;border-radius:6px;padding:4px 8px;font-size:11px">🛒 Einkaufen <span style="color:#5b21b6">+50</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<h2>Dashboard Layout — welches gefällt dir besser?</h2>
+<p class="subtitle">Die Hauptansicht nach dem Login</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Duell-Ansicht</h3>
+      <p>Beide Spieler nebeneinander — Punkte, Level und Fortschritt direkt im Vergleich sichtbar. Wettbewerb steht im Vordergrund.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Dashboard</div>
+        <div class="mockup-body" style="padding:12px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div style="background:#6366f1;border-radius:8px;padding:12px;color:white;text-align:center">
+              <div style="font-size:11px;opacity:0.8">FRANZ</div>
+              <div style="font-size:24px;font-weight:bold">1.240 Pkt</div>
+              <div style="font-size:11px;opacity:0.8">Level 4 · Haushalts-Held</div>
+            </div>
+            <div style="background:#ec4899;border-radius:8px;padding:12px;color:white;text-align:center">
+              <div style="font-size:11px;opacity:0.8">PARTNER</div>
+              <div style="font-size:24px;font-weight:bold">980 Pkt</div>
+              <div style="font-size:11px;opacity:0.8">Level 3 · Ordnungs-Fan</div>
+            </div>
+          </div>
+          <div style="background:#f1f5f9;border-radius:6px;padding:8px;font-size:11px;color:#64748b">
+            📋 Offene Aufgaben: 5 &nbsp;|&nbsp; ✅ Heute erledigt: 2
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Team-Ansicht</h3>
+      <p>Gemeinsamer Fortschrittsbalken oben, darunter individuelle Stats. Kooperation statt Konkurrenz — ihr arbeitet zusammen auf ein Ziel hin.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Dashboard</div>
+        <div class="mockup-body" style="padding:12px">
+          <div style="background:#f1f5f9;border-radius:8px;padding:10px;margin-bottom:10px">
+            <div style="font-size:11px;color:#64748b;margin-bottom:4px">TEAM-ZIEL DIESE WOCHE</div>
+            <div style="background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden">
+              <div style="background:linear-gradient(90deg,#6366f1,#ec4899);width:68%;height:100%"></div>
+            </div>
+            <div style="font-size:11px;color:#64748b;margin-top:4px">68% · 2.220 / 3.000 Pkt gemeinsam</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="border:1px solid #e2e8f0;border-radius:6px;padding:8px;text-align:center">
+              <div style="font-size:11px;color:#64748b">Franz</div>
+              <div style="font-weight:bold;color:#6366f1">1.240 Pkt</div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:6px;padding:8px;text-align:center">
+              <div style="font-size:11px;color:#64748b">Partner</div>
+              <div style="font-weight:bold;color:#ec4899">980 Pkt</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Feed-Ansicht</h3>
+      <p>Aktivitäts-Feed im Vordergrund — wer hat was wann gemacht. Punkte als Sekundärinfo. Fühlt sich eher wie eine Social App an.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Dashboard</div>
+        <div class="mockup-body" style="padding:12px">
+          <div style="display:flex;gap:12px;margin-bottom:10px">
+            <div style="text-align:center;flex:1">
+              <div style="font-size:18px;font-weight:bold;color:#6366f1">1.240</div>
+              <div style="font-size:10px;color:#64748b">Franz</div>
+            </div>
+            <div style="text-align:center;flex:1">
+              <div style="font-size:18px;font-weight:bold;color:#ec4899">980</div>
+              <div style="font-size:10px;color:#64748b">Partner</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-bottom:6px">ZULETZT ERLEDIGT</div>
+          <div style="font-size:11px;padding:6px;border-left:3px solid #6366f1;margin-bottom:4px;background:#f8fafc">🧹 Franz hat "Staubsaugen" erledigt · +50 Pkt</div>
+          <div style="font-size:11px;padding:6px;border-left:3px solid #ec4899;margin-bottom:4px;background:#f8fafc">🍽️ Partner hat "Abwasch" erledigt · +30 Pkt</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
