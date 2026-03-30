@@ -1,16 +1,18 @@
 // src/tests/api/store.test.ts
 import { vi, describe, it, expect } from 'vitest'
+import { getServerSession } from 'next-auth'
+import { prisma } from '@/lib/prisma'
 
 const mockSession = { user: { id: 'user-1', name: 'Franz' } }
 const mockItem = { id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }
 
-vi.mock('next-auth', () => ({ getServerSession: vi.fn().mockResolvedValue(mockSession) }))
+vi.mock('next-auth', () => ({ getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-1', name: 'Franz' } }) }))
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))
 vi.mock('@/lib/prisma', () => ({
   prisma: {
     storeItem: {
-      findMany: vi.fn().mockResolvedValue([mockItem]),
-      findUnique: vi.fn().mockResolvedValue(mockItem),
+      findMany: vi.fn().mockResolvedValue([{ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }]),
+      findUnique: vi.fn().mockResolvedValue({ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }),
     },
     taskCompletion: {
       findMany: vi.fn().mockResolvedValue([{ points: 1000 }]),
@@ -33,6 +35,13 @@ describe('GET /api/store', () => {
     const data = await res.json()
     expect(Array.isArray(data)).toBe(true)
   })
+
+  it('returns 401 when session is null', async () => {
+    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    const { GET } = await import('@/app/api/store/route')
+    const res = await GET(new Request('http://localhost/api/store') as any)
+    expect(res.status).toBe(401)
+  })
 })
 
 describe('POST /api/store/[id]/purchase', () => {
@@ -43,5 +52,86 @@ describe('POST /api/store/[id]/purchase', () => {
       { params: { id: 'item-1' } }
     )
     expect(res.status).toBe(201)
+  })
+
+  it('returns 401 when session is null', async () => {
+    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    const { POST } = await import('@/app/api/store/[id]/purchase/route')
+    const res = await POST(
+      new Request('http://localhost/api/store/item-1/purchase', { method: 'POST' }) as any,
+      { params: { id: 'item-1' } }
+    )
+    expect(res.status).toBe(401)
+  })
+
+  it('returns 409 when trophy already owned', async () => {
+    vi.mocked(prisma.purchase.findFirst).mockResolvedValueOnce({ id: 'pur-existing' } as any)
+    const { POST } = await import('@/app/api/store/[id]/purchase/route')
+    const res = await POST(
+      new Request('http://localhost/api/store/item-1/purchase', { method: 'POST' }) as any,
+      { params: { id: 'item-1' } }
+    )
+    expect(res.status).toBe(409)
+  })
+
+  it('returns 402 when insufficient points', async () => {
+    // earned 1000, spent 600 => balance 400 < 500 cost
+    vi.mocked(prisma.taskCompletion.findMany).mockResolvedValueOnce([{ points: 1000 }] as any)
+    vi.mocked(prisma.purchase.findMany).mockResolvedValueOnce([{ pointsSpent: 600 }] as any)
+    const { POST } = await import('@/app/api/store/[id]/purchase/route')
+    const res = await POST(
+      new Request('http://localhost/api/store/item-1/purchase', { method: 'POST' }) as any,
+      { params: { id: 'item-1' } }
+    )
+    expect(res.status).toBe(402)
+  })
+})
+
+describe('POST /api/store/[id]/redeem', () => {
+  it('returns 200 on successful redeem', async () => {
+    const { POST } = await import('@/app/api/store/[id]/redeem/route')
+    const res = await POST(
+      new Request('http://localhost/api/store/pur-1/redeem', { method: 'POST' }) as any,
+      { params: { id: 'pur-1' } }
+    )
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 401 when session is null', async () => {
+    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    const { POST } = await import('@/app/api/store/[id]/redeem/route')
+    const res = await POST(
+      new Request('http://localhost/api/store/pur-1/redeem', { method: 'POST' }) as any,
+      { params: { id: 'pur-1' } }
+    )
+    expect(res.status).toBe(401)
+  })
+
+  it('returns 409 when already redeemed', async () => {
+    vi.mocked(prisma.purchase.findUnique).mockResolvedValueOnce({
+      id: 'pur-1',
+      userId: 'user-1',
+      redeemedAt: new Date('2024-01-01'),
+    } as any)
+    const { POST } = await import('@/app/api/store/[id]/redeem/route')
+    const res = await POST(
+      new Request('http://localhost/api/store/pur-1/redeem', { method: 'POST' }) as any,
+      { params: { id: 'pur-1' } }
+    )
+    expect(res.status).toBe(409)
+  })
+
+  it('returns 404 when purchase belongs to another user', async () => {
+    vi.mocked(prisma.purchase.findUnique).mockResolvedValueOnce({
+      id: 'pur-1',
+      userId: 'user-other',
+      redeemedAt: null,
+    } as any)
+    const { POST } = await import('@/app/api/store/[id]/redeem/route')
+    const res = await POST(
+      new Request('http://localhost/api/store/pur-1/redeem', { method: 'POST' }) as any,
+      { params: { id: 'pur-1' } }
+    )
+    expect(res.status).toBe(404)
   })
 })
