@@ -6,7 +6,7 @@ import { ApprovalsClient } from './approvals-client'
 
 export default async function ApprovalsPage() {
   const session = await getServerSession(authOptions)
-  if (!session) redirect('/login')
+  if (!session?.user?.id) redirect('/login')
 
   const approvals = await prisma.taskApproval.findMany({
     where: {

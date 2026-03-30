@@ -1,12 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { ApprovalCard } from '@/components/approvals/approval-card'
-
-type Approval = {
-  id: string
-  task: { title: string; emoji: string; points: number; isRecurring: boolean; recurringInterval: string | null }
-  requestedBy: { name: string | null }
-}
+import type { Approval } from '@/components/approvals/approval-card'
 
 export function ApprovalsClient({ approvals }: { approvals: Approval[] }) {
   const router = useRouter()
@@ -24,7 +19,9 @@ export function ApprovalsClient({ approvals }: { approvals: Approval[] }) {
   return (
     <div>
       <h1 className="text-xl font-bold mb-1">Freigaben</h1>
-      <p className="text-sm text-slate-500 mb-6">{approvals.length} offene Anfragen</p>
+      {approvals.length > 0 && (
+        <p className="text-sm text-slate-500 mb-6">{approvals.length} offene Anfragen</p>
+      )}
       {approvals.length === 0 ? (
         <p className="text-center text-slate-400 py-12">
           ✅ Keine offenen Anfragen

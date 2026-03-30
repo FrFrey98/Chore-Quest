@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 
-type Approval = {
+export type Approval = {
   id: string
   task: { title: string; emoji: string; points: number; isRecurring: boolean; recurringInterval: string | null }
   requestedBy: { name: string | null }
@@ -41,7 +41,10 @@ export function ApprovalCard({
           <p className="text-sm text-slate-500">
             Von {approval.requestedBy.name ?? 'Unbekannt'} ·{' '}
             {approval.task.isRecurring
-              ? `Wiederkehrend (${approval.task.recurringInterval === 'daily' ? 'täglich' : approval.task.recurringInterval === 'weekly' ? 'wöchentlich' : 'monatlich'})`
+              ? `Wiederkehrend (${approval.task.recurringInterval === 'daily' ? 'täglich'
+                  : approval.task.recurringInterval === 'weekly' ? 'wöchentlich'
+                  : approval.task.recurringInterval === 'monthly' ? 'monatlich'
+                  : 'unbekannt'})`
               : 'Einmalig'}
           </p>
         </div>
