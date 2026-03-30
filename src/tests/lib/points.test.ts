@@ -48,6 +48,10 @@ describe('getLevel', () => {
     expect(getLevel(99999).level).toBe(LEVELS.length)
   })
 
+  it('returns level 1 just below level 2 threshold (199 points)', () => {
+    expect(getLevel(199).level).toBe(1)
+  })
+
   it('returns correct title', () => {
     expect(getLevel(0).title).toBe('Haushaltslehrling')
     expect(getLevel(500).title).toBe('Putz-Profi')
