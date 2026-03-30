@@ -39,7 +39,8 @@ export function LoginForm({ users }: { users: User[] }) {
           <button
             key={u.id}
             type="button"
-            onClick={() => setSelectedId(u.id)}
+            disabled={loading}
+            onClick={() => { setSelectedId(u.id); setError(''); setPin('') }}
             className={`p-4 rounded-xl border-2 text-center font-medium transition-colors ${
               selectedId === u.id
                 ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
@@ -56,6 +57,7 @@ export function LoginForm({ users }: { users: User[] }) {
           <Input
             type="password"
             inputMode="numeric"
+            pattern="\d*"
             placeholder="PIN eingeben"
             value={pin}
             onChange={(e) => setPin(e.target.value)}
