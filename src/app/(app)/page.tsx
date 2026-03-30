@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getTotalEarned, getCurrentPoints } from '@/lib/points'
+import { getTotalEarned } from '@/lib/points'
 import { PointsHeader } from '@/components/dashboard/points-header'
 import { FeedItem } from '@/components/dashboard/feed-item'
 
@@ -17,7 +17,7 @@ export default async function DashboardPage() {
 
   const userStats = users.map((u) => ({
     id: u.id,
-    name: u.name,
+    name: u.name ?? 'Unbekannt',
     earned: getTotalEarned(u.completions),
     spent: u.purchases.reduce((s, p) => s + p.pointsSpent, 0),
   }))
@@ -34,7 +34,7 @@ export default async function DashboardPage() {
   const feed = completions.map((c) => ({
     id: c.id,
     type: 'completion' as const,
-    user: c.user,
+    user: { id: c.user.id, name: c.user.name ?? 'Unbekannt' },
     task: c.task,
     points: c.points,
     at: c.completedAt.toISOString(),
