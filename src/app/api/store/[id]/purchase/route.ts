@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@/generated/prisma/client'
 import { getCurrentPoints, getTotalEarned } from '@/lib/points'
 
 export async function POST(
@@ -43,8 +44,15 @@ export async function POST(
     return NextResponse.json({ error: 'Nicht genug Punkte' }, { status: 402 })
   }
 
-  const purchase = await prisma.purchase.create({
-    data: { itemId: params.id, userId: session.user.id, pointsSpent: item.pointCost },
-  })
-  return NextResponse.json(purchase, { status: 201 })
+  try {
+    const purchase = await prisma.purchase.create({
+      data: { itemId: params.id, userId: session.user.id, pointsSpent: item.pointCost },
+    })
+    return NextResponse.json(purchase, { status: 201 })
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+      return NextResponse.json({ error: 'Artikel nicht gefunden' }, { status: 404 })
+    }
+    return NextResponse.json({ error: 'Fehler beim Kauf' }, { status: 500 })
+  }
 }

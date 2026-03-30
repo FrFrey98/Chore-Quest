@@ -19,6 +19,34 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const item = await prisma.storeItem.create({ data: body })
+  const { title, emoji, pointCost, type, description, isActive } = body
+
+  if (!title || !emoji || !pointCost || !type) {
+    return NextResponse.json({ error: 'Fehlende Felder' }, { status: 400 })
+  }
+
+  if (typeof title !== 'string' || typeof emoji !== 'string') {
+    return NextResponse.json({ error: 'Ungültige Felder' }, { status: 400 })
+  }
+
+  const parsedPointCost = Number(pointCost)
+  if (!Number.isInteger(parsedPointCost) || parsedPointCost <= 0) {
+    return NextResponse.json({ error: 'pointCost muss eine positive ganze Zahl sein' }, { status: 400 })
+  }
+
+  if (type !== 'trophy' && type !== 'real_reward') {
+    return NextResponse.json({ error: 'type muss "trophy" oder "real_reward" sein' }, { status: 400 })
+  }
+
+  const item = await prisma.storeItem.create({
+    data: {
+      title,
+      emoji,
+      pointCost: parsedPointCost,
+      type,
+      description: typeof description === 'string' ? description : '',
+      isActive: typeof isActive === 'boolean' ? isActive : true,
+    },
+  })
   return NextResponse.json(item, { status: 201 })
 }
