@@ -17,6 +17,8 @@ export async function POST(
   }
 
   const hashed = await bcrypt.hash(pin, 10)
+  // In this 2-person household app, both users have equal admin access.
+  // Either user can change any PIN (including the other person's).
   await prisma.user.update({ where: { id: params.id }, data: { pin: hashed } })
   return NextResponse.json({ success: true })
 }

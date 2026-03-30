@@ -8,8 +8,8 @@ const mockItem = { id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'tro
 
 vi.mock('next-auth', () => ({ getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-1', name: 'Franz' } }) }))
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
+vi.mock('@/lib/prisma', () => {
+  const mock = {
     storeItem: {
       findMany: vi.fn().mockResolvedValue([{ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }]),
       findUnique: vi.fn().mockResolvedValue({ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }),
@@ -24,8 +24,11 @@ vi.mock('@/lib/prisma', () => ({
       findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'user-1', redeemedAt: null }),
       update: vi.fn().mockResolvedValue({ id: 'pur-1', redeemedAt: new Date() }),
     },
-  },
-}))
+    $transaction: vi.fn(),
+  }
+  mock.$transaction.mockImplementation((fn: (tx: typeof mock) => Promise<unknown>) => fn(mock))
+  return { prisma: mock }
+})
 
 describe('GET /api/store', () => {
   it('returns store items', async () => {
