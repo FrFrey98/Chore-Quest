@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, CheckSquare, ShoppingBag, BarChart2, Shield, Settings } from 'lucide-react'
@@ -19,6 +20,15 @@ const NAV = [
 
 export function Navigation() {
   const pathname = usePathname()
+  const [approvalCount, setApprovalCount] = useState(0)
+
+  useEffect(() => {
+    fetch('/api/approvals/count')
+      .then(r => r.ok ? r.json() : { count: 0 })
+      .then(d => setApprovalCount(d.count ?? 0))
+      .catch(() => {})
+  }, [pathname])
+
   return (
     <>
       {/* Mobile bottom bar */}
@@ -28,11 +38,16 @@ export function Navigation() {
             key={href}
             href={href}
             aria-current={isActive(pathname, href) ? 'page' : undefined}
-            className={`flex-1 flex flex-col items-center py-2 text-xs gap-1 transition-colors ${
+            className={`flex-1 flex flex-col items-center py-2 text-xs gap-1 transition-colors relative ${
               isActive(pathname, href) ? 'text-indigo-600' : 'text-slate-500'
             }`}
           >
-            <Icon size={20} />
+            <span className="relative">
+              <Icon size={20} />
+              {href === '/approvals' && approvalCount > 0 && (
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </span>
             <span>{label}</span>
           </Link>
         ))}
@@ -54,6 +69,11 @@ export function Navigation() {
           >
             <Icon size={18} />
             {label}
+            {href === '/approvals' && approvalCount > 0 && (
+              <span className="ml-auto text-xs bg-red-500 text-white rounded-full px-1.5 py-0.5 min-w-5 text-center">
+                {approvalCount}
+              </span>
+            )}
           </Link>
         ))}
       </nav>
