@@ -25,17 +25,18 @@ export async function POST(
     return NextResponse.json({ error: 'Eigene Aufgaben können nicht genehmigt werden' }, { status: 403 })
   }
 
-  await prisma.taskApproval.update({
-    where: { id: params.id },
-    data: { status: action === 'approve' ? 'approved' : 'rejected' },
-  })
-
-  await prisma.task.update({
-    where: { id: approval.taskId },
-    data: {
-      status: action === 'approve' ? 'active' : 'rejected',
-      approvedById: action === 'approve' ? session.user.id : undefined,
-    },
+  await prisma.$transaction(async (tx) => {
+    await tx.taskApproval.update({
+      where: { id: params.id },
+      data: { status: action === 'approve' ? 'approved' : 'rejected' },
+    })
+    await tx.task.update({
+      where: { id: approval.taskId },
+      data: {
+        status: action === 'approve' ? 'active' : 'rejected',
+        approvedById: action === 'approve' ? session.user.id : undefined,
+      },
+    })
   })
 
   return NextResponse.json({ success: true })

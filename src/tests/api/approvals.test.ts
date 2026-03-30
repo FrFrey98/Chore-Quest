@@ -18,6 +18,12 @@ vi.mock('@/lib/prisma', () => ({
     task: {
       update: vi.fn().mockResolvedValue({ id: 'task-1', status: 'active' }),
     },
+    $transaction: vi.fn().mockImplementation((callback: any) =>
+      callback({
+        taskApproval: { update: vi.fn().mockResolvedValue({ id: 'approval-1', status: 'approved' }) },
+        task: { update: vi.fn().mockResolvedValue({ id: 'task-1', status: 'active' }) },
+      })
+    ),
   },
 }))
 
@@ -40,5 +46,56 @@ describe('POST /api/approvals/[id]', () => {
     })
     const res = await POST(req as any, { params: { id: 'approval-1' } })
     expect(res.status).toBe(200)
+  })
+
+  it('returns 401 when not authenticated', async () => {
+    // Temporarily mock getServerSession to return null for this test
+    const { getServerSession } = await import('next-auth')
+    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+
+    const { POST } = await import('@/app/api/approvals/[id]/route')
+    const req = new Request('http://localhost/api/approvals/approval-1', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'approve' }),
+    })
+    const res = await POST(req as any, { params: { id: 'approval-1' } })
+    expect(res.status).toBe(401)
+  })
+
+  it('returns 400 for invalid action', async () => {
+    const { POST } = await import('@/app/api/approvals/[id]/route')
+    const req = new Request('http://localhost/api/approvals/approval-1', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'invalid' }),
+    })
+    const res = await POST(req as any, { params: { id: 'approval-1' } })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 403 when user tries to approve their own task', async () => {
+    // User-1 is the session user, but requestedById is also user-1
+    const { getServerSession } = await import('next-auth')
+    vi.mocked(getServerSession).mockResolvedValueOnce({ user: { id: 'user-1', name: 'Franz' } })
+
+    const { POST } = await import('@/app/api/approvals/[id]/route')
+    const req = new Request('http://localhost/api/approvals/approval-1', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'approve' }),
+    })
+    const res = await POST(req as any, { params: { id: 'approval-1' } })
+    expect(res.status).toBe(403)
+  })
+
+  it('returns 404 when approval not found', async () => {
+    const { prisma } = await import('@/lib/prisma')
+    vi.mocked(prisma.taskApproval.findUnique).mockResolvedValueOnce(null)
+
+    const { POST } = await import('@/app/api/approvals/[id]/route')
+    const req = new Request('http://localhost/api/approvals/nonexistent', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'approve' }),
+    })
+    const res = await POST(req as any, { params: { id: 'nonexistent' } })
+    expect(res.status).toBe(404)
   })
 })
