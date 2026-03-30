@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  pin         String
+  createdAt   DateTime @default(now())
+
+  completions   TaskCompletion[]
+  purchases     Purchase[]
+  createdTasks  Task[]           @relation("CreatedBy")
+  approvedTasks Task[]           @relation("ApprovedBy")
+  approvals     TaskApproval[]
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String
+  emoji String
+  tasks Task[]
+}
+
+model Task {
+  id                String    @id @default(cuid())
+  title             String
+  emoji             String
+  points            Int
+  isRecurring       Boolean   @default(false)
+  recurringInterval String?
+  status            String    @default("pending_approval")
+  categoryId        String
+  createdById       String
+  approvedById      String?
+  createdAt         DateTime  @default(now())
+  nextDueAt         DateTime?
+
+  category    Category         @relation(fields: [categoryId], references: [id])
+  createdBy   User             @relation("CreatedBy", fields: [createdById], references: [id])
+  approvedBy  User?            @relation("ApprovedBy", fields: [approvedById], references: [id])
+  completions TaskCompletion[]
+  approval    TaskApproval?
+}
+
+model TaskApproval {
+  id            String   @id @default(cuid())
+  taskId        String   @unique
+  requestedById String
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+
+  task        Task @relation(fields: [taskId], references: [id])
+  requestedBy User @relation(fields: [requestedById], references: [id])
+}
+
+model TaskCompletion {
+  id          String   @id @default(cuid())
+  taskId      String
+  userId      String
+  points      Int
+  completedAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model StoreItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  emoji       String
+  pointCost   Int
+  type        String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  purchases Purchase[]
+}
+
+model Purchase {
+  id          String    @id @default(cuid())
+  itemId      String
+  userId      String
+  pointsSpent Int
+  purchasedAt DateTime  @default(now())
+  redeemedAt  DateTime?
+
+  item StoreItem @relation(fields: [itemId], references: [id])
+  user User      @relation(fields: [userId], references: [id])
+}
