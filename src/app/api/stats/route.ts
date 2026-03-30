@@ -26,13 +26,13 @@ export async function GET(req: NextRequest) {
 
     const allTimeCompletions = await prisma.taskCompletion.findMany({
       where: { userId: session.user.id },
-      select: { points: true },
+      select: { points: true, completedAt: true },
     })
     const totalEarned = getTotalEarned(allTimeCompletions)
 
     // Streak
     const daySet = new Set(
-      completions.map((c) => c.completedAt.toISOString().slice(0, 10))
+      allTimeCompletions.map((c) => c.completedAt.toISOString().slice(0, 10))
     )
     let streak = 0
     const today = new Date()
