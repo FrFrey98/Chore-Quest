@@ -40,4 +40,8 @@ describe('isTaskVisible', () => {
   it('shows recurring tasks without nextDueAt (never completed)', () => {
     expect(isTaskVisible({ isRecurring: true, nextDueAt: null }, now)).toBe(true)
   })
+
+  it('shows recurring tasks when nextDueAt equals now (exactly on time)', () => {
+    expect(isTaskVisible({ isRecurring: true, nextDueAt: now }, now)).toBe(true)
+  })
 })
