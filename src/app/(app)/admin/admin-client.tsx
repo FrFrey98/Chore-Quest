@@ -19,44 +19,46 @@ export function AdminClient({ categories, storeItems, tasks, userId }: {
   const [tab, setTab] = useState<'tasks' | 'store' | 'settings'>('tasks')
 
   // --- New Task form ---
+  const [taskError, setTaskError] = useState('')
   const [taskForm, setTaskForm] = useState({
     title: '', emoji: '🏠', points: 30, categoryId: categories[0]?.id ?? '',
     isRecurring: false, recurringInterval: 'weekly',
   })
 
   async function createTask() {
-    const res = await fetch('/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(taskForm),
-    })
+    setTaskError('')
+    const res = await fetch('/api/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(taskForm) })
     if (res.ok) {
       setTaskForm(prev => ({ ...prev, title: '' }))
       router.refresh()
+    } else {
+      const data = await res.json()
+      setTaskError(data.error ?? 'Fehler beim Anlegen')
     }
   }
 
   // --- New Store Item form ---
+  const [itemError, setItemError] = useState('')
   const [itemForm, setItemForm] = useState({
     title: '', emoji: '🏆', description: '', pointCost: 500, type: 'trophy',
   })
 
   async function createStoreItem() {
-    const res = await fetch('/api/store', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...itemForm, isActive: true }),
-    })
+    setItemError('')
+    const res = await fetch('/api/store', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...itemForm, isActive: true }) })
     if (res.ok) {
       setItemForm(prev => ({ ...prev, title: '', description: '' }))
       router.refresh()
+    } else {
+      const data = await res.json()
+      setItemError(data.error ?? 'Fehler beim Anlegen')
     }
   }
 
   // --- Archive task ---
   async function archiveTask(id: string) {
-    await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
-    router.refresh()
+    const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+    if (res.ok) router.refresh()
   }
 
   // --- PIN change ---
@@ -65,7 +67,10 @@ export function AdminClient({ categories, storeItems, tasks, userId }: {
   const [pinMsg, setPinMsg] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    fetch('/api/users').then(r => r.json()).then(setUsers)
+    fetch('/api/users')
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('Fehler')))
+      .then(setUsers)
+      .catch(() => setUsers([]))
   }, [])
 
   async function changePin(uid: string) {
@@ -144,6 +149,7 @@ export function AdminClient({ categories, storeItems, tasks, userId }: {
             <Button onClick={createTask} disabled={!taskForm.title || !taskForm.categoryId}>
               Aufgabe anlegen (→ Freigabe nötig)
             </Button>
+            {taskError && <p className="text-red-500 text-xs">{taskError}</p>}
           </div>
 
           <div className="space-y-2">
@@ -197,6 +203,7 @@ export function AdminClient({ categories, storeItems, tasks, userId }: {
             <Button onClick={createStoreItem} disabled={!itemForm.title || !itemForm.description}>
               Artikel anlegen
             </Button>
+            {itemError && <p className="text-red-500 text-xs">{itemError}</p>}
           </div>
 
           <div className="space-y-2">
@@ -217,6 +224,7 @@ export function AdminClient({ categories, storeItems, tasks, userId }: {
       {tab === 'settings' && (
         <div className="space-y-4">
           <h2 className="font-semibold">PIN ändern</h2>
+          {users.length === 0 && <p className="text-slate-400 text-sm">Nutzer konnten nicht geladen werden.</p>}
           {users.map((u) => (
             <div key={u.id} className="bg-white rounded-xl p-4 shadow-sm space-y-2">
               <p className="font-medium">{u.name ?? 'Unbekannt'}</p>

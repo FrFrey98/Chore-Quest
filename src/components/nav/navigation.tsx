@@ -45,7 +45,9 @@ export function Navigation() {
             <span className="relative">
               <Icon size={20} />
               {href === '/approvals' && approvalCount > 0 && (
-                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+                <span className="absolute -top-0.5 -right-0.5 text-xs bg-red-500 text-white rounded-full px-1 min-w-4 text-center leading-4">
+                  {approvalCount > 9 ? '9+' : approvalCount}
+                </span>
               )}
             </span>
             <span>{label}</span>
