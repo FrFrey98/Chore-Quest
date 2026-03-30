@@ -2,7 +2,6 @@
 .next
 node_modules
 *.db
-.env
-.env.local
+.env*
 .superpowers
 docs
