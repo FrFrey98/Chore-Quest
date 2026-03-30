@@ -1,0 +1,65 @@
+'use client'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+
+export type StoreItem = {
+  id: string; title: string; description: string; emoji: string
+  pointCost: number; type: string; alreadyOwned?: boolean
+}
+
+export function StoreItemCard({
+  item,
+  userBalance,
+  onPurchase,
+}: {
+  item: StoreItem
+  userBalance: number
+  onPurchase: (id: string) => Promise<{ error?: string }>
+}) {
+  const [loading, setLoading] = useState(false)
+  const [purchased, setPurchased] = useState(false)
+  const [error, setError] = useState('')
+  const canAfford = userBalance >= item.pointCost
+
+  async function handlePurchase() {
+    setLoading(true)
+    setError('')
+    const res = await onPurchase(item.id)
+    if (res.error) {
+      setError(res.error)
+    } else {
+      setPurchased(true)
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div className={`bg-white rounded-xl shadow-sm p-4 space-y-2${purchased ? ' opacity-50' : ''}`}>
+      <div className="flex items-center gap-3">
+        <span className="text-3xl">{item.emoji}</span>
+        <div className="flex-1">
+          <p className="font-semibold">{item.title}</p>
+          <p className="text-sm text-slate-500">{item.description}</p>
+        </div>
+        <span className="text-xs font-bold border border-slate-200 px-2 py-0.5 rounded shrink-0">
+          {item.pointCost} Pkt
+        </span>
+      </div>
+      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {purchased ? (
+        <p className="text-green-600 text-sm font-medium">✓ Gekauft!</p>
+      ) : item.alreadyOwned ? (
+        <p className="text-slate-400 text-sm">Bereits erworben</p>
+      ) : (
+        <Button
+          className="w-full"
+          onClick={handlePurchase}
+          disabled={loading || !canAfford}
+          variant={canAfford ? 'default' : 'outline'}
+        >
+          {loading ? '…' : canAfford ? 'Kaufen' : 'Nicht genug Punkte'}
+        </Button>
+      )}
+    </div>
+  )
+}
