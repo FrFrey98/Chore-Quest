@@ -8,7 +8,7 @@ function createPrismaClient() {
   return new PrismaClient({ adapter, log: ['error'] })
 }
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof createPrismaClient> }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
