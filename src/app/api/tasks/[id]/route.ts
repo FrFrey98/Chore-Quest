@@ -11,18 +11,25 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const task = await prisma.task.update({
-    where: { id: params.id },
-    data: {
-      title: body.title,
-      emoji: body.emoji,
-      points: body.points !== undefined ? Number(body.points) : undefined,
-      categoryId: body.categoryId,
-      isRecurring: body.isRecurring,
-      recurringInterval: body.recurringInterval ?? null,
-    },
-  })
-  return NextResponse.json(task)
+  try {
+    const task = await prisma.task.update({
+      where: { id: params.id },
+      data: {
+        title: body.title,
+        emoji: body.emoji,
+        points: body.points !== undefined ? Number(body.points) : undefined,
+        categoryId: body.categoryId,
+        isRecurring: body.isRecurring,
+        recurringInterval: body.recurringInterval ?? null,
+      },
+    })
+    return NextResponse.json(task)
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
+    }
+    throw error
+  }
 }
 
 export async function DELETE(
@@ -32,9 +39,16 @@ export async function DELETE(
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  await prisma.task.update({
-    where: { id: params.id },
-    data: { status: 'archived' },
-  })
+  try {
+    await prisma.task.update({
+      where: { id: params.id },
+      data: { status: 'archived' },
+    })
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
+    }
+    throw error
+  }
   return new NextResponse(null, { status: 204 })
 }

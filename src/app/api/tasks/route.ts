@@ -32,25 +32,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Fehlende Felder' }, { status: 400 })
   }
 
-  const task = await prisma.task.create({
-    data: {
-      title,
-      emoji,
-      points: Number(points),
-      categoryId,
-      isRecurring: Boolean(isRecurring),
-      recurringInterval: isRecurring ? recurringInterval : null,
-      status: 'pending_approval',
-      createdById: session.user.id,
-    },
-  })
+  const parsedPoints = Number(points)
+  if (!Number.isInteger(parsedPoints) || parsedPoints <= 0) {
+    return NextResponse.json({ error: 'Punkte müssen eine positive ganze Zahl sein' }, { status: 400 })
+  }
 
-  await prisma.taskApproval.create({
-    data: {
-      taskId: task.id,
-      requestedById: session.user.id,
-      status: 'pending',
-    },
+  const { task } = await prisma.$transaction(async (tx) => {
+    const task = await tx.task.create({
+      data: {
+        title,
+        emoji,
+        points: parsedPoints,
+        categoryId,
+        isRecurring: Boolean(isRecurring),
+        recurringInterval: isRecurring ? recurringInterval : null,
+        status: 'pending_approval',
+        createdById: session.user.id,
+      },
+    })
+
+    await tx.taskApproval.create({
+      data: {
+        taskId: task.id,
+        requestedById: session.user.id,
+        status: 'pending',
+      },
+    })
+
+    return { task }
   })
 
   return NextResponse.json(task, { status: 201 })

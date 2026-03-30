@@ -23,6 +23,12 @@ vi.mock('@/lib/auth', () => ({ authOptions: {} }))
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
+    $transaction: vi.fn().mockImplementation((cb: any) =>
+      cb({
+        task: { create: vi.fn().mockResolvedValue(mockTask) },
+        taskApproval: { create: vi.fn().mockResolvedValue({ id: 'approval-1' }) },
+      })
+    ),
     task: {
       findMany: vi.fn().mockResolvedValue([mockTask]),
       create: vi.fn().mockResolvedValue(mockTask),
