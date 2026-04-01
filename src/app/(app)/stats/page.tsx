@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -44,14 +45,16 @@ export default async function StatsPage({ searchParams }: { searchParams: { tab?
   }))
 
   return (
-    <StatsClient
-      completions={serialized}
-      users={users}
-      currentUserId={userId}
-      categories={categories}
-      allTasks={tasks}
-      from={from}
-      to={to}
-    />
+    <Suspense fallback={<div className="text-center py-16 text-slate-400">Lade Statistiken...</div>}>
+      <StatsClient
+        completions={serialized}
+        users={users}
+        currentUserId={userId}
+        categories={categories}
+        allTasks={tasks}
+        from={from}
+        to={to}
+      />
+    </Suspense>
   )
 }
