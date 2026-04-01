@@ -31,14 +31,29 @@ export function AchievementsClient({
       </h2>
       <div className="grid grid-cols-4 gap-2 mb-8">
         {unlocked.map((a) => (
-          <div key={a.id} className="bg-white rounded-xl p-3 text-center border border-slate-200 aspect-square flex flex-col items-center justify-center">
+          <div key={a.id} className="group relative bg-white rounded-xl p-3 text-center border border-slate-200 aspect-square flex flex-col items-center justify-center cursor-default">
             <span className="text-3xl">{a.emoji}</span>
             <span className="text-[10px] text-slate-600 mt-1 leading-tight line-clamp-2">{a.title}</span>
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 text-center shadow-lg">
+              <p className="font-semibold">{a.title}</p>
+              <p className="text-slate-300 mt-0.5">{a.description}</p>
+              <p className="text-slate-400 mt-1">{a.progress}/{a.progressMax} · {a.unlockedAt ? `Seit ${new Date(a.unlockedAt).toLocaleDateString('de-DE')}` : ''}</p>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+            </div>
           </div>
         ))}
         {locked.map((a) => (
-          <div key={a.id} className="bg-slate-50 rounded-xl p-3 text-center border border-dashed border-slate-300 aspect-square flex flex-col items-center justify-center">
+          <div key={a.id} className="group relative bg-slate-50 rounded-xl p-3 text-center border border-dashed border-slate-300 aspect-square flex flex-col items-center justify-center cursor-default">
             <span className="text-3xl grayscale opacity-30">{a.emoji}</span>
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 text-center shadow-lg">
+              <p className="font-semibold">{a.title}</p>
+              <p className="text-slate-300 mt-0.5">{a.description}</p>
+              <div className="mt-1.5 bg-slate-600 rounded-full h-1 overflow-hidden">
+                <div className="bg-indigo-400 h-full rounded-full" style={{ width: `${a.progressMax > 0 ? Math.round((a.progress / a.progressMax) * 100) : 0}%` }} />
+              </div>
+              <p className="text-slate-400 mt-1">{a.progress}/{a.progressMax}</p>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+            </div>
           </div>
         ))}
       </div>
