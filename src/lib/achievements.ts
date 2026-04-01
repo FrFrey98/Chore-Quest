@@ -74,25 +74,15 @@ export async function checkAndUnlockAchievements(userId: string): Promise<string
   })
   const existingIds = new Set(existing.map((e) => e.achievementId))
 
-  const newlyUnlocked: string[] = []
+  const toUnlock = allAchievements.filter(
+    (a) => !existingIds.has(a.id) && checkAchievementCondition(a.conditionType, a.conditionValue, a.conditionMeta, stats)
+  )
 
-  for (const achievement of allAchievements) {
-    if (existingIds.has(achievement.id)) continue
-
-    const met = checkAchievementCondition(
-      achievement.conditionType,
-      achievement.conditionValue,
-      achievement.conditionMeta,
-      stats
-    )
-
-    if (met) {
-      await prisma.userAchievement.create({
-        data: { userId, achievementId: achievement.id },
-      })
-      newlyUnlocked.push(achievement.id)
-    }
+  if (toUnlock.length > 0) {
+    await prisma.userAchievement.createMany({
+      data: toUnlock.map((a) => ({ userId, achievementId: a.id })),
+    })
   }
 
-  return newlyUnlocked
+  return toUnlock.map((a) => a.id)
 }
