@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { StoreItemCard } from '@/components/store/store-item-card'
 import { CreateItemDialog } from '@/components/store/create-item-dialog'
 import { MyRewards } from '@/components/store/pending-rewards'
@@ -60,6 +61,11 @@ export function StoreClient({
         {rewards.map((item) => (
           <StoreItemCard key={item.id} item={item} userBalance={balance} onPurchase={handlePurchase} />
         ))}
+      </div>
+      <div className="flex justify-end mt-4">
+        <Link href="/manage?tab=rewards" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
+          Verwalten →
+        </Link>
       </div>
     </div>
   )

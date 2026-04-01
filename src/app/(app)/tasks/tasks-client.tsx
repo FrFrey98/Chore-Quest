@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { TaskCategoryGroup } from '@/components/tasks/task-category-group'
 import { CreateTaskDialog } from '@/components/tasks/create-task-dialog'
 
@@ -36,6 +37,11 @@ export function TasksClient({ grouped, categories }: { grouped: Category[]; cate
       {grouped.map((cat) => (
         <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} />
       ))}
+      <div className="flex justify-end mt-4">
+        <Link href="/manage?tab=tasks" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
+          Verwalten →
+        </Link>
+      </div>
     </div>
   )
 }
