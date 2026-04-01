@@ -2,36 +2,120 @@ import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getTotalEarned, getLevel } from '@/lib/points'
-import { PointsHeader } from '@/components/dashboard/points-header'
-import { FeedItem } from '@/components/dashboard/feed-item'
+import { getTotalEarned, getLevel, getCurrentPoints } from '@/lib/points'
+import { computeStats } from '@/lib/achievements'
+import { getWeekBounds, groupFeedByDay } from '@/lib/dashboard'
+import type { FeedEntry } from '@/lib/dashboard'
+import { StatPills } from '@/components/dashboard/stat-pills'
+import { TodaySection } from '@/components/dashboard/today-section'
+import { WeekChart } from '@/components/dashboard/week-chart'
+import { GroupedFeed } from '@/components/dashboard/grouped-feed'
 import { DashboardNotifications } from '@/components/dashboard/dashboard-notifications'
+
+const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
+  const userId = session!.user.id
 
+  // --- Stat Pills Data ---
+  const stats = await computeStats(userId)
+  const levelInfo = getLevel(stats.totalPointsEarned)
+  const spent = await prisma.purchase.aggregate({
+    where: { userId },
+    _sum: { pointsSpent: true },
+  })
+  const balance = getCurrentPoints(stats.totalPointsEarned, spent._sum.pointsSpent ?? 0)
+
+  // --- Partner ---
   const users = await prisma.user.findMany({
     include: {
       completions: { select: { points: true } },
-      purchases: { select: { pointsSpent: true } },
       userAchievements: { select: { id: true } },
     },
   })
-
-  const userStats = users.map((u) => ({
-    id: u.id,
-    name: u.name ?? 'Unbekannt',
-    earned: getTotalEarned(u.completions),
-    spent: u.purchases.reduce((s, p) => s + p.pointsSpent, 0),
-  }))
-
-  const partner = users.find((u) => u.id !== session!.user.id)
+  const me = users.find((u) => u.id === userId)!
+  const partner = users.find((u) => u.id !== userId)
   const partnerLevel = partner ? getLevel(getTotalEarned(partner.completions)) : null
   const partnerAchievementCount = partner ? partner.userAchievements.length : 0
 
-  const sevenDaysAgo = new Date()
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  // --- Today Section Data ---
+  const todayStart = new Date()
+  todayStart.setUTCHours(0, 0, 0, 0)
 
+  const todayCompletions = await prisma.taskCompletion.findMany({
+    where: { userId, completedAt: { gte: todayStart } },
+    include: { task: { select: { id: true, emoji: true, title: true, points: true } } },
+  })
+  const completedToday = todayCompletions.map((c) => ({
+    id: c.id,
+    emoji: c.task.emoji,
+    title: c.task.title,
+    points: c.points,
+  }))
+  const completedTaskIds = new Set(todayCompletions.map((c) => c.taskId))
+
+  const now = new Date()
+  const recurringTasks = await prisma.task.findMany({
+    where: {
+      status: 'active',
+      isRecurring: true,
+      OR: [
+        { nextDueAt: null },
+        { nextDueAt: { lte: now } },
+      ],
+    },
+    select: { id: true, emoji: true, title: true, points: true },
+  })
+  const dueTasks = recurringTasks.filter((t) => !completedTaskIds.has(t.id))
+
+  let suggestions: { id: string; emoji: string; title: string }[] = []
+  if (dueTasks.length < 3) {
+    const completedEver = await prisma.taskCompletion.findMany({
+      where: { userId },
+      select: { taskId: true },
+      distinct: ['taskId'],
+    })
+    const completedEverIds = new Set(completedEver.map((c) => c.taskId))
+
+    const candidates = await prisma.task.findMany({
+      where: {
+        status: 'active',
+        isRecurring: false,
+      },
+      select: { id: true, emoji: true, title: true },
+    })
+    const eligible = candidates.filter((t) => !completedEverIds.has(t.id))
+    const shuffled = eligible.sort(() => Math.random() - 0.5)
+    suggestions = shuffled.slice(0, 2)
+  }
+
+  // --- Week Chart Data ---
+  const { start: weekStart, end: weekEnd } = getWeekBounds(now)
+  const weekCompletions = await prisma.taskCompletion.findMany({
+    where: { completedAt: { gte: weekStart, lte: weekEnd } },
+    select: { userId: true, completedAt: true },
+  })
+  const todayDayIndex = now.getUTCDay() === 0 ? 6 : now.getUTCDay() - 1
+
+  const weekDays = DAY_LABELS.map((day, i) => {
+    const dayDate = new Date(weekStart)
+    dayDate.setUTCDate(dayDate.getUTCDate() + i)
+    const dayKey = dayDate.toISOString().slice(0, 10)
+
+    const dayCompletions = weekCompletions.filter(
+      (c) => c.completedAt.toISOString().slice(0, 10) === dayKey
+    )
+
+    return {
+      day,
+      userCount: dayCompletions.filter((c) => c.userId === userId).length,
+      partnerCount: partner ? dayCompletions.filter((c) => c.userId === partner.id).length : 0,
+      isFuture: i > todayDayIndex,
+    }
+  })
+
+  // --- Feed Data ---
   const completions = await prisma.taskCompletion.findMany({
     take: 30,
     orderBy: { completedAt: 'desc' },
@@ -41,10 +125,11 @@ export default async function DashboardPage() {
     },
   })
 
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 14)
+
   const recentRedemptions = await prisma.purchase.findMany({
-    where: {
-      redeemedAt: { not: null, gte: sevenDaysAgo },
-    },
+    where: { redeemedAt: { not: null, gte: sevenDaysAgo } },
     orderBy: { redeemedAt: 'desc' },
     include: {
       user: { select: { id: true, name: true } },
@@ -52,64 +137,66 @@ export default async function DashboardPage() {
     },
   })
 
-  const completionFeed = completions.map((c) => ({
-    id: c.id,
-    type: 'completion' as const,
-    user: { id: c.user.id, name: c.user.name ?? 'Unbekannt' },
-    task: c.task,
-    points: c.points,
-    at: c.completedAt.toISOString(),
-  }))
+  const feedEntries: FeedEntry[] = [
+    ...completions.map((c) => ({
+      id: c.id,
+      type: 'completion' as const,
+      user: { id: c.user.id, name: c.user.name ?? 'Unbekannt' },
+      task: c.task,
+      points: c.points,
+      at: c.completedAt.toISOString(),
+    })),
+    ...recentRedemptions.map((p) => ({
+      id: p.id,
+      type: 'redemption' as const,
+      user: { id: p.user.id, name: p.user.name ?? 'Unbekannt' },
+      item: p.item,
+      points: 0,
+      at: p.redeemedAt!.toISOString(),
+    })),
+  ].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
 
-  const redemptionFeed = recentRedemptions.map((p) => ({
-    id: p.id,
-    type: 'redemption' as const,
-    user: { id: p.user.id, name: p.user.name ?? 'Unbekannt' },
-    item: p.item,
-    points: 0,
-    at: p.redeemedAt!.toISOString(),
-  }))
-
-  const feed = [...completionFeed, ...redemptionFeed].sort(
-    (a, b) => new Date(b.at).getTime() - new Date(a.at).getTime()
-  )
+  const feedGroups = groupFeedByDay(feedEntries, now)
 
   return (
     <div>
       <DashboardNotifications />
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
-      <PointsHeader users={userStats} />
+
+      <StatPills
+        streakDays={stats.currentStreakDays}
+        level={levelInfo.level}
+        levelTitle={levelInfo.title}
+        totalEarned={stats.totalPointsEarned}
+        balance={balance}
+      />
 
       {partner && partnerLevel && (
         <Link href={`/profile/${partner.id}`}>
-          <div className="mb-4 p-4 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer">
+          <div className="mb-4 p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer">
             <div className="text-2xl">👫</div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-slate-800 truncate">{partner.name ?? 'Unbekannt'}</p>
-              <p className="text-xs text-slate-500">{partnerLevel.title} · {partnerAchievementCount} Achievements</p>
+              <p className="text-xs text-slate-500">{partnerLevel.title} · {partnerAchievementCount} Erfolge</p>
             </div>
             <span className="text-slate-400 text-sm">›</span>
           </div>
         </Link>
       )}
 
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Letzte Aktivitäten
-      </h2>
-      <div className="space-y-2">
-        {feed.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-4xl mb-3">🚀</p>
-            <p className="text-lg font-semibold text-slate-700">Noch keine Aktivitäten</p>
-            <p className="text-sm text-slate-400 mt-1">
-              Erledige deine erste Aufgabe und starte das Spiel!
-            </p>
-          </div>
-        )}
-        {feed.map((entry) => (
-          <FeedItem key={entry.id} entry={entry} currentUserId={session!.user.id} />
-        ))}
-      </div>
+      <TodaySection
+        completed={completedToday}
+        due={dueTasks}
+        suggestions={suggestions}
+      />
+
+      <WeekChart
+        days={weekDays}
+        userName={me.name ?? 'Ich'}
+        partnerName={partner?.name ?? 'Partner'}
+      />
+
+      <GroupedFeed groups={feedGroups} currentUserId={userId} />
     </div>
   )
 }
