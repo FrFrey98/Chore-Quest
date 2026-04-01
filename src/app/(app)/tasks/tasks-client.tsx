@@ -11,9 +11,7 @@ type Category = { id: string; name: string; emoji: string; tasks: Task[] }
 export function TasksClient({ grouped }: { grouped: Category[] }) {
   const router = useRouter()
 
-  async function handleComplete(taskId: string) {
-    const res = await fetch(`/api/tasks/${taskId}/complete`, { method: 'POST' })
-    if (!res.ok) throw new Error('Fehler beim Erledigen')
+  async function handleComplete(_taskId: string) {
     router.refresh()
   }
 

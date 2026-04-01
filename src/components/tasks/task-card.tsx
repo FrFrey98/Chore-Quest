@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { useToast } from '@/components/toast-provider'
 
 type Task = {
   id: string; title: string; emoji: string; points: number
@@ -11,12 +12,33 @@ type Task = {
 export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: string) => Promise<void> }) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const { toast } = useToast()
 
   async function handleComplete() {
     setLoading(true)
     try {
-      await onComplete(task.id)
+      const res = await fetch(`/api/tasks/${task.id}/complete`, { method: 'POST' })
+      if (!res.ok) throw new Error('Fehler beim Erledigen')
+      const completion = await res.json()
       setDone(true)
+
+      toast(`+${task.points} Pkt für "${task.title}"`, 'success', {
+        label: 'Rückgängig',
+        onClick: async () => {
+          const undoRes = await fetch(`/api/tasks/${task.id}/complete/undo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ completionId: completion.id }),
+          })
+          if (undoRes.ok) {
+            setDone(false)
+            toast('Erledigung rückgängig gemacht', 'info')
+          }
+        },
+      })
+
+      // Trigger parent refresh for points update etc.
+      onComplete(task.id).catch(() => {})
     } catch {
       // API failed — keep the card visible
     } finally {
