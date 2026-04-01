@@ -32,13 +32,18 @@ export async function POST(
   }
 
   // Check for newly unlocked achievements
-  const newAchievementIds = await checkAndUnlockAchievements(session.user.id)
   let newAchievements: { id: string; title: string; emoji: string }[] = []
-  if (newAchievementIds.length > 0) {
-    newAchievements = await prisma.achievement.findMany({
-      where: { id: { in: newAchievementIds } },
-      select: { id: true, title: true, emoji: true },
-    })
+  try {
+    const newAchievementIds = await checkAndUnlockAchievements(session.user.id)
+    if (newAchievementIds.length > 0) {
+      newAchievements = await prisma.achievement.findMany({
+        where: { id: { in: newAchievementIds } },
+        select: { id: true, title: true, emoji: true },
+        orderBy: { sortOrder: 'asc' },
+      })
+    }
+  } catch {
+    // Achievement check failure should not block the completion response
   }
 
   return NextResponse.json({ ...completion, newAchievements }, { status: 201 })

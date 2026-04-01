@@ -41,11 +41,11 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
 
       // Show achievement toasts
       if (data.newAchievements && data.newAchievements.length > 0) {
-        for (const a of data.newAchievements) {
+        data.newAchievements.forEach((a: { emoji: string; title: string }, i: number) => {
           setTimeout(() => {
             toast(`${a.emoji} Achievement freigeschaltet: ${a.title}`, 'success')
-          }, 1500)
-        }
+          }, 1500 + i * 1500)
+        })
       }
 
       // Trigger parent refresh for points update etc.
