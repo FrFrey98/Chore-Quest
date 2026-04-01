@@ -25,12 +25,11 @@ export default async function StorePage() {
   const spent = purchases.reduce((s, p) => s + p.pointsSpent, 0)
   const balance = getCurrentPoints(earned, spent)
 
-  const rewards = items.map((i) => ({ ...i }))
-
   const myPendingPurchases = await prisma.purchase.findMany({
     where: {
       userId,
       redeemedAt: null,
+      item: { type: 'real_reward' },
     },
     include: {
       item: { select: { title: true, emoji: true } },
@@ -46,7 +45,7 @@ export default async function StorePage() {
 
   return (
     <StoreClient
-      rewards={rewards}
+      rewards={items}
       balance={balance}
       myPendingPurchases={myPendingSerialized}
     />
