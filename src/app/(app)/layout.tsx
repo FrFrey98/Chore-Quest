@@ -6,7 +6,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col md:flex-row min-h-screen bg-slate-50">
       <Navigation />
       <ToastProvider>
-        <main className="flex-1 p-4 pb-24 md:pb-4 max-w-2xl mx-auto w-full">
+        <main className="flex-1 p-4 pt-16 pb-24 md:pt-4 md:pb-4 max-w-2xl mx-auto w-full">
           {children}
         </main>
       </ToastProvider>

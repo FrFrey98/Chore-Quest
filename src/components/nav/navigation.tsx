@@ -9,13 +9,12 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + '/')
 }
 
-const NAV = [
+const MAIN_NAV = [
   { href: '/',           icon: Home,         label: 'Home' },
   { href: '/tasks',      icon: CheckSquare,  label: 'Aufgaben' },
   { href: '/store',      icon: ShoppingBag,  label: 'Store' },
   { href: '/stats',      icon: BarChart2,    label: 'Statistik' },
   { href: '/approvals',  icon: Shield,       label: 'Freigaben' },
-  { href: '/admin',      icon: Settings,     label: 'Admin' },
 ]
 
 export function Navigation() {
@@ -31,9 +30,23 @@ export function Navigation() {
 
   return (
     <>
-      {/* Mobile bottom bar */}
+      {/* Mobile top bar with admin access */}
+      <header className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 flex items-center justify-between px-4 py-2 md:hidden z-50">
+        <span className="text-sm font-bold">🏠 Haushalt-Quest</span>
+        <Link
+          href="/admin"
+          aria-current={isActive(pathname, '/admin') ? 'page' : undefined}
+          className={`p-2 rounded-lg transition-colors ${
+            isActive(pathname, '/admin') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500'
+          }`}
+        >
+          <Settings size={20} />
+        </Link>
+      </header>
+
+      {/* Mobile bottom bar — 5 items */}
       <nav aria-label="Hauptnavigation" className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex md:hidden z-50">
-        {NAV.map(({ href, icon: Icon, label }) => (
+        {MAIN_NAV.map(({ href, icon: Icon, label }) => (
           <Link
             key={href}
             href={href}
@@ -55,10 +68,10 @@ export function Navigation() {
         ))}
       </nav>
 
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — all 6 items */}
       <nav aria-label="Seitenleiste" className="hidden md:flex flex-col w-56 min-h-screen bg-white border-r border-slate-200 p-4 gap-1">
         <div className="text-lg font-bold mb-6 px-3">🏠 Haushalt-Quest</div>
-        {NAV.map(({ href, icon: Icon, label }) => (
+        {[...MAIN_NAV, { href: '/admin', icon: Settings, label: 'Admin' }].map(({ href, icon: Icon, label }) => (
           <Link
             key={href}
             href={href}
