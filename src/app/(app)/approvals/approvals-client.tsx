@@ -23,9 +23,13 @@ export function ApprovalsClient({ approvals }: { approvals: Approval[] }) {
         <p className="text-sm text-slate-500 mb-6">{approvals.length} offene Anfragen</p>
       )}
       {approvals.length === 0 ? (
-        <p className="text-center text-slate-400 py-12">
-          ✅ Keine offenen Anfragen
-        </p>
+        <div className="text-center py-16">
+          <p className="text-4xl mb-3">✅</p>
+          <p className="text-lg font-semibold text-slate-700">Alles freigegeben</p>
+          <p className="text-sm text-slate-400 mt-1">
+            Keine offenen Anfragen — wenn jemand eine neue Aufgabe vorschlägt, erscheint sie hier.
+          </p>
+        </div>
       ) : (
         <div className="space-y-4">
           {approvals.map((a) => (

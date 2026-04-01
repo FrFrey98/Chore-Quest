@@ -49,9 +49,13 @@ export default async function DashboardPage() {
       </h2>
       <div className="space-y-2">
         {feed.length === 0 && (
-          <p className="text-slate-400 text-sm text-center py-8">
-            Noch keine Aktivitäten. Erledige die erste Aufgabe!
-          </p>
+          <div className="text-center py-16">
+            <p className="text-4xl mb-3">🚀</p>
+            <p className="text-lg font-semibold text-slate-700">Noch keine Aktivitäten</p>
+            <p className="text-sm text-slate-400 mt-1">
+              Erledige deine erste Aufgabe und starte das Spiel!
+            </p>
+          </div>
         )}
         {feed.map((entry) => (
           <FeedItem key={entry.id} entry={entry} currentUserId={session!.user.id} />
