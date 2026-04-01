@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getNextDueAt } from '@/lib/recurring'
+import { checkAndUnlockAchievements } from '@/lib/achievements'
 
 export async function POST(
   _req: NextRequest,
@@ -30,5 +31,15 @@ export async function POST(
     })
   }
 
-  return NextResponse.json(completion, { status: 201 })
+  // Check for newly unlocked achievements
+  const newAchievementIds = await checkAndUnlockAchievements(session.user.id)
+  let newAchievements: { id: string; title: string; emoji: string }[] = []
+  if (newAchievementIds.length > 0) {
+    newAchievements = await prisma.achievement.findMany({
+      where: { id: { in: newAchievementIds } },
+      select: { id: true, title: true, emoji: true },
+    })
+  }
+
+  return NextResponse.json({ ...completion, newAchievements }, { status: 201 })
 }

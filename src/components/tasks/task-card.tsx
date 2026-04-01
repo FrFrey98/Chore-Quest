@@ -19,7 +19,7 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
     try {
       const res = await fetch(`/api/tasks/${task.id}/complete`, { method: 'POST' })
       if (!res.ok) throw new Error('Fehler beim Erledigen')
-      const completion = await res.json()
+      const data = await res.json()
       setDone(true)
 
       toast(`+${task.points} Pkt für "${task.title}"`, 'success', {
@@ -28,7 +28,7 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
           const undoRes = await fetch(`/api/tasks/${task.id}/complete/undo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completionId: completion.id }),
+            body: JSON.stringify({ completionId: data.id }),
           })
           if (undoRes.ok) {
             setDone(false)
@@ -38,6 +38,15 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
           }
         },
       })
+
+      // Show achievement toasts
+      if (data.newAchievements && data.newAchievements.length > 0) {
+        for (const a of data.newAchievements) {
+          setTimeout(() => {
+            toast(`${a.emoji} Achievement freigeschaltet: ${a.title}`, 'success')
+          }, 1500)
+        }
+      }
 
       // Trigger parent refresh for points update etc.
       onComplete(task.id).catch(() => {})
