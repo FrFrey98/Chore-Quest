@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 
 vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-2', name: 'Partner' } }),
+  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-2', name: 'Michelle' } }),
 }))
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))
 vi.mock('@/lib/prisma', () => ({
