@@ -197,6 +197,12 @@ export default async function DashboardPage() {
         partnerName={partner?.name ?? 'Partner'}
       />
 
+      <div className="flex justify-end -mt-2 mb-4">
+        <Link href="/stats" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
+          Alle Statistiken →
+        </Link>
+      </div>
+
       <GroupedFeed groups={feedGroups} currentUserId={userId} />
     </div>
   )
