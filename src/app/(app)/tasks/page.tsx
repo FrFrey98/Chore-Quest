@@ -26,5 +26,5 @@ export default async function TasksPage() {
     tasks: visible.filter((t) => t.categoryId === cat.id),
   }))
 
-  return <TasksClient grouped={grouped} />
+  return <TasksClient grouped={grouped} categories={categories} />
 }
