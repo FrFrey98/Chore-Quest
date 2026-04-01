@@ -14,12 +14,16 @@ export function StoreClient({
   const { toast } = useToast()
 
   async function handlePurchase(itemId: string) {
-    const res = await fetch(`/api/store/${itemId}/purchase`, { method: 'POST' })
-    const data = await res.json()
-    if (!res.ok) return { error: data.error ?? 'Fehler beim Kauf' }
-    router.refresh()
-    toast('Erfolgreich gekauft!', 'success')
-    return {}
+    try {
+      const res = await fetch(`/api/store/${itemId}/purchase`, { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) return { error: data.error ?? 'Fehler beim Kauf' }
+      router.refresh()
+      toast('Erfolgreich gekauft!', 'success')
+      return {}
+    } catch {
+      return { error: 'Netzwerkfehler — bitte erneut versuchen' }
+    }
   }
 
   return (
