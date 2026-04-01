@@ -88,7 +88,7 @@ export function ManageClient({ tasks, categories, rewards, initialTab }: ManageC
           )}
           {sortedTasks.map((task) => (
             <TaskRow
-              key={task.id}
+              key={`${task.id}-${task.title}-${task.status}`}
               task={task}
               categories={categories}
               isEditing={editingId === task.id}
@@ -104,7 +104,7 @@ export function ManageClient({ tasks, categories, rewards, initialTab }: ManageC
           )}
           {sortedRewards.map((reward) => (
             <RewardRow
-              key={reward.id}
+              key={`${reward.id}-${reward.title}-${reward.isActive}`}
               reward={reward}
               isEditing={editingId === reward.id}
               onStartEdit={() => setEditingId(reward.id)}

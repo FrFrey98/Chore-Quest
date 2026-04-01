@@ -61,7 +61,10 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
       const res = await fetch(`/api/tasks/${task.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          recurringInterval: form.isRecurring ? form.recurringInterval : null,
+        }),
       })
       if (res.ok) {
         toast('Aufgabe gespeichert', 'success')
