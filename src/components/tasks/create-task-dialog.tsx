@@ -17,6 +17,7 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({
     title: '', emoji: '🏠', points: 30,
     categoryId: categories[0]?.id ?? '',
@@ -25,19 +26,26 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
 
   async function handleSubmit() {
     setError('')
-    const res = await fetch('/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-    if (res.ok) {
-      setForm((prev) => ({ ...prev, title: '' }))
-      setOpen(false)
-      router.refresh()
-      toast('Aufgabe eingereicht — wartet auf Freigabe', 'success')
-    } else {
-      const data = await res.json()
-      setError(data.error ?? 'Fehler beim Anlegen')
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (res.ok) {
+        setForm((prev) => ({ ...prev, title: '' }))
+        setOpen(false)
+        router.refresh()
+        toast('Aufgabe eingereicht — wartet auf Freigabe', 'success')
+      } else {
+        const data = await res.json()
+        setError(data.error ?? 'Fehler beim Anlegen')
+      }
+    } catch {
+      setError('Netzwerkfehler — bitte erneut versuchen')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -95,7 +103,7 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
             )}
           </div>
           {error && <p className="text-red-500 text-xs">{error}</p>}
-          <Button onClick={handleSubmit} disabled={!form.title || !form.categoryId} className="w-full">
+          <Button onClick={handleSubmit} disabled={submitting || !form.title || !form.categoryId} className="w-full">
             Einreichen (→ Freigabe nötig)
           </Button>
         </div>
