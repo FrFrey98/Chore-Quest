@@ -18,35 +18,50 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   const userId = session!.user.id
 
-  // --- Stat Pills Data ---
-  const stats = await computeStats(userId)
-  const levelInfo = getLevel(stats.totalPointsEarned)
-  const spent = await prisma.purchase.aggregate({
-    where: { userId },
-    _sum: { pointsSpent: true },
-  })
-  const balance = getCurrentPoints(stats.totalPointsEarned, spent._sum.pointsSpent ?? 0)
+  const now = new Date()
 
-  // --- Partner ---
-  const users = await prisma.user.findMany({
-    include: {
-      completions: { select: { points: true } },
-      userAchievements: { select: { id: true } },
-    },
-  })
+  // --- Stat Pills Data ---
+  const [stats, spent, users] = await Promise.all([
+    computeStats(userId),
+    prisma.purchase.aggregate({
+      where: { userId },
+      _sum: { pointsSpent: true },
+    }),
+    prisma.user.findMany({
+      include: {
+        completions: { select: { points: true } },
+        userAchievements: { select: { id: true } },
+      },
+    }),
+  ])
+  const levelInfo = getLevel(stats.totalPointsEarned)
+  const balance = getCurrentPoints(stats.totalPointsEarned, spent._sum.pointsSpent ?? 0)
   const me = users.find((u) => u.id === userId)!
   const partner = users.find((u) => u.id !== userId)
   const partnerLevel = partner ? getLevel(getTotalEarned(partner.completions)) : null
   const partnerAchievementCount = partner ? partner.userAchievements.length : 0
 
   // --- Today Section Data ---
-  const todayStart = new Date()
+  const todayStart = new Date(now)
   todayStart.setUTCHours(0, 0, 0, 0)
 
-  const todayCompletions = await prisma.taskCompletion.findMany({
-    where: { userId, completedAt: { gte: todayStart } },
-    include: { task: { select: { id: true, emoji: true, title: true, points: true } } },
-  })
+  const [todayCompletions, recurringTasks] = await Promise.all([
+    prisma.taskCompletion.findMany({
+      where: { userId, completedAt: { gte: todayStart } },
+      include: { task: { select: { id: true, emoji: true, title: true, points: true } } },
+    }),
+    prisma.task.findMany({
+      where: {
+        status: 'active',
+        isRecurring: true,
+        OR: [
+          { nextDueAt: null },
+          { nextDueAt: { lte: now } },
+        ],
+      },
+      select: { id: true, emoji: true, title: true, points: true },
+    }),
+  ])
   const completedToday = todayCompletions.map((c) => ({
     id: c.id,
     emoji: c.task.emoji,
@@ -54,19 +69,6 @@ export default async function DashboardPage() {
     points: c.points,
   }))
   const completedTaskIds = new Set(todayCompletions.map((c) => c.taskId))
-
-  const now = new Date()
-  const recurringTasks = await prisma.task.findMany({
-    where: {
-      status: 'active',
-      isRecurring: true,
-      OR: [
-        { nextDueAt: null },
-        { nextDueAt: { lte: now } },
-      ],
-    },
-    select: { id: true, emoji: true, title: true, points: true },
-  })
   const dueTasks = recurringTasks.filter((t) => !completedTaskIds.has(t.id))
 
   let suggestions: { id: string; emoji: string; title: string }[] = []
@@ -90,13 +92,34 @@ export default async function DashboardPage() {
     suggestions = shuffled.slice(0, 2)
   }
 
-  // --- Week Chart Data ---
+  // --- Week Chart & Feed Data ---
   const { start: weekStart, end: weekEnd } = getWeekBounds(now)
-  const weekCompletions = await prisma.taskCompletion.findMany({
-    where: { completedAt: { gte: weekStart, lte: weekEnd } },
-    select: { userId: true, completedAt: true },
-  })
   const todayDayIndex = now.getUTCDay() === 0 ? 6 : now.getUTCDay() - 1
+  const twoWeeksAgo = new Date(now)
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
+
+  const [weekCompletions, completions, recentRedemptions] = await Promise.all([
+    prisma.taskCompletion.findMany({
+      where: { completedAt: { gte: weekStart, lte: weekEnd } },
+      select: { userId: true, completedAt: true },
+    }),
+    prisma.taskCompletion.findMany({
+      take: 30,
+      orderBy: { completedAt: 'desc' },
+      include: {
+        user: { select: { id: true, name: true } },
+        task: { select: { title: true, emoji: true } },
+      },
+    }),
+    prisma.purchase.findMany({
+      where: { redeemedAt: { not: null, gte: twoWeeksAgo } },
+      orderBy: { redeemedAt: 'desc' },
+      include: {
+        user: { select: { id: true, name: true } },
+        item: { select: { title: true, emoji: true } },
+      },
+    }),
+  ])
 
   const weekDays = DAY_LABELS.map((day, i) => {
     const dayDate = new Date(weekStart)
@@ -113,28 +136,6 @@ export default async function DashboardPage() {
       partnerCount: partner ? dayCompletions.filter((c) => c.userId === partner.id).length : 0,
       isFuture: i > todayDayIndex,
     }
-  })
-
-  // --- Feed Data ---
-  const completions = await prisma.taskCompletion.findMany({
-    take: 30,
-    orderBy: { completedAt: 'desc' },
-    include: {
-      user: { select: { id: true, name: true } },
-      task: { select: { title: true, emoji: true } },
-    },
-  })
-
-  const sevenDaysAgo = new Date()
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 14)
-
-  const recentRedemptions = await prisma.purchase.findMany({
-    where: { redeemedAt: { not: null, gte: sevenDaysAgo } },
-    orderBy: { redeemedAt: 'desc' },
-    include: {
-      user: { select: { id: true, name: true } },
-      item: { select: { title: true, emoji: true } },
-    },
   })
 
   const feedEntries: FeedEntry[] = [
