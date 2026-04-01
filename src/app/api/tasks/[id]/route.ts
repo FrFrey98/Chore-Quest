@@ -11,6 +11,8 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
+  const allowedStatuses = ['active', 'archived']
+
   try {
     const task = await prisma.task.update({
       where: { id: params.id },
@@ -21,6 +23,9 @@ export async function PATCH(
         categoryId: body.categoryId,
         isRecurring: body.isRecurring,
         recurringInterval: body.recurringInterval ?? null,
+        ...(typeof body.status === 'string' && allowedStatuses.includes(body.status)
+          ? { status: body.status }
+          : {}),
       },
     })
     return NextResponse.json(task)
