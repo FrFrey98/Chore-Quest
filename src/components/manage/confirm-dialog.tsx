@@ -19,7 +19,7 @@ export function ConfirmDialog({
   open, onOpenChange, title, description, confirmLabel, onConfirm, loading,
 }: ConfirmDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(next) => { if (!loading) onOpenChange(next) }}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

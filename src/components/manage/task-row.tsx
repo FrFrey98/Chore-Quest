@@ -225,7 +225,7 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
           >
             <Pencil size={14} />
           </button>
-          {task.status === 'archived' ? (
+          {(task.status === 'archived' || task.status === 'rejected') ? (
             <button
               type="button"
               onClick={handleRestore}
