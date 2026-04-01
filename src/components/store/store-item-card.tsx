@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 export type StoreItem = {
   id: string; title: string; description: string; emoji: string
-  pointCost: number; type: string; alreadyOwned?: boolean
+  pointCost: number; type: string
 }
 
 export function StoreItemCard({
@@ -41,15 +41,13 @@ export function StoreItemCard({
           <p className="font-semibold">{item.title}</p>
           <p className="text-sm text-slate-500">{item.description}</p>
         </div>
-        <span className="text-xs font-bold border border-slate-200 px-2 py-0.5 rounded shrink-0">
+        <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded shrink-0">
           {item.pointCost} Pkt
         </span>
       </div>
       {error && <p className="text-red-500 text-xs">{error}</p>}
       {purchased ? (
         <p className="text-green-600 text-sm font-medium">✓ Gekauft!</p>
-      ) : item.alreadyOwned ? (
-        <p className="text-slate-400 text-sm">Bereits erworben</p>
       ) : (
         <Button
           className="w-full"

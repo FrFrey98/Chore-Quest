@@ -2,22 +2,21 @@
 import { useRouter } from 'next/navigation'
 import { StoreItemCard } from '@/components/store/store-item-card'
 import { CreateItemDialog } from '@/components/store/create-item-dialog'
-import { PendingRewards } from '@/components/store/pending-rewards'
+import { MyRewards } from '@/components/store/pending-rewards'
 import { useToast } from '@/components/toast-provider'
 import type { StoreItem } from '@/components/store/store-item-card'
 
 type PendingPurchase = {
   id: string
   purchasedAt: string
-  user: { id: string; name: string | null }
   item: { title: string; emoji: string }
 }
 
 export function StoreClient({
-  trophies, rewards, balance, pendingPurchases, currentUserId,
+  rewards, balance, myPendingPurchases,
 }: {
-  trophies: StoreItem[]; rewards: StoreItem[]; balance: number
-  pendingPurchases: PendingPurchase[]; currentUserId: string
+  rewards: StoreItem[]; balance: number
+  myPendingPurchases: PendingPurchase[]
 }) {
   const router = useRouter()
   const { toast } = useToast()
@@ -45,23 +44,7 @@ export function StoreClient({
         </div>
       </div>
 
-      <PendingRewards purchases={pendingPurchases} currentUserId={currentUserId} />
-
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        🏆 Trophäen
-      </h2>
-      <div className="space-y-3 mb-8">
-        {trophies.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-3xl mb-2">🏆</p>
-            <p className="text-slate-400 text-sm">Noch keine Trophäen verfügbar.</p>
-            <p className="text-slate-400 text-xs mt-1">Erstelle welche über den + Button oben.</p>
-          </div>
-        )}
-        {trophies.map((item) => (
-          <StoreItemCard key={item.id} item={item} userBalance={balance} onPurchase={handlePurchase} />
-        ))}
-      </div>
+      <MyRewards purchases={myPendingPurchases} />
 
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
         🎁 Belohnungen

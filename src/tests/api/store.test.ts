@@ -4,15 +4,15 @@ import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/prisma'
 
 const mockSession = { user: { id: 'user-1', name: 'Franz' } }
-const mockItem = { id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }
+const mockItem = { id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'real_reward', isActive: true }
 
 vi.mock('next-auth', () => ({ getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-1', name: 'Franz' } }) }))
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))
 vi.mock('@/lib/prisma', () => {
   const mock = {
     storeItem: {
-      findMany: vi.fn().mockResolvedValue([{ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }]),
-      findUnique: vi.fn().mockResolvedValue({ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'trophy', isActive: true }),
+      findMany: vi.fn().mockResolvedValue([{ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'real_reward', isActive: true }]),
+      findUnique: vi.fn().mockResolvedValue({ id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'real_reward', isActive: true }),
     },
     taskCompletion: {
       findMany: vi.fn().mockResolvedValue([{ points: 1000 }]),
@@ -21,7 +21,7 @@ vi.mock('@/lib/prisma', () => {
       findMany: vi.fn().mockResolvedValue([]),
       findFirst: vi.fn().mockResolvedValue(null),
       create: vi.fn().mockResolvedValue({ id: 'pur-1', pointsSpent: 500 }),
-      findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'user-other', redeemedAt: null, item: { type: 'real_reward' } }),
+      findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'user-1', redeemedAt: null }),
       update: vi.fn().mockResolvedValue({ id: 'pur-1', redeemedAt: new Date() }),
     },
     $transaction: vi.fn(),
@@ -67,16 +67,6 @@ describe('POST /api/store/[id]/purchase', () => {
     expect(res.status).toBe(401)
   })
 
-  it('returns 409 when trophy already owned', async () => {
-    vi.mocked(prisma.purchase.findFirst).mockResolvedValueOnce({ id: 'pur-existing' } as any)
-    const { POST } = await import('@/app/api/store/[id]/purchase/route')
-    const res = await POST(
-      new Request('http://localhost/api/store/item-1/purchase', { method: 'POST' }) as any,
-      { params: { id: 'item-1' } }
-    )
-    expect(res.status).toBe(409)
-  })
-
   it('returns 402 when insufficient points', async () => {
     // earned 1000, spent 600 => balance 400 < 500 cost
     vi.mocked(prisma.taskCompletion.findMany).mockResolvedValueOnce([{ points: 1000 }] as any)
@@ -91,7 +81,7 @@ describe('POST /api/store/[id]/purchase', () => {
 })
 
 describe('POST /api/store/[id]/redeem', () => {
-  it('returns 200 on successful redeem', async () => {
+  it('returns 200 on successful self-redeem', async () => {
     const { POST } = await import('@/app/api/store/[id]/redeem/route')
     const res = await POST(
       new Request('http://localhost/api/store/pur-1/redeem', { method: 'POST' }) as any,
@@ -113,9 +103,8 @@ describe('POST /api/store/[id]/redeem', () => {
   it('returns 409 when already redeemed', async () => {
     vi.mocked(prisma.purchase.findUnique).mockResolvedValueOnce({
       id: 'pur-1',
-      userId: 'user-other',
+      userId: 'user-1',
       redeemedAt: new Date('2024-01-01'),
-      item: { type: 'real_reward' },
     } as any)
     const { POST } = await import('@/app/api/store/[id]/redeem/route')
     const res = await POST(
@@ -125,12 +114,11 @@ describe('POST /api/store/[id]/redeem', () => {
     expect(res.status).toBe(409)
   })
 
-  it('returns 403 when user tries to redeem their own purchase', async () => {
+  it('returns 403 when trying to redeem someone else\'s purchase', async () => {
     vi.mocked(prisma.purchase.findUnique).mockResolvedValueOnce({
       id: 'pur-1',
-      userId: 'user-1',
+      userId: 'user-other',
       redeemedAt: null,
-      item: { type: 'real_reward' },
     } as any)
     const { POST } = await import('@/app/api/store/[id]/redeem/route')
     const res = await POST(

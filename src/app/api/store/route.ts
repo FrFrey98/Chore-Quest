@@ -8,7 +8,7 @@ export async function GET(_req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const items = await prisma.storeItem.findMany({
-    where: { isActive: true },
+    where: { isActive: true, type: 'real_reward' },
     orderBy: { pointCost: 'asc' },
   })
   return NextResponse.json(items)
@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { title, emoji, pointCost, type, description, isActive } = body
+  const { title, emoji, pointCost, description, isActive } = body
 
-  if (!title || !emoji || !pointCost || !type) {
+  if (!title || !emoji || !pointCost) {
     return NextResponse.json({ error: 'Fehlende Felder' }, { status: 400 })
   }
 
@@ -34,16 +34,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'pointCost muss eine positive ganze Zahl sein' }, { status: 400 })
   }
 
-  if (type !== 'trophy' && type !== 'real_reward') {
-    return NextResponse.json({ error: 'type muss "trophy" oder "real_reward" sein' }, { status: 400 })
-  }
-
   const item = await prisma.storeItem.create({
     data: {
       title,
       emoji,
       pointCost: parsedPointCost,
-      type,
+      type: 'real_reward',
       description: typeof description === 'string' ? description : '',
       isActive: typeof isActive === 'boolean' ? isActive : true,
     },

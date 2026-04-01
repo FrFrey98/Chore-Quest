@@ -16,16 +16,6 @@ export async function POST(
     return NextResponse.json({ error: 'Artikel nicht gefunden' }, { status: 404 })
   }
 
-  // Trophies: check not already owned
-  if (item.type === 'trophy') {
-    const existing = await prisma.purchase.findFirst({
-      where: { itemId: params.id, userId: session.user.id },
-    })
-    if (existing) {
-      return NextResponse.json({ error: 'Trophäe bereits erworben' }, { status: 409 })
-    }
-  }
-
   try {
     const purchase = await prisma.$transaction(async (tx) => {
       // Re-check points balance inside transaction
