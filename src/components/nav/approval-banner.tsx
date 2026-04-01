@@ -9,10 +9,12 @@ export function ApprovalBanner() {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    fetch('/api/approvals/count')
+    const controller = new AbortController()
+    fetch('/api/approvals/count', { signal: controller.signal })
       .then(r => r.ok ? r.json() : { count: 0 })
       .then(d => setCount(d.count ?? 0))
       .catch(() => {})
+    return () => controller.abort()
   }, [pathname])
 
   if (count === 0) return null
