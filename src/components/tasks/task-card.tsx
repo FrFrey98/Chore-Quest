@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/toast-provider'
+import { Check } from 'lucide-react'
 
 type Task = {
   id: string; title: string; emoji: string; points: number
@@ -75,8 +76,8 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
       <Badge variant="secondary" className="text-indigo-700 bg-indigo-50 shrink-0">
         +{task.points} Pkt
       </Badge>
-      <Button size="sm" onClick={handleComplete} disabled={loading}>
-        {loading ? '…' : 'Erledigt'}
+      <Button size="sm" onClick={handleComplete} disabled={loading} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-1">
+        {loading ? '…' : <><Check size={16} /> Abhaken</>}
       </Button>
     </div>
   )
