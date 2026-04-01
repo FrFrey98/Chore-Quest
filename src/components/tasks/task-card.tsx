@@ -33,6 +33,8 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
           if (undoRes.ok) {
             setDone(false)
             toast('Erledigung rückgängig gemacht', 'info')
+          } else {
+            toast('Rückgängig fehlgeschlagen', 'error')
           }
         },
       })
@@ -40,7 +42,7 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
       // Trigger parent refresh for points update etc.
       onComplete(task.id).catch(() => {})
     } catch {
-      // API failed — keep the card visible
+      toast('Fehler beim Erledigen', 'error')
     } finally {
       setLoading(false)
     }

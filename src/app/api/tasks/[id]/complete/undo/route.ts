@@ -10,7 +10,12 @@ export async function POST(
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json()
+  let body: Record<string, unknown>
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Ungültiger Request-Body' }, { status: 400 })
+  }
   const { completionId } = body
 
   if (!completionId || typeof completionId !== 'string') {
