@@ -7,6 +7,39 @@ Drei zusammenhängende Änderungen an Haushalt-Quest:
 1. **Trophäen raus aus dem Store** — Store wird rein für einlösbare Belohnungen. Trophäen werden zu automatischen Achievements.
 2. **Achievements-System** — Neue Seite mit Trophy-Shelf/Vitrine. Achievements werden automatisch freigeschaltet bei Anzahl-, Streak- und Punkte-Meilensteinen.
 3. **Navigation & Seitenstruktur** — 5 Tabs (Home, Aufgaben, Store, Erfolge, Profil). Profil vereint Stats + Einstellungen. Freigaben als globaler Banner.
+4. **Visuelle Überarbeitung** — Eindeutige Buttons, klare Farbgebung, unmissverständliche Labels.
+
+---
+
+## 0. Visuelle Gestaltung — Grundregeln
+
+Bei allen Änderungen (und bestehenden Komponenten) gelten folgende Regeln:
+
+### Buttons müssen als Buttons erkennbar sein
+
+- Interaktive Elemente brauchen einen klar sichtbaren Rahmen, Hintergrund oder beides
+- Kein "Ghost-Button" für primäre Aktionen — primäre Aktionen bekommen einen gefüllten, farbigen Button
+- Sekundäre Aktionen dürfen outline/ghost sein, müssen aber einen sichtbaren Border haben
+
+### Labels müssen eindeutig sein
+
+- Button-Texte beschreiben die **Aktion**, nicht den **Zustand**
+- Schlecht: "Erledigt" (klingt wie "ist bereits erledigt")
+- Gut: "Erledigen" oder "Abhaken" oder ein Checkmark-Icon
+- Gleiches Prinzip gilt für "Einlösen", "Kaufen", "Freigeben" etc.
+
+### Farbgebung mit Bedeutung
+
+- **Indigo/Blau:** Primäre Aktionen (Erledigen, Kaufen)
+- **Grün:** Erfolg/Bestätigung (Achievement freigeschaltet, Kauf bestätigt)
+- **Amber/Orange:** Ausstehend/Wartet (Pending Rewards, offene Freigaben)
+- **Rot:** Destruktiv/Fehler (Löschen, Fehlermeldungen)
+- **Slate/Grau:** Deaktiviert, sekundär, gesperrte Achievements
+
+### Bestehende Probleme die mitbehoben werden
+
+- **Task-Card:** Button "Erledigt" → umbenennen zu "Abhaken" oder Checkmark-Icon, mit sichtbarem gefülltem Button-Stil
+- **Store-Item-Card:** Kaufen-Button prüfen auf Eindeutigkeit und Sichtbarkeit
 
 ---
 
