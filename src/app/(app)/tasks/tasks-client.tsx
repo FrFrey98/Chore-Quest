@@ -8,8 +8,9 @@ type Task = {
   isRecurring: boolean; recurringInterval: string | null
 }
 type Category = { id: string; name: string; emoji: string; tasks: Task[] }
+type SimpleCategory = { id: string; name: string; emoji: string }
 
-export function TasksClient({ grouped, categories }: { grouped: Category[]; categories: Category[] }) {
+export function TasksClient({ grouped, categories }: { grouped: Category[]; categories: SimpleCategory[] }) {
   const router = useRouter()
 
   async function handleComplete(_taskId: string) {
