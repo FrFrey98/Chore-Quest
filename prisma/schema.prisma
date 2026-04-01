@@ -13,11 +13,12 @@ model User {
   pin         String
   createdAt   DateTime @default(now())
 
-  completions   TaskCompletion[]
-  purchases     Purchase[]
-  createdTasks  Task[]           @relation("CreatedBy")
-  approvedTasks Task[]           @relation("ApprovedBy")
-  approvals     TaskApproval[]
+  completions      TaskCompletion[]
+  purchases        Purchase[]
+  createdTasks     Task[]           @relation("CreatedBy")
+  approvedTasks    Task[]           @relation("ApprovedBy")
+  approvals        TaskApproval[]
+  userAchievements UserAchievement[]
 }
 
 model Category {
@@ -90,7 +91,33 @@ model Purchase {
   pointsSpent Int
   purchasedAt DateTime  @default(now())
   redeemedAt  DateTime?
+  notifiedAt  DateTime?
 
   item StoreItem @relation(fields: [itemId], references: [id])
   user User      @relation(fields: [userId], references: [id])
+}
+
+model Achievement {
+  id             String   @id @default(cuid())
+  title          String
+  description    String
+  emoji          String
+  conditionType  String   // 'task_count', 'category_count', 'streak_days', 'total_points', 'level'
+  conditionValue Int
+  conditionMeta  String?  // e.g. categoryId for category_count
+  sortOrder      Int      @default(0)
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id])
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
 }
