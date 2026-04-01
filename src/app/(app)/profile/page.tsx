@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getTotalEarned, getLevel } from '@/lib/points'
 import { ProfileClient } from './profile-client'
+import { computeProfileStats } from '@/lib/profile-stats'
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions)
@@ -11,44 +11,9 @@ export default async function ProfilePage() {
   const userId = session.user.id
 
   // --- Personal stats (from old stats page) ---
-  const completions = await prisma.taskCompletion.findMany({
-    where: { userId },
-    include: { task: { select: { title: true, emoji: true, categoryId: true } } },
-    orderBy: { completedAt: 'asc' },
-  })
+  const stats = await computeProfileStats(userId)
 
   const categories = await prisma.category.findMany()
-
-  const heatmap: Record<string, number> = {}
-  for (const c of completions) {
-    const day = c.completedAt.toISOString().slice(0, 10)
-    heatmap[day] = (heatmap[day] ?? 0) + c.points
-  }
-
-  const taskCount: Record<string, { count: number; title: string; emoji: string }> = {}
-  for (const c of completions) {
-    if (!taskCount[c.taskId])
-      taskCount[c.taskId] = { count: 0, title: c.task.title, emoji: c.task.emoji }
-    taskCount[c.taskId].count++
-  }
-  const topTasks = Object.values(taskCount)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5)
-
-  const daySet = new Set(completions.map((c) => c.completedAt.toISOString().slice(0, 10)))
-  let streak = 0
-  const today = new Date()
-  const todayKey = today.toISOString().slice(0, 10)
-  const startDay = daySet.has(todayKey) ? 0 : 1
-  for (let i = startDay; i < 365; i++) {
-    const d = new Date(today)
-    d.setUTCDate(d.getUTCDate() - i)
-    if (daySet.has(d.toISOString().slice(0, 10))) streak++
-    else break
-  }
-
-  const totalEarned = getTotalEarned(completions)
-  const level = getLevel(totalEarned)
 
   const purchases = await prisma.purchase.findMany({
     where: { userId },
@@ -100,12 +65,12 @@ export default async function ProfilePage() {
     <ProfileClient
       userName={userName}
       personal={{
-        heatmap,
-        topTasks,
-        streak,
-        totalCompletions: completions.length,
-        totalPointsEarned: totalEarned,
-        level,
+        heatmap: stats.heatmap,
+        topTasks: stats.topTasks,
+        streak: stats.streak,
+        totalCompletions: stats.completionCount,
+        totalPointsEarned: stats.totalEarned,
+        level: stats.level,
         purchases: purchasesForClient,
       }}
       categories={categories}

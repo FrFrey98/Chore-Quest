@@ -21,7 +21,7 @@ type Task = { id: string; title: string; emoji: string; points: number; status: 
 
 type Personal = {
   heatmap: Record<string, number>
-  topTasks: { title: string; emoji: string; count: number }[]
+  topTasks: { id: string; title: string; emoji: string; count: number }[]
   streak: number
   totalCompletions: number
   totalPointsEarned: number
@@ -191,7 +191,7 @@ export function ProfileClient({
               <p className="text-slate-400 text-sm">Noch keine Aufgaben erledigt.</p>
             )}
             {personal.topTasks.map((t) => (
-              <div key={t.title} className="flex items-center gap-2">
+              <div key={t.id} className="flex items-center gap-2">
                 <span>{t.emoji}</span>
                 <span className="text-sm flex-1">{t.title}</span>
                 <span className="text-sm font-bold text-indigo-600">{t.count}×</span>
