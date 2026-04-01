@@ -59,4 +59,15 @@ describe('groupFeedByDay', () => {
   it('returns empty array for no entries', () => {
     expect(groupFeedByDay([], now)).toEqual([])
   })
+
+  it('computes totalTasks and totalPoints from completion entries', () => {
+    const entries = [
+      { id: '1', type: 'completion', user: { id: 'u1', name: 'Franz' }, task: { title: 'T1', emoji: '🧹' }, points: 30, at: '2026-04-01T10:00:00Z' },
+      { id: '2', type: 'completion', user: { id: 'u1', name: 'Franz' }, task: { title: 'T2', emoji: '🍳' }, points: 40, at: '2026-04-01T12:00:00Z' },
+      { id: '3', type: 'redemption', user: { id: 'u1', name: 'Franz' }, item: { title: 'R1', emoji: '🎁' }, points: 0, at: '2026-04-01T14:00:00Z' },
+    ] as any[]
+    const groups = groupFeedByDay(entries, now)
+    expect(groups[0].totalTasks).toBe(2)
+    expect(groups[0].totalPoints).toBe(70)
+  })
 })
