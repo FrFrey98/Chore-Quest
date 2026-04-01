@@ -1,8 +1,9 @@
 type FeedEntry = {
   id: string
-  type: 'completion'
+  type: 'completion' | 'redemption'
   user: { id: string; name: string }
-  task: { title: string; emoji: string }
+  task?: { title: string; emoji: string }
+  item?: { title: string; emoji: string }
   points: number
   at: string
 }
@@ -13,14 +14,36 @@ export function FeedItem({ entry, currentUserId }: { entry: FeedEntry; currentUs
     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   })
 
+  if (entry.type === 'redemption') {
+    const emoji = entry.item?.emoji ?? '🎁'
+    const title = entry.item?.title ?? ''
+    return (
+      <div className={`flex items-start gap-3 p-3 border-l-4 ${isMe ? 'border-indigo-400' : 'border-pink-400'} bg-white rounded-r-lg shadow-sm`}>
+        <span className="text-2xl">{emoji}</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-slate-800 truncate">
+            <span className={isMe ? 'text-indigo-600' : 'text-pink-600'}>{entry.user.name}</span>
+            {' '}hat{' '}
+            <span className="font-semibold">"{title}"</span>
+            {' '}eingelöst
+          </p>
+          <p className="text-xs text-slate-500">{time}</p>
+        </div>
+        <span className="text-sm font-bold whitespace-nowrap text-amber-600">
+          Belohnung
+        </span>
+      </div>
+    )
+  }
+
   return (
     <div className={`flex items-start gap-3 p-3 border-l-4 ${isMe ? 'border-indigo-400' : 'border-pink-400'} bg-white rounded-r-lg shadow-sm`}>
-      <span className="text-2xl">{entry.task.emoji}</span>
+      <span className="text-2xl">{entry.task?.emoji}</span>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-800 truncate">
           <span className={isMe ? 'text-indigo-600' : 'text-pink-600'}>{entry.user.name}</span>
           {' '}hat{' '}
-          <span className="font-semibold">"{entry.task.title}"</span>
+          <span className="font-semibold">"{entry.task?.title}"</span>
           {' '}erledigt
         </p>
         <p className="text-xs text-slate-500">{time}</p>
