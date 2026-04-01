@@ -2,13 +2,22 @@
 import { useRouter } from 'next/navigation'
 import { StoreItemCard } from '@/components/store/store-item-card'
 import { CreateItemDialog } from '@/components/store/create-item-dialog'
+import { PendingRewards } from '@/components/store/pending-rewards'
 import { useToast } from '@/components/toast-provider'
 import type { StoreItem } from '@/components/store/store-item-card'
 
+type PendingPurchase = {
+  id: string
+  purchasedAt: string
+  user: { id: string; name: string | null }
+  item: { title: string; emoji: string }
+}
+
 export function StoreClient({
-  trophies, rewards, balance,
+  trophies, rewards, balance, pendingPurchases, currentUserId,
 }: {
   trophies: StoreItem[]; rewards: StoreItem[]; balance: number
+  pendingPurchases: PendingPurchase[]; currentUserId: string
 }) {
   const router = useRouter()
   const { toast } = useToast()
@@ -35,6 +44,8 @@ export function StoreClient({
           <CreateItemDialog />
         </div>
       </div>
+
+      <PendingRewards purchases={pendingPurchases} currentUserId={currentUserId} />
 
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
         🏆 Trophäen

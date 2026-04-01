@@ -21,7 +21,7 @@ vi.mock('@/lib/prisma', () => {
       findMany: vi.fn().mockResolvedValue([]),
       findFirst: vi.fn().mockResolvedValue(null),
       create: vi.fn().mockResolvedValue({ id: 'pur-1', pointsSpent: 500 }),
-      findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'user-1', redeemedAt: null }),
+      findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'user-other', redeemedAt: null, item: { type: 'real_reward' } }),
       update: vi.fn().mockResolvedValue({ id: 'pur-1', redeemedAt: new Date() }),
     },
     $transaction: vi.fn(),
@@ -113,8 +113,9 @@ describe('POST /api/store/[id]/redeem', () => {
   it('returns 409 when already redeemed', async () => {
     vi.mocked(prisma.purchase.findUnique).mockResolvedValueOnce({
       id: 'pur-1',
-      userId: 'user-1',
+      userId: 'user-other',
       redeemedAt: new Date('2024-01-01'),
+      item: { type: 'real_reward' },
     } as any)
     const { POST } = await import('@/app/api/store/[id]/redeem/route')
     const res = await POST(
@@ -124,17 +125,18 @@ describe('POST /api/store/[id]/redeem', () => {
     expect(res.status).toBe(409)
   })
 
-  it('returns 404 when purchase belongs to another user', async () => {
+  it('returns 403 when user tries to redeem their own purchase', async () => {
     vi.mocked(prisma.purchase.findUnique).mockResolvedValueOnce({
       id: 'pur-1',
-      userId: 'user-other',
+      userId: 'user-1',
       redeemedAt: null,
+      item: { type: 'real_reward' },
     } as any)
     const { POST } = await import('@/app/api/store/[id]/redeem/route')
     const res = await POST(
       new Request('http://localhost/api/store/pur-1/redeem', { method: 'POST' }) as any,
       { params: { id: 'pur-1' } }
     )
-    expect(res.status).toBe(404)
+    expect(res.status).toBe(403)
   })
 })

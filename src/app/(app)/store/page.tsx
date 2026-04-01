@@ -30,5 +30,33 @@ export default async function StorePage() {
     ...i, alreadyOwned: false,
   }))
 
-  return <StoreClient trophies={trophies} rewards={rewards} balance={balance} />
+  // Alle offenen Belohnungen (eigene + die des Partners)
+  const pendingPurchases = await prisma.purchase.findMany({
+    where: {
+      redeemedAt: null,
+      item: { type: 'real_reward' },
+    },
+    include: {
+      user: { select: { id: true, name: true } },
+      item: { select: { title: true, emoji: true } },
+    },
+    orderBy: { purchasedAt: 'desc' },
+  })
+
+  const pendingSerialized = pendingPurchases.map((p) => ({
+    id: p.id,
+    purchasedAt: p.purchasedAt.toISOString(),
+    user: { id: p.user.id, name: p.user.name },
+    item: { title: p.item.title, emoji: p.item.emoji },
+  }))
+
+  return (
+    <StoreClient
+      trophies={trophies}
+      rewards={rewards}
+      balance={balance}
+      pendingPurchases={pendingSerialized}
+      currentUserId={userId}
+    />
+  )
 }
