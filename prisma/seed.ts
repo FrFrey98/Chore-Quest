@@ -75,10 +75,6 @@ async function main() {
 
   // Initiale Store-Items
   const storeItems = [
-    { id: 'item-trophy-putzprofi', title: 'Putz-Profi', description: 'Für 50 erledigte Aufgaben', emoji: '🧹', pointCost: 500, type: 'trophy' },
-    { id: 'item-trophy-kochstar', title: 'Koch-Star', description: 'Meister am Herd', emoji: '⭐', pointCost: 300, type: 'trophy' },
-    { id: 'item-trophy-wochenstar', title: 'Wochen-Star', description: 'Eine ganze Woche ohne Pause', emoji: '🌟', pointCost: 700, type: 'trophy' },
-    { id: 'item-trophy-earlybird', title: 'Früh-Aufsteher', description: 'Immer die erste Aufgabe des Tages', emoji: '🐦', pointCost: 400, type: 'trophy' },
     { id: 'item-reward-pizza', title: 'Pizza-Abend aussuchen', description: 'Du darfst bestimmen was bestellt wird', emoji: '🍕', pointCost: 200, type: 'real_reward' },
     { id: 'item-reward-movie', title: 'Film-Abend aussuchen', description: 'Du wählst den Film', emoji: '🎬', pointCost: 150, type: 'real_reward' },
     { id: 'item-reward-sleep', title: 'Ausschlafen', description: 'Kein Wecker, keine Pflichten am Morgen', emoji: '😴', pointCost: 250, type: 'real_reward' },
@@ -91,6 +87,31 @@ async function main() {
       where: { id: item.id },
       update: {},
       create: { ...item, isActive: true },
+    })
+  }
+
+  // Achievements
+  const achievements = [
+    { id: 'ach-first-task', title: 'Erste Schritte', description: 'Erste Aufgabe erledigt', emoji: '⭐', conditionType: 'task_count', conditionValue: 1, sortOrder: 1 },
+    { id: 'ach-task-10', title: 'Fleißig', description: '10 Aufgaben erledigt', emoji: '💪', conditionType: 'task_count', conditionValue: 10, sortOrder: 2 },
+    { id: 'ach-task-50', title: 'Putz-Profi', description: '50 Aufgaben erledigt', emoji: '🧹', conditionType: 'task_count', conditionValue: 50, sortOrder: 3 },
+    { id: 'ach-task-100', title: 'Centurion', description: '100 Aufgaben erledigt', emoji: '💯', conditionType: 'task_count', conditionValue: 100, sortOrder: 4 },
+    { id: 'ach-kitchen-20', title: 'Koch-Star', description: '20 Küchen-Aufgaben erledigt', emoji: '👨‍🍳', conditionType: 'category_count', conditionValue: 20, conditionMeta: 'cat-kitchen', sortOrder: 5 },
+    { id: 'ach-bath-10', title: 'Glanz & Gloria', description: '10 Bad-Aufgaben erledigt', emoji: '✨', conditionType: 'category_count', conditionValue: 10, conditionMeta: 'cat-bath', sortOrder: 6 },
+    { id: 'ach-streak-7', title: 'Feuer-Starter', description: '7 Tage in Folge eine Aufgabe erledigt', emoji: '🔥', conditionType: 'streak_days', conditionValue: 7, sortOrder: 7 },
+    { id: 'ach-streak-14', title: 'Wochen-Star', description: '14 Tage in Folge eine Aufgabe erledigt', emoji: '🏆', conditionType: 'streak_days', conditionValue: 14, sortOrder: 8 },
+    { id: 'ach-streak-30', title: 'Monats-Marathon', description: '30 Tage in Folge eine Aufgabe erledigt', emoji: '⚡', conditionType: 'streak_days', conditionValue: 30, sortOrder: 9 },
+    { id: 'ach-points-500', title: 'Punktesammler', description: '500 Punkte verdient', emoji: '💰', conditionType: 'total_points', conditionValue: 500, sortOrder: 10 },
+    { id: 'ach-points-2000', title: 'Diamant-Sammler', description: '2000 Punkte verdient', emoji: '💎', conditionType: 'total_points', conditionValue: 2000, sortOrder: 11 },
+    { id: 'ach-level-4', title: 'Haushalts-Held', description: 'Level 4 erreicht', emoji: '🎓', conditionType: 'level', conditionValue: 4, sortOrder: 12 },
+    { id: 'ach-level-6', title: 'Wohn-Meister', description: 'Level 6 erreicht', emoji: '👑', conditionType: 'level', conditionValue: 6, sortOrder: 13 },
+  ]
+
+  for (const ach of achievements) {
+    await prisma.achievement.upsert({
+      where: { id: ach.id },
+      update: {},
+      create: ach,
     })
   }
 }
