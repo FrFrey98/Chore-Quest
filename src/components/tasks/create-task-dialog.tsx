@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/toast-provider'
+import { EmojiPicker } from '@/components/ui/emoji-picker'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog'
@@ -65,7 +66,7 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Emoji</Label>
-              <Input value={form.emoji} onChange={(e) => setForm({ ...form, emoji: e.target.value })} />
+              <EmojiPicker value={form.emoji} onChange={(emoji) => setForm({ ...form, emoji })} />
             </div>
             <div>
               <Label>Punkte</Label>
