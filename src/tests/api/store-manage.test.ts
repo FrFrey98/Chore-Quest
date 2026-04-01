@@ -87,4 +87,15 @@ describe('DELETE /api/store/[id]', () => {
     )
     expect(res.status).toBe(401)
   })
+
+  it('returns 404 when item not found', async () => {
+    const { prisma } = await import('@/lib/prisma')
+    vi.mocked(prisma.storeItem.update).mockRejectedValueOnce({ code: 'P2025' })
+    const { DELETE } = await import('@/app/api/store/[id]/route')
+    const res = await DELETE(
+      new Request('http://localhost/api/store/item-1', { method: 'DELETE' }) as any,
+      { params: { id: 'item-1' } }
+    )
+    expect(res.status).toBe(404)
+  })
 })

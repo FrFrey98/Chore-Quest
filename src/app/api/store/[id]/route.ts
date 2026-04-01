@@ -22,6 +22,10 @@ export async function PATCH(
   }
   if (typeof body.isActive === 'boolean') data.isActive = body.isActive
 
+  if (Object.keys(data).length === 0) {
+    return NextResponse.json({ error: 'Keine Felder zum Aktualisieren' }, { status: 400 })
+  }
+
   try {
     const item = await prisma.storeItem.update({
       where: { id: params.id },
