@@ -32,8 +32,8 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 # Copy generated Prisma client (output is in src/generated/prisma, not node_modules/.prisma)
 COPY --from=builder /app/src/generated ./src/generated
 
-# Copy Prisma CLI and engines for migrate deploy
-COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+# Copy Prisma CLI, engines, and WASM files for migrate deploy
+COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
