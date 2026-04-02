@@ -9,9 +9,13 @@ type Category = { id: string; name: string; emoji: string; tasks: Task[] }
 export function TaskCategoryGroup({
   category,
   onComplete,
+  partnerId,
+  partnerName,
 }: {
   category: Category
   onComplete: (id: string) => Promise<void>
+  partnerId?: string
+  partnerName?: string
 }) {
   if (category.tasks.length === 0) return null
   return (
@@ -21,7 +25,7 @@ export function TaskCategoryGroup({
       </h2>
       <div className="space-y-2">
         {category.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onComplete={onComplete} />
+          <TaskCard key={task.id} task={task} onComplete={onComplete} partnerId={partnerId} partnerName={partnerName} />
         ))}
       </div>
     </div>

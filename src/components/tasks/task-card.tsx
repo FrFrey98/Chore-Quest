@@ -3,27 +3,44 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/toast-provider'
-import { Check } from 'lucide-react'
+import { Check, Users } from 'lucide-react'
 
 type Task = {
   id: string; title: string; emoji: string; points: number
   isRecurring: boolean; recurringInterval: string | null
+  allowMultiple?: boolean; dailyLimit?: number | null
 }
 
-export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: string) => Promise<void> }) {
+export function TaskCard({ task, onComplete, partnerId, partnerName }: {
+  task: Task
+  onComplete: (id: string) => Promise<void>
+  partnerId?: string
+  partnerName?: string
+}) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [shared, setShared] = useState(false)
   const { toast } = useToast()
 
   async function handleComplete() {
     setLoading(true)
     try {
-      const res = await fetch(`/api/tasks/${task.id}/complete`, { method: 'POST' })
-      if (!res.ok) throw new Error('Fehler beim Erledigen')
+      const isShared = shared && partnerId
+      const res = await fetch(`/api/tasks/${task.id}/complete`, {
+        method: 'POST',
+        headers: isShared ? { 'Content-Type': 'application/json' } : undefined,
+        body: isShared ? JSON.stringify({ withUserId: partnerId }) : undefined,
+      })
+      if (!res.ok) {
+        const errData = await res.json()
+        throw new Error(errData.error ?? 'Fehler beim Erledigen')
+      }
       const data = await res.json()
       setDone(true)
+      setShared(false)
 
-      toast(`+${task.points} Pkt für "${task.title}"`, 'success', {
+      const sharedLabel = isShared ? ' 👫' : ''
+      toast(`+${data.points} Pkt für "${task.title}"${sharedLabel}`, 'success', {
         label: 'Rückgängig',
         onClick: async () => {
           const undoRes = await fetch(`/api/tasks/${task.id}/complete/undo`, {
@@ -40,7 +57,6 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
         },
       })
 
-      // Show achievement toasts
       if (data.newAchievements && data.newAchievements.length > 0) {
         data.newAchievements.forEach((a: { emoji: string; title: string }, i: number) => {
           setTimeout(() => {
@@ -49,10 +65,9 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
         })
       }
 
-      // Trigger parent refresh for points update etc.
       onComplete(task.id).catch(() => {})
-    } catch {
-      toast('Fehler beim Erledigen', 'error')
+    } catch (err: any) {
+      toast(err.message ?? 'Fehler beim Erledigen', 'error')
     } finally {
       setLoading(false)
     }
@@ -76,8 +91,19 @@ export function TaskCard({ task, onComplete }: { task: Task; onComplete: (id: st
       <Badge variant="secondary" className="text-indigo-700 bg-indigo-50 shrink-0">
         +{task.points} Pkt
       </Badge>
+      {partnerId && (
+        <button
+          onClick={() => setShared(!shared)}
+          className={`p-1.5 rounded-lg transition-colors ${
+            shared ? 'bg-amber-100 text-amber-700' : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
+          }`}
+          title={`Zusammen mit ${partnerName}`}
+        >
+          <Users size={16} />
+        </button>
+      )}
       <Button size="sm" onClick={handleComplete} disabled={loading} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-1">
-        {loading ? '…' : <><Check size={16} /> Abhaken</>}
+        {loading ? '…' : <><Check size={16} /> {shared ? '👫 Zusammen' : 'Abhaken'}</>}
       </Button>
     </div>
   )

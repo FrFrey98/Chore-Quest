@@ -19,6 +19,10 @@ export default async function TasksPage() {
     (t) => !t.isRecurring || !t.nextDueAt || t.nextDueAt <= now
   )
 
+  const userId = session.user?.id
+  const users = await prisma.user.findMany()
+  const partner = users.find((u) => u.id !== userId)
+
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } })
 
   const grouped = categories.map((cat) => ({
@@ -26,5 +30,5 @@ export default async function TasksPage() {
     tasks: visible.filter((t) => t.categoryId === cat.id),
   }))
 
-  return <TasksClient grouped={grouped} categories={categories} />
+  return <TasksClient grouped={grouped} categories={categories} partnerId={partner?.id} partnerName={partner?.name ?? undefined} />
 }

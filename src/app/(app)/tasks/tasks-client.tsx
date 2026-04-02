@@ -11,7 +11,7 @@ type Task = {
 type Category = { id: string; name: string; emoji: string; tasks: Task[] }
 type SimpleCategory = { id: string; name: string; emoji: string }
 
-export function TasksClient({ grouped, categories }: { grouped: Category[]; categories: SimpleCategory[] }) {
+export function TasksClient({ grouped, categories, partnerId, partnerName }: { grouped: Category[]; categories: SimpleCategory[]; partnerId?: string; partnerName?: string }) {
   const router = useRouter()
 
   async function handleComplete(_taskId: string) {
@@ -35,7 +35,7 @@ export function TasksClient({ grouped, categories }: { grouped: Category[]; cate
         </div>
       )}
       {grouped.map((cat) => (
-        <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} />
+        <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} partnerId={partnerId} partnerName={partnerName} />
       ))}
       <div className="flex justify-end mt-4">
         <Link href="/manage?tab=tasks" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
