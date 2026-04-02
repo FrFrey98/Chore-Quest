@@ -83,6 +83,35 @@ describe('applyBonus', () => {
   it('floors 10% on odd base points', () => {
     expect(applyBonus(25, 7)).toBe(27)
   })
+
+  // Teamwork bonus tests
+  it('applies 10% teamwork bonus when shared, no streak', () => {
+    expect(applyBonus(20, 0, true)).toBe(22)
+  })
+
+  it('applies teamwork + streak bonus additively (5% + 10%)', () => {
+    // 35 * 1.15 = 40.25 → 40
+    expect(applyBonus(35, 3, true)).toBe(40)
+  })
+
+  it('applies teamwork + streak bonus additively (10% + 10%)', () => {
+    // 35 * 1.20 = 42
+    expect(applyBonus(35, 7, true)).toBe(42)
+  })
+
+  it('applies teamwork + streak bonus additively (25% + 10%)', () => {
+    // 20 * 1.35 = 27
+    expect(applyBonus(20, 14, true)).toBe(27)
+  })
+
+  it('applies teamwork + streak bonus additively (50% + 10%)', () => {
+    // 20 * 1.60 = 32
+    expect(applyBonus(20, 30, true)).toBe(32)
+  })
+
+  it('isShared defaults to false', () => {
+    expect(applyBonus(20, 7)).toBe(applyBonus(20, 7, false))
+  })
 })
 
 describe('calculateRestorePrice', () => {

@@ -8,6 +8,8 @@ export const STREAK_TIERS = [
   { minDays: 0,  percent: 0,  name: 'Kein Bonus' },
 ] as const
 
+export const TEAMWORK_BONUS_PERCENT = 10
+
 export type StreakTier = {
   minDays: number
   percent: number
@@ -18,9 +20,10 @@ export function getStreakTier(currentStreak: number): StreakTier {
   return STREAK_TIERS.find((t) => currentStreak >= t.minDays) ?? STREAK_TIERS[STREAK_TIERS.length - 1]
 }
 
-export function applyBonus(basePoints: number, currentStreak: number): number {
+export function applyBonus(basePoints: number, currentStreak: number, isShared: boolean = false): number {
   const tier = getStreakTier(currentStreak)
-  return Math.floor(basePoints * (1 + tier.percent / 100))
+  const totalPercent = tier.percent + (isShared ? TEAMWORK_BONUS_PERCENT : 0)
+  return Math.floor(basePoints * (1 + totalPercent / 100))
 }
 
 export function calculateRestorePrice(currentStreak: number): number {
