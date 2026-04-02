@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getTotalEarned, getLevel, getCurrentPoints } from '@/lib/points'
 import { computeStats } from '@/lib/achievements'
+import { getOrCreateStreakState, getStreakTier, isRestoreAvailable } from '@/lib/streak'
 import { getWeekBounds, groupFeedByDay } from '@/lib/dashboard'
 import type { FeedEntry } from '@/lib/dashboard'
 import { StatPills } from '@/components/dashboard/stat-pills'
@@ -34,6 +35,12 @@ export default async function DashboardPage() {
       },
     }),
   ])
+  const [streakState, restoreInfo] = await Promise.all([
+    getOrCreateStreakState(userId),
+    isRestoreAvailable(userId),
+  ])
+  const streakTier = getStreakTier(streakState.currentStreak)
+
   const levelInfo = getLevel(stats.totalPointsEarned)
   const balance = getCurrentPoints(stats.totalPointsEarned, spent._sum.pointsSpent ?? 0)
   const me = users.find((u) => u.id === userId)!
@@ -165,7 +172,11 @@ export default async function DashboardPage() {
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
 
       <StatPills
-        streakDays={stats.currentStreakDays}
+        streakDays={streakState.currentStreak}
+        streakBonusPercent={streakTier.percent}
+        streakBonusName={streakTier.name}
+        restoreAvailable={restoreInfo.available}
+        restorePrice={restoreInfo.price}
         level={levelInfo.level}
         levelTitle={levelInfo.title}
         totalEarned={stats.totalPointsEarned}
