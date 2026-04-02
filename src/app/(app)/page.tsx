@@ -55,7 +55,7 @@ export default async function DashboardPage() {
   const [todayCompletions, recurringTasks] = await Promise.all([
     prisma.taskCompletion.findMany({
       where: { userId, completedAt: { gte: todayStart } },
-      include: { task: { select: { id: true, emoji: true, title: true, points: true } } },
+      include: { task: { select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true } } },
     }),
     prisma.task.findMany({
       where: {
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
           { nextDueAt: { lte: now } },
         ],
       },
-      select: { id: true, emoji: true, title: true, points: true },
+      select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true },
     }),
   ])
   const completedToday = todayCompletions.map((c) => ({
@@ -75,8 +75,25 @@ export default async function DashboardPage() {
     title: c.task.title,
     points: c.points,
   }))
-  const completedTaskIds = new Set(todayCompletions.map((c) => c.taskId))
-  const dueTasks = recurringTasks.filter((t) => !completedTaskIds.has(t.id))
+
+  // Count completions per task for multi-completion support
+  const completionCountByTask = new Map<string, number>()
+  for (const c of todayCompletions) {
+    completionCountByTask.set(c.taskId, (completionCountByTask.get(c.taskId) ?? 0) + 1)
+  }
+
+  const dueTasks = recurringTasks
+    .filter((t) => {
+      const count = completionCountByTask.get(t.id) ?? 0
+      if (t.allowMultiple && t.dailyLimit) {
+        return count < t.dailyLimit
+      }
+      return count === 0
+    })
+    .map((t) => ({
+      ...t,
+      todayCount: completionCountByTask.get(t.id) ?? 0,
+    }))
 
   let suggestions: { id: string; emoji: string; title: string }[] = []
   if (dueTasks.length < 3) {
@@ -200,6 +217,8 @@ export default async function DashboardPage() {
         completed={completedToday}
         due={dueTasks}
         suggestions={suggestions}
+        partnerId={partner?.id}
+        partnerName={partner?.name ?? 'Partner'}
       />
 
       <WeekChart
