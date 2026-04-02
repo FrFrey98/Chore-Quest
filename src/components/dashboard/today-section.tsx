@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/toast-provider'
-import { Check } from 'lucide-react'
+import { Check, Users } from 'lucide-react'
 
 type CompletedTask = {
   id: string
@@ -16,6 +16,9 @@ type DueTask = {
   emoji: string
   title: string
   points: number
+  allowMultiple: boolean
+  dailyLimit: number | null
+  todayCount: number
 }
 
 type SuggestedTask = {
@@ -28,13 +31,16 @@ type TodaySectionProps = {
   completed: CompletedTask[]
   due: DueTask[]
   suggestions: SuggestedTask[]
+  partnerId?: string
+  partnerName?: string
 }
 
-export function TodaySection({ completed, due, suggestions }: TodaySectionProps) {
+export function TodaySection({ completed, due, suggestions, partnerId, partnerName }: TodaySectionProps) {
   const router = useRouter()
   const { toast } = useToast()
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set())
+  const [sharedTaskId, setSharedTaskId] = useState<string | null>(null)
 
   const totalTasks = completed.length + due.length
   const doneCount = completed.length + doneIds.size
@@ -42,11 +48,25 @@ export function TodaySection({ completed, due, suggestions }: TodaySectionProps)
   async function handleComplete(task: DueTask) {
     setLoadingId(task.id)
     try {
-      const res = await fetch(`/api/tasks/${task.id}/complete`, { method: 'POST' })
-      if (!res.ok) throw new Error()
+      const isShared = sharedTaskId === task.id && partnerId
+      const res = await fetch(`/api/tasks/${task.id}/complete`, {
+        method: 'POST',
+        headers: isShared ? { 'Content-Type': 'application/json' } : undefined,
+        body: isShared ? JSON.stringify({ withUserId: partnerId }) : undefined,
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error ?? 'Fehler')
+      }
       const data = await res.json()
-      setDoneIds((prev) => new Set(prev).add(task.id))
-      toast(`+${task.points} Pkt für "${task.title}"`, 'success')
+
+      if (!task.allowMultiple) {
+        setDoneIds((prev) => new Set(prev).add(task.id))
+      }
+      setSharedTaskId(null)
+
+      const sharedLabel = isShared ? ' 👫' : ''
+      toast(`+${data.points} Pkt für "${task.title}"${sharedLabel}`, 'success')
 
       if (data.newAchievements?.length > 0) {
         data.newAchievements.forEach((a: { emoji: string; title: string }, i: number) => {
@@ -57,8 +77,8 @@ export function TodaySection({ completed, due, suggestions }: TodaySectionProps)
       }
 
       router.refresh()
-    } catch {
-      toast('Fehler beim Erledigen', 'error')
+    } catch (err: any) {
+      toast(err.message ?? 'Fehler beim Erledigen', 'error')
     } finally {
       setLoadingId(null)
     }
@@ -85,13 +105,31 @@ export function TodaySection({ completed, due, suggestions }: TodaySectionProps)
         {due.filter((t) => !doneIds.has(t.id)).map((t) => (
           <div key={t.id} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg border-l-[3px] border-slate-300">
             <span className="text-lg">{t.emoji}</span>
-            <span className="flex-1 text-sm text-slate-800 truncate">{t.title}</span>
+            <div className="flex-1 min-w-0">
+              <span className="text-sm text-slate-800 truncate block">{t.title}</span>
+              {t.allowMultiple && t.dailyLimit && (
+                <span className="text-[10px] text-slate-400">{t.todayCount}/{t.dailyLimit} heute</span>
+              )}
+            </div>
+            {partnerId && (
+              <button
+                onClick={() => setSharedTaskId(sharedTaskId === t.id ? null : t.id)}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  sharedTaskId === t.id
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
+                }`}
+                title={`Zusammen mit ${partnerName}`}
+              >
+                <Users size={14} />
+              </button>
+            )}
             <button
               onClick={() => handleComplete(t)}
               disabled={loadingId === t.id}
               className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
             >
-              {loadingId === t.id ? '…' : <><Check size={14} /> Abhaken</>}
+              {loadingId === t.id ? '…' : <><Check size={14} /> {sharedTaskId === t.id ? '👫 Zusammen' : 'Abhaken'}</>}
             </button>
           </div>
         ))}
