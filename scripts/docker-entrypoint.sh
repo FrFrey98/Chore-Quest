@@ -96,8 +96,13 @@ DB_PATH="$DB_PATH" node -e "
       ['ach-level-6','Wohn-Meister','Level 6 erreicht','👑','level',6,null,13]
     ].forEach(a => insertAch.run(...a));
 
+    // Ensure StreakState exists for both users
+    const insertStreak = db.prepare('INSERT OR IGNORE INTO StreakState (id, userId, currentStreak, bestStreak, restoreCount, updatedAt) VALUES (?, ?, ?, ?, ?, ?)');
+    insertStreak.run('streak-1', 'user-1', 0, 0, 0, now);
+    insertStreak.run('streak-2', 'user-2', 0, 0, 0, now);
+
     db.close();
-    console.log('Stammdaten geprüft: 2 User, 5 Kategorien, 16 Tasks, 5 Belohnungen, 13 Achievements');
+    console.log('Stammdaten geprüft: 2 User, 5 Kategorien, 16 Tasks, 5 Belohnungen, 13 Achievements, 2 StreakStates');
   "
 
 # 3. App starten (exec ersetzt Shell, Node wird PID 1)
