@@ -13,13 +13,14 @@ model User {
   pin         String
   createdAt   DateTime @default(now())
 
-  completions      TaskCompletion[]
-  purchases        Purchase[]
-  createdTasks     Task[]           @relation("CreatedBy")
-  approvedTasks    Task[]           @relation("ApprovedBy")
-  approvals        TaskApproval[]
-  userAchievements UserAchievement[]
-  streakState      StreakState?
+  completions        TaskCompletion[]
+  purchases          Purchase[]
+  createdTasks       Task[]           @relation("CreatedBy")
+  approvedTasks      Task[]           @relation("ApprovedBy")
+  approvals          TaskApproval[]
+  userAchievements   UserAchievement[]
+  streakState        StreakState?
+  sharedCompletions  TaskCompletion[] @relation("sharedCompletions")
 }
 
 model Category {
@@ -42,6 +43,8 @@ model Task {
   approvedById      String?
   createdAt         DateTime  @default(now())
   nextDueAt         DateTime?
+  allowMultiple     Boolean   @default(false)
+  dailyLimit        Int?
 
   category    Category         @relation(fields: [categoryId], references: [id])
   createdBy   User             @relation("CreatedBy", fields: [createdById], references: [id])
@@ -67,9 +70,11 @@ model TaskCompletion {
   userId      String
   points      Int
   completedAt DateTime @default(now())
+  withUserId  String?
 
-  task Task @relation(fields: [taskId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  task     Task  @relation(fields: [taskId], references: [id])
+  user     User  @relation(fields: [userId], references: [id])
+  withUser User? @relation("sharedCompletions", fields: [withUserId], references: [id])
 }
 
 model StoreItem {
