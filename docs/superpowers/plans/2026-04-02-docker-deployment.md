@@ -351,7 +351,7 @@ Die Produktions-Compose-Datei definiert App + Watchtower. Sie wird auf die Synol
 ```yaml
 services:
   app:
-    image: ghcr.io/<github-username>/haushalt-quest:latest
+    image: ghcr.io/frfrey98/haushalt-quest:latest
     ports:
       - "3333:3000"
     volumes:
@@ -380,7 +380,7 @@ services:
 
 Schreibe diese Datei nach `docker-compose.prod.yml`.
 
-**Hinweis:** `<github-username>` muss durch den echten GitHub-Username ersetzt werden, sobald das Repository erstellt ist (z.B. `ghcr.io/franzfreynhofer/haushalt-quest:latest`).
+**Hinweis:** Der Image-Name `ghcr.io/frfrey98/haushalt-quest:latest` entspricht dem GitHub-Repository `FrFrey98/haushalt-quest`.
 
 - [ ] **Step 2: Commit**
 
@@ -464,4 +464,4 @@ Manuelle Schritte (nicht Teil des Plans, aber nötig):
 1. **GitHub-Repo erstellen** und als Remote hinzufügen
 2. Auf `main` pushen → erster GitHub Actions Build wird getriggert
 3. **Synology einrichten:** SSH → `docker login ghcr.io` → `.env` anlegen → `docker compose -f docker-compose.prod.yml up -d`
-4. `<github-username>` in `docker-compose.prod.yml` durch echten Username ersetzen
+4. Image-Name in `docker-compose.prod.yml` ist bereits auf `ghcr.io/frfrey98/haushalt-quest:latest` gesetzt

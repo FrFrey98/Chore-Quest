@@ -13,7 +13,7 @@ GitHub Actions Workflow
         ↓
 Build Multi-Arch Docker-Image (linux/amd64 + linux/arm64)
         ↓
-Push auf ghcr.io/<username>/haushalt-quest:latest
+Push auf ghcr.io/frfrey98/haushalt-quest:latest
         ↓
 Watchtower auf Synology (prüft alle 5 Min)
         ↓
@@ -33,7 +33,7 @@ Neues Image erkannt → Pull → Container neu starten
 1. Checkout Code
 2. Docker Buildx einrichten (für Multi-Arch)
 3. Login bei ghcr.io mit `GITHUB_TOKEN` (automatisch verfügbar, kein manuelles Secret nötig)
-4. Build + Push: `ghcr.io/<username>/haushalt-quest:latest`
+4. Build + Push: `ghcr.io/frfrey98/haushalt-quest:latest`
 
 **Plattformen:** `linux/amd64`, `linux/arm64` (Synology NAS-Modelle nutzen beide Architekturen).
 
@@ -109,7 +109,7 @@ Separate Datei neben der bestehenden `docker-compose.yml` (die bleibt für lokal
 ```yaml
 services:
   app:
-    image: ghcr.io/<username>/haushalt-quest:latest
+    image: ghcr.io/frfrey98/haushalt-quest:latest
     ports:
       - "3333:3000"
     volumes:
