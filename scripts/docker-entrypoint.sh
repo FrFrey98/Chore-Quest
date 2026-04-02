@@ -29,7 +29,12 @@ USER_COUNT=$(DB_PATH="$DB_PATH" node -e "
 
 if [ "$USER_COUNT" = "0" ]; then
   echo "Datenbank leer — seede Initialdaten..."
-  DB_PATH="$DB_PATH" node -e "
+else
+  echo "Datenbank enthält $USER_COUNT User — prüfe fehlende Stammdaten..."
+fi
+
+# INSERT OR IGNORE stellt sicher, dass nur fehlende Einträge eingefügt werden
+DB_PATH="$DB_PATH" node -e "
     const Database = require('better-sqlite3');
     const bcrypt = require('bcryptjs');
     const db = new Database(process.env.DB_PATH);
@@ -65,13 +70,13 @@ if [ "$USER_COUNT" = "0" ]; then
       ['task-groceries','Einkaufen','🛒',35,'cat-general',1,'weekly','active','user-1','user-2',now]
     ].forEach(t => insertTask.run(...t));
 
-    const insertItem = db.prepare('INSERT OR IGNORE INTO StoreItem (id, title, description, emoji, pointCost, type, isActive) VALUES (?, ?, ?, ?, ?, \"real_reward\", 1)');
+    const insertItem = db.prepare('INSERT OR IGNORE INTO StoreItem (id, title, description, emoji, pointCost, type, isActive) VALUES (?, ?, ?, ?, ?, ?, ?)');
     [
-      ['item-reward-pizza','Pizza-Abend aussuchen','Du darfst bestimmen was bestellt wird','🍕',200],
-      ['item-reward-movie','Film-Abend aussuchen','Du wählst den Film','🎬',150],
-      ['item-reward-sleep','Ausschlafen','Kein Wecker, keine Pflichten am Morgen','😴',250],
-      ['item-reward-massage','Massage (15 Min)','15 Minuten Schulter-/Rückenmassage','💆',350],
-      ['item-reward-dishfree','Abwasch-frei (1 Woche)','Eine Woche lang kein Abwasch','✨',500]
+      ['item-reward-pizza','Pizza-Abend aussuchen','Du darfst bestimmen was bestellt wird','🍕',200,'real_reward',1],
+      ['item-reward-movie','Film-Abend aussuchen','Du wählst den Film','🎬',150,'real_reward',1],
+      ['item-reward-sleep','Ausschlafen','Kein Wecker, keine Pflichten am Morgen','😴',250,'real_reward',1],
+      ['item-reward-massage','Massage (15 Min)','15 Minuten Schulter-/Rückenmassage','💆',350,'real_reward',1],
+      ['item-reward-dishfree','Abwasch-frei (1 Woche)','Eine Woche lang kein Abwasch','✨',500,'real_reward',1]
     ].forEach(i => insertItem.run(...i));
 
     const insertAch = db.prepare('INSERT OR IGNORE INTO Achievement (id, title, description, emoji, conditionType, conditionValue, conditionMeta, sortOrder) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
@@ -92,11 +97,8 @@ if [ "$USER_COUNT" = "0" ]; then
     ].forEach(a => insertAch.run(...a));
 
     db.close();
-    console.log('Seed erfolgreich: 2 User, 5 Kategorien, 16 Tasks, 5 Belohnungen, 13 Achievements');
+    console.log('Stammdaten geprüft: 2 User, 5 Kategorien, 16 Tasks, 5 Belohnungen, 13 Achievements');
   "
-else
-  echo "Datenbank enthält $USER_COUNT User — Seed übersprungen."
-fi
 
 # 3. App starten (exec ersetzt Shell, Node wird PID 1)
 echo "Starte Server..."
