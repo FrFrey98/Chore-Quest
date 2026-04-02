@@ -23,6 +23,8 @@ export async function PATCH(
         categoryId: body.categoryId,
         isRecurring: body.isRecurring,
         recurringInterval: body.recurringInterval ?? null,
+        allowMultiple: body.allowMultiple !== undefined ? Boolean(body.allowMultiple) : undefined,
+        dailyLimit: body.allowMultiple === false ? null : (body.dailyLimit !== undefined ? Number(body.dailyLimit) : undefined),
         ...(typeof body.status === 'string' && allowedStatuses.includes(body.status)
           ? { status: body.status }
           : {}),

@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { title, emoji, points, categoryId, isRecurring, recurringInterval } = body
+  const { title, emoji, points, categoryId, isRecurring, recurringInterval, allowMultiple, dailyLimit } = body
 
   if (!title || !emoji || !points || !categoryId) {
     return NextResponse.json({ error: 'Fehlende Felder' }, { status: 400 })
@@ -46,6 +46,8 @@ export async function POST(req: NextRequest) {
         categoryId,
         isRecurring: Boolean(isRecurring),
         recurringInterval: isRecurring ? recurringInterval : null,
+        allowMultiple: Boolean(allowMultiple),
+        dailyLimit: allowMultiple && dailyLimit ? Number(dailyLimit) : null,
         status: 'pending_approval',
         createdById: session.user.id,
       },
