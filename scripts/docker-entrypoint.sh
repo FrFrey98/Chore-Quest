@@ -36,32 +36,33 @@ if [ "$USER_COUNT" = "0" ]; then
 
     const pin1 = bcrypt.hashSync('1234', 10);
     const pin2 = bcrypt.hashSync('5678', 10);
+    const now = new Date().toISOString();
 
-    const insertUser = db.prepare('INSERT OR IGNORE INTO User (id, name, pin, createdAt) VALUES (?, ?, ?, datetime(\"now\"))');
-    insertUser.run('user-1', 'Franz', pin1);
-    insertUser.run('user-2', 'Michelle', pin2);
+    const insertUser = db.prepare('INSERT OR IGNORE INTO User (id, name, pin, createdAt) VALUES (?, ?, ?, ?)');
+    insertUser.run('user-1', 'Franz', pin1, now);
+    insertUser.run('user-2', 'Michelle', pin2, now);
 
     const insertCat = db.prepare('INSERT OR IGNORE INTO Category (id, name, emoji) VALUES (?, ?, ?)');
     [['cat-kitchen','Küche','🍳'],['cat-bath','Bad','🚿'],['cat-general','Allgemein','🏠'],['cat-laundry','Wäsche','👕'],['cat-outdoor','Draußen','🌿']].forEach(c => insertCat.run(...c));
 
-    const insertTask = db.prepare('INSERT OR IGNORE INTO Task (id, title, emoji, points, categoryId, isRecurring, recurringInterval, status, createdById, approvedById, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, \"active\", \"user-1\", \"user-2\", datetime(\"now\"))');
+    const insertTask = db.prepare('INSERT OR IGNORE INTO Task (id, title, emoji, points, categoryId, isRecurring, recurringInterval, status, createdById, approvedById, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     [
-      ['task-dishes','Abwasch machen','🍽️',20,'cat-kitchen',1,'daily'],
-      ['task-cook','Kochen','👨‍🍳',40,'cat-kitchen',1,'daily'],
-      ['task-wipe-kitchen','Arbeitsflächen abwischen','🧽',15,'cat-kitchen',1,'daily'],
-      ['task-fridge','Kühlschrank aufräumen','🧊',30,'cat-kitchen',1,'weekly'],
-      ['task-bathroom-clean','Bad putzen','🧹',40,'cat-bath',1,'weekly'],
-      ['task-toilet','Toilette reinigen','🚽',25,'cat-bath',1,'weekly'],
-      ['task-mirror','Spiegel putzen','🪞',10,'cat-bath',1,'weekly'],
-      ['task-vacuum','Staubsaugen','🧹',30,'cat-general',1,'weekly'],
-      ['task-mop','Wischen','🪣',30,'cat-general',1,'weekly'],
-      ['task-dust','Staubwischen','🪶',20,'cat-general',1,'weekly'],
-      ['task-trash','Müll rausbringen','🗑️',10,'cat-general',1,'daily'],
-      ['task-laundry-wash','Wäsche waschen','🫧',20,'cat-laundry',1,'weekly'],
-      ['task-laundry-hang','Wäsche aufhängen','👕',15,'cat-laundry',1,'weekly'],
-      ['task-laundry-fold','Wäsche zusammenlegen','🧺',15,'cat-laundry',1,'weekly'],
-      ['task-plants','Pflanzen gießen','🪴',10,'cat-outdoor',1,'daily'],
-      ['task-groceries','Einkaufen','🛒',35,'cat-general',1,'weekly']
+      ['task-dishes','Abwasch machen','🍽️',20,'cat-kitchen',1,'daily','active','user-1','user-2',now],
+      ['task-cook','Kochen','👨‍🍳',40,'cat-kitchen',1,'daily','active','user-1','user-2',now],
+      ['task-wipe-kitchen','Arbeitsflächen abwischen','🧽',15,'cat-kitchen',1,'daily','active','user-1','user-2',now],
+      ['task-fridge','Kühlschrank aufräumen','🧊',30,'cat-kitchen',1,'weekly','active','user-1','user-2',now],
+      ['task-bathroom-clean','Bad putzen','🧹',40,'cat-bath',1,'weekly','active','user-1','user-2',now],
+      ['task-toilet','Toilette reinigen','🚽',25,'cat-bath',1,'weekly','active','user-1','user-2',now],
+      ['task-mirror','Spiegel putzen','🪞',10,'cat-bath',1,'weekly','active','user-1','user-2',now],
+      ['task-vacuum','Staubsaugen','🧹',30,'cat-general',1,'weekly','active','user-1','user-2',now],
+      ['task-mop','Wischen','🪣',30,'cat-general',1,'weekly','active','user-1','user-2',now],
+      ['task-dust','Staubwischen','🪶',20,'cat-general',1,'weekly','active','user-1','user-2',now],
+      ['task-trash','Müll rausbringen','🗑️',10,'cat-general',1,'daily','active','user-1','user-2',now],
+      ['task-laundry-wash','Wäsche waschen','🫧',20,'cat-laundry',1,'weekly','active','user-1','user-2',now],
+      ['task-laundry-hang','Wäsche aufhängen','👕',15,'cat-laundry',1,'weekly','active','user-1','user-2',now],
+      ['task-laundry-fold','Wäsche zusammenlegen','🧺',15,'cat-laundry',1,'weekly','active','user-1','user-2',now],
+      ['task-plants','Pflanzen gießen','🪴',10,'cat-outdoor',1,'daily','active','user-1','user-2',now],
+      ['task-groceries','Einkaufen','🛒',35,'cat-general',1,'weekly','active','user-1','user-2',now]
     ].forEach(t => insertTask.run(...t));
 
     const insertItem = db.prepare('INSERT OR IGNORE INTO StoreItem (id, title, description, emoji, pointCost, type, isActive) VALUES (?, ?, ?, ?, ?, \"real_reward\", 1)');
