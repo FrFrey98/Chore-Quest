@@ -187,7 +187,7 @@ export default async function DashboardPage() {
   const seenSharedPairs = new Set<string>()
   const dedupedFeed = feedEntries.filter((entry) => {
     if (entry.type !== 'completion' || !entry.withUser) return true
-    const pairKey = [entry.user.id, entry.withUser.id].sort().join('-') + '-' + entry.at.slice(0, 16)
+    const pairKey = [entry.user.id, entry.withUser.id].sort().join('-') + '-' + (entry.task?.title ?? '') + '-' + entry.at.slice(0, 16)
     if (seenSharedPairs.has(pairKey)) return false
     seenSharedPairs.add(pairKey)
     return true

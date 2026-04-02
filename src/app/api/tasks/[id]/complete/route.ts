@@ -23,6 +23,14 @@ export async function POST(
     // No body or invalid JSON — solo completion
   }
 
+  // Validate partner exists if shared
+  if (withUserId) {
+    const partner = await prisma.user.findUnique({ where: { id: withUserId } })
+    if (!partner) {
+      return NextResponse.json({ error: 'Partner nicht gefunden' }, { status: 400 })
+    }
+  }
+
   const task = await prisma.task.findUnique({ where: { id: params.id } })
   if (!task || task.status !== 'active') {
     return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
@@ -50,6 +58,7 @@ export async function POST(
       return NextResponse.json({ error: `Tageslimit erreicht (${task.dailyLimit}x)` }, { status: 409 })
     }
   }
+  // else: allowMultiple=true with no dailyLimit → unlimited completions allowed
 
   const isShared = !!withUserId
 
@@ -82,17 +91,20 @@ export async function POST(
   }
 
   // Handle recurring/one-time task state
-  if (task.allowMultiple && task.dailyLimit) {
-    // Only set nextDueAt when daily limit is reached
-    const todayStart = new Date()
-    todayStart.setUTCHours(0, 0, 0, 0)
-    const newCount = await prisma.taskCompletion.count({
-      where: { taskId: task.id, userId, completedAt: { gte: todayStart } },
-    })
-    if (newCount >= task.dailyLimit && task.isRecurring && task.recurringInterval) {
-      const nextDueAt = getNextDueAt(task.recurringInterval, new Date())
-      await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
+  if (task.allowMultiple) {
+    // Multi-completion: only update nextDueAt when daily limit is reached (for recurring tasks)
+    if (task.dailyLimit && task.isRecurring && task.recurringInterval) {
+      const todayStart = new Date()
+      todayStart.setUTCHours(0, 0, 0, 0)
+      const newCount = await prisma.taskCompletion.count({
+        where: { taskId: task.id, userId, completedAt: { gte: todayStart } },
+      })
+      if (newCount >= task.dailyLimit) {
+        const nextDueAt = getNextDueAt(task.recurringInterval, new Date())
+        await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
+      }
     }
+    // For allowMultiple tasks (recurring or not), never archive
   } else if (task.isRecurring && task.recurringInterval) {
     const nextDueAt = getNextDueAt(task.recurringInterval, new Date())
     await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
