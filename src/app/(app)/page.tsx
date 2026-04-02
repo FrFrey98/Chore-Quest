@@ -133,6 +133,7 @@ export default async function DashboardPage() {
       include: {
         user: { select: { id: true, name: true } },
         task: { select: { title: true, emoji: true } },
+        withUser: { select: { id: true, name: true } },
       },
     }),
     prisma.purchase.findMany({
@@ -170,6 +171,7 @@ export default async function DashboardPage() {
       task: c.task,
       points: c.points,
       at: c.completedAt.toISOString(),
+      withUser: c.withUser ? { id: c.withUser.id, name: c.withUser.name ?? 'Unbekannt' } : null,
     })),
     ...recentRedemptions.map((p) => ({
       id: p.id,
@@ -181,7 +183,17 @@ export default async function DashboardPage() {
     })),
   ].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
 
-  const feedGroups = groupFeedByDay(feedEntries, now)
+  // Deduplicate shared completions: keep only one entry per shared pair
+  const seenSharedPairs = new Set<string>()
+  const dedupedFeed = feedEntries.filter((entry) => {
+    if (entry.type !== 'completion' || !entry.withUser) return true
+    const pairKey = [entry.user.id, entry.withUser.id].sort().join('-') + '-' + entry.at.slice(0, 16)
+    if (seenSharedPairs.has(pairKey)) return false
+    seenSharedPairs.add(pairKey)
+    return true
+  })
+
+  const feedGroups = groupFeedByDay(dedupedFeed, now)
 
   return (
     <div>

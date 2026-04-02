@@ -6,6 +6,7 @@ export type FeedEntry = {
   item?: { title: string; emoji: string }
   points: number
   at: string
+  withUser?: { id: string; name: string } | null
 }
 
 export type FeedGroup = {

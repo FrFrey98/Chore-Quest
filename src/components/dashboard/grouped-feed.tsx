@@ -8,12 +8,22 @@ function FeedRow({ entry, currentUserId }: { entry: FeedEntry; currentUserId: st
   const nameColor = isMe ? 'text-indigo-600' : 'text-pink-600'
   const emoji = entry.type === 'redemption' ? (entry.item?.emoji ?? '🎁') : (entry.task?.emoji ?? '✅')
   const title = entry.type === 'redemption' ? (entry.item?.title ?? '') : (entry.task?.title ?? '')
+  const isShared = entry.type === 'completion' && !!entry.withUser
 
   return (
     <div className="flex items-center gap-2 px-3 py-2 text-sm border-b border-slate-50 last:border-b-0">
       <span className="text-base">{emoji}</span>
       <span className={`font-semibold ${nameColor}`}>{entry.user.name}</span>
+      {isShared && (
+        <span className="text-slate-400">&amp;</span>
+      )}
+      {isShared && (
+        <span className={`font-semibold ${entry.withUser!.id === currentUserId ? 'text-indigo-600' : 'text-pink-600'}`}>
+          {entry.withUser!.name}
+        </span>
+      )}
       <span className="text-slate-600 truncate flex-1">{title}</span>
+      {isShared && <span className="text-xs">👫</span>}
       {entry.type === 'redemption' ? (
         <span className="text-xs font-semibold text-amber-600 whitespace-nowrap">Belohnung</span>
       ) : (
