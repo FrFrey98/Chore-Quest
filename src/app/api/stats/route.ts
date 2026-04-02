@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getLevel, getTotalEarned } from '@/lib/points'
+import { getOrCreateStreakState } from '@/lib/streak'
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -31,20 +32,8 @@ export async function GET(req: NextRequest) {
     const totalEarned = getTotalEarned(allTimeCompletions)
 
     // Streak
-    const daySet = new Set(
-      allTimeCompletions.map((c) => c.completedAt.toISOString().slice(0, 10))
-    )
-    let streak = 0
-    const today = new Date()
-    for (let i = 0; i < 365; i++) {
-      const d = new Date(today)
-      d.setUTCDate(d.getUTCDate() - i)
-      if (daySet.has(d.toISOString().slice(0, 10))) {
-        streak++
-      } else {
-        break
-      }
-    }
+    const streakState = await getOrCreateStreakState(session.user.id)
+    const streak = streakState.currentStreak
 
     // Top tasks
     const taskCount: Record<string, { count: number; title: string; emoji: string }> = {}

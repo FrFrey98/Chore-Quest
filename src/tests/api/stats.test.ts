@@ -14,6 +14,16 @@ vi.mock('@/lib/prisma', () => ({
           user: { id: 'user-1', name: 'Franz' } },
       ]),
     },
+    streakState: {
+      findUnique: vi.fn().mockResolvedValue({
+        userId: 'user-1',
+        currentStreak: 3,
+        longestStreak: 5,
+        lastCompletedDate: new Date('2026-04-01'),
+        updatedAt: new Date('2026-04-01'),
+      }),
+      upsert: vi.fn(),
+    },
   },
 }))
 

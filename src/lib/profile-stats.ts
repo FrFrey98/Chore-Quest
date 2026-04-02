@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { getTotalEarned, getLevel } from '@/lib/points'
+import { getOrCreateStreakState } from '@/lib/streak'
 
 export async function computeProfileStats(userId: string) {
   const completions = await prisma.taskCompletion.findMany({
@@ -21,17 +22,8 @@ export async function computeProfileStats(userId: string) {
   }
   const topTasks = Object.values(taskCount).sort((a, b) => b.count - a.count).slice(0, 5)
 
-  const daySet = new Set(completions.map((c) => c.completedAt.toISOString().slice(0, 10)))
-  let streak = 0
-  const today = new Date()
-  const todayKey = today.toISOString().slice(0, 10)
-  const startDay = daySet.has(todayKey) ? 0 : 1
-  for (let i = startDay; i < 365; i++) {
-    const d = new Date(today)
-    d.setUTCDate(d.getUTCDate() - i)
-    if (daySet.has(d.toISOString().slice(0, 10))) streak++
-    else break
-  }
+  const streakState = await getOrCreateStreakState(userId)
+  const streak = streakState.currentStreak
 
   const totalEarned = getTotalEarned(completions)
   const level = getLevel(totalEarned)

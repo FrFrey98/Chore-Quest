@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { getTotalEarned, getLevel } from '@/lib/points'
+import { getOrCreateStreakState } from '@/lib/streak'
 
 export type AchievementStats = {
   totalTaskCount: number
@@ -32,11 +33,14 @@ export function checkAchievementCondition(
 }
 
 export async function computeStats(userId: string): Promise<AchievementStats> {
-  const completions = await prisma.taskCompletion.findMany({
-    where: { userId },
-    include: { task: { select: { categoryId: true } } },
-    orderBy: { completedAt: 'asc' },
-  })
+  const [completions, streakState] = await Promise.all([
+    prisma.taskCompletion.findMany({
+      where: { userId },
+      include: { task: { select: { categoryId: true } } },
+      orderBy: { completedAt: 'asc' },
+    }),
+    getOrCreateStreakState(userId),
+  ])
 
   const totalTaskCount = completions.length
   const totalPointsEarned = getTotalEarned(completions)
@@ -48,20 +52,13 @@ export async function computeStats(userId: string): Promise<AchievementStats> {
     categoryCounts[catId] = (categoryCounts[catId] ?? 0) + 1
   }
 
-  // Calculate streak
-  const daySet = new Set(completions.map((c) => c.completedAt.toISOString().slice(0, 10)))
-  let currentStreakDays = 0
-  const today = new Date()
-  const todayKey = today.toISOString().slice(0, 10)
-  const startDay = daySet.has(todayKey) ? 0 : 1
-  for (let i = startDay; i < 365; i++) {
-    const d = new Date(today)
-    d.setUTCDate(d.getUTCDate() - i)
-    if (daySet.has(d.toISOString().slice(0, 10))) currentStreakDays++
-    else break
+  return {
+    totalTaskCount,
+    categoryCounts,
+    currentStreakDays: streakState.currentStreak,
+    totalPointsEarned,
+    currentLevel,
   }
-
-  return { totalTaskCount, categoryCounts, currentStreakDays, totalPointsEarned, currentLevel }
 }
 
 export async function checkAndUnlockAchievements(userId: string): Promise<string[]> {
