@@ -14,6 +14,8 @@ type Task = {
   isRecurring: boolean
   recurringInterval: string | null
   status: string
+  allowMultiple: boolean
+  dailyLimit: number | null
 }
 
 type Reward = {

@@ -19,6 +19,8 @@ type Task = {
   isRecurring: boolean
   recurringInterval: string | null
   status: string
+  allowMultiple: boolean
+  dailyLimit: number | null
 }
 
 type TaskRowProps = {
@@ -46,6 +48,8 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
     isRecurring: task.isRecurring,
     recurringInterval: task.recurringInterval ?? 'weekly',
     status: task.status,
+    allowMultiple: task.allowMultiple,
+    dailyLimit: task.dailyLimit ?? 3,
   })
   const [saving, setSaving] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -64,6 +68,7 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
         body: JSON.stringify({
           ...form,
           recurringInterval: form.isRecurring ? form.recurringInterval : null,
+          dailyLimit: form.allowMultiple ? form.dailyLimit : null,
         }),
       })
       if (res.ok) {
@@ -178,6 +183,29 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
               <option value="weekly">Wöchentlich</option>
               <option value="monthly">Monatlich</option>
             </select>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id={`multi-${task.id}`}
+            checked={form.allowMultiple}
+            onChange={(e) => setForm({ ...form, allowMultiple: e.target.checked })}
+          />
+          <label htmlFor={`multi-${task.id}`} className="text-sm">Mehrfach pro Tag</label>
+          {form.allowMultiple && (
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-slate-500">Max</span>
+              <Input
+                type="number"
+                min={2}
+                max={10}
+                className="w-16"
+                value={form.dailyLimit}
+                onChange={(e) => setForm({ ...form, dailyLimit: Number(e.target.value) })}
+              />
+              <span className="text-xs text-slate-500">×/Tag</span>
+            </div>
           )}
         </div>
         <div className="flex justify-end gap-2">

@@ -23,6 +23,7 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
     title: '', emoji: '🏠', points: 30,
     categoryId: categories[0]?.id ?? '',
     isRecurring: false, recurringInterval: 'weekly',
+    allowMultiple: false, dailyLimit: 3,
   })
 
   async function handleSubmit() {
@@ -101,6 +102,25 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
                 <option value="weekly">Wöchentlich</option>
                 <option value="monthly">Monatlich</option>
               </select>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <input type="checkbox" id="task-multi" checked={form.allowMultiple}
+              onChange={(e) => setForm({ ...form, allowMultiple: e.target.checked })} />
+            <Label htmlFor="task-multi">Mehrfach pro Tag</Label>
+            {form.allowMultiple && (
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-slate-500">Max</span>
+                <Input
+                  type="number"
+                  min={2}
+                  max={10}
+                  className="w-16"
+                  value={form.dailyLimit}
+                  onChange={(e) => setForm({ ...form, dailyLimit: Number(e.target.value) })}
+                />
+                <span className="text-sm text-slate-500">×/Tag</span>
+              </div>
             )}
           </div>
           {error && <p className="text-red-500 text-xs">{error}</p>}

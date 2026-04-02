@@ -30,6 +30,8 @@ export default async function ManagePage({ searchParams }: { searchParams: { tab
     isRecurring: t.isRecurring,
     recurringInterval: t.recurringInterval,
     status: t.status,
+    allowMultiple: t.allowMultiple,
+    dailyLimit: t.dailyLimit,
   }))
 
   const serializedRewards = rewards.map((r) => ({
