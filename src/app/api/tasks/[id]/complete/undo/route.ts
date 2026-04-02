@@ -41,7 +41,26 @@ export async function POST(
   }
 
   await prisma.$transaction(async (tx) => {
+    // Delete this completion
     await tx.taskCompletion.delete({ where: { id: completionId } })
+
+    // If shared, also delete the partner's completion
+    if (completion.withUserId) {
+      const partnerCompletion = await tx.taskCompletion.findFirst({
+        where: {
+          taskId: completion.taskId,
+          userId: completion.withUserId,
+          withUserId: completion.userId,
+          completedAt: {
+            gte: new Date(completion.completedAt.getTime() - 5000),
+            lte: new Date(completion.completedAt.getTime() + 5000),
+          },
+        },
+      })
+      if (partnerCompletion) {
+        await tx.taskCompletion.delete({ where: { id: partnerCompletion.id } })
+      }
+    }
 
     const task = await tx.task.findUnique({ where: { id: params.id } })
     if (task) {
