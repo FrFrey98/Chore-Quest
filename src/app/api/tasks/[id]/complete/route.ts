@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getNextDueAt } from '@/lib/recurring'
 import { checkAndUnlockAchievements } from '@/lib/achievements'
+import { applyBonus, updateStreakOnCompletion } from '@/lib/streak'
 
 export async function POST(
   _req: NextRequest,
@@ -17,8 +18,12 @@ export async function POST(
     return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
   }
 
+  // Update streak state and get current streak for bonus calculation
+  const { currentStreak } = await updateStreakOnCompletion(session.user.id)
+  const pointsWithBonus = applyBonus(task.points, currentStreak)
+
   const completion = await prisma.taskCompletion.create({
-    data: { taskId: task.id, userId: session.user.id, points: task.points },
+    data: { taskId: task.id, userId: session.user.id, points: pointsWithBonus },
   })
 
   if (task.isRecurring && task.recurringInterval) {
@@ -46,5 +51,11 @@ export async function POST(
     // Achievement check failure should not block the completion response
   }
 
-  return NextResponse.json({ ...completion, newAchievements }, { status: 201 })
+  return NextResponse.json({
+    ...completion,
+    basePoints: task.points,
+    bonusPoints: pointsWithBonus - task.points,
+    streakDays: currentStreak,
+    newAchievements,
+  }, { status: 201 })
 }
