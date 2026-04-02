@@ -75,6 +75,8 @@ model TaskCompletion {
   task     Task  @relation(fields: [taskId], references: [id])
   user     User  @relation(fields: [userId], references: [id])
   withUser User? @relation("sharedCompletions", fields: [withUserId], references: [id])
+
+  @@index([withUserId])
 }
 
 model StoreItem {
