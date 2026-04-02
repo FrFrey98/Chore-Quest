@@ -32,21 +32,8 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 # Copy generated Prisma client (output is in src/generated/prisma, not node_modules/.prisma)
 COPY --from=builder /app/src/generated ./src/generated
 
-# Copy Prisma CLI, engines, and WASM files for migrate deploy
-COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-# Copy better-sqlite3 for seed guard check
-COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
-COPY --from=builder /app/node_modules/bindings ./node_modules/bindings
-COPY --from=builder /app/node_modules/file-uri-to-path ./node_modules/file-uri-to-path
-
-# Copy bcryptjs for seed script
-COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
-
-# Copy dotenv for seed script
-COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
+# Copy all node_modules from builder (Prisma CLI has many transitive deps)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy compiled seed script
 COPY --from=builder /app/prisma/seed.js ./prisma/seed.js
