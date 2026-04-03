@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
 import { getTotalEarned, getLevel, getCurrentPoints } from '@/lib/points'
 import { computeStats } from '@/lib/achievements'
-import { getOrCreateStreakState, getStreakTier, isRestoreAvailable } from '@/lib/streak'
+import { getOrCreateStreakState, getStreakTier, getEffectiveStreak, isRestoreAvailable } from '@/lib/streak'
 import { getWeekBounds, groupFeedByDay } from '@/lib/dashboard'
 import type { FeedEntry } from '@/lib/dashboard'
 import { StatPills } from '@/components/dashboard/stat-pills'
@@ -41,7 +41,8 @@ export default async function DashboardPage() {
     getOrCreateStreakState(userId),
     isRestoreAvailable(userId, { basePrice: config.restoreBasePrice, perDayPrice: config.restorePerDayPrice }),
   ])
-  const streakTier = getStreakTier(streakState.currentStreak, config.streakTiers)
+  const effectiveStreak = getEffectiveStreak(streakState)
+  const streakTier = getStreakTier(effectiveStreak, config.streakTiers)
 
   const levelInfo = getLevel(stats.totalPointsEarned, config.levelDefinitions)
   const balance = getCurrentPoints(stats.totalPointsEarned, spent._sum.pointsSpent ?? 0)
@@ -203,7 +204,7 @@ export default async function DashboardPage() {
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
 
       <StatPills
-        streakDays={streakState.currentStreak}
+        streakDays={effectiveStreak}
         streakBonusPercent={streakTier.percent}
         streakBonusName={streakTier.name}
         restoreAvailable={restoreInfo.available}

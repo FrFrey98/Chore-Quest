@@ -4,6 +4,7 @@ import {
   applyBonus,
   calculateRestorePrice,
   getNextTier,
+  getEffectiveStreak,
 } from '@/lib/streak'
 import { DEFAULT_STREAK_TIERS } from '@/lib/config'
 
@@ -187,5 +188,37 @@ describe('custom config parameters', () => {
     const result = getNextTier(5, custom)
     expect(result?.tier.name).toBe('Top')
     expect(result?.daysNeeded).toBe(5)
+  })
+})
+
+describe('getEffectiveStreak', () => {
+  it('returns 0 when lastActiveAt is null', () => {
+    expect(getEffectiveStreak({ currentStreak: 0, lastActiveAt: null })).toBe(0)
+  })
+
+  it('returns 0 when currentStreak is 0', () => {
+    expect(getEffectiveStreak({ currentStreak: 0, lastActiveAt: new Date() })).toBe(0)
+  })
+
+  it('returns stored streak when last active today', () => {
+    expect(getEffectiveStreak({ currentStreak: 5, lastActiveAt: new Date() })).toBe(5)
+  })
+
+  it('returns stored streak when last active yesterday', () => {
+    const yesterday = new Date()
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1)
+    expect(getEffectiveStreak({ currentStreak: 3, lastActiveAt: yesterday })).toBe(3)
+  })
+
+  it('returns 0 when last active 2 days ago (streak broken)', () => {
+    const twoDaysAgo = new Date()
+    twoDaysAgo.setUTCDate(twoDaysAgo.getUTCDate() - 2)
+    expect(getEffectiveStreak({ currentStreak: 10, lastActiveAt: twoDaysAgo })).toBe(0)
+  })
+
+  it('returns 0 when last active a week ago', () => {
+    const weekAgo = new Date()
+    weekAgo.setUTCDate(weekAgo.getUTCDate() - 7)
+    expect(getEffectiveStreak({ currentStreak: 5, lastActiveAt: weekAgo })).toBe(0)
   })
 })

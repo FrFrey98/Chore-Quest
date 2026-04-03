@@ -40,13 +40,23 @@ export function getNextTier(currentStreak: number, tiers?: StreakTierDef[]): { t
   return { tier: nextTier, daysNeeded: nextTier.minDays - currentStreak }
 }
 
-function toDateKey(date: Date): string {
+export function toDateKey(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
 
-function daysBetween(a: string, b: string): number {
+export function daysBetween(a: string, b: string): number {
   const msPerDay = 86400000
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / msPerDay)
+}
+
+/** Returns the effective current streak, accounting for broken streaks since last activity. */
+export function getEffectiveStreak(state: { currentStreak: number; lastActiveAt: Date | null }): number {
+  if (!state.lastActiveAt || state.currentStreak === 0) return 0
+  const todayKey = toDateKey(new Date())
+  const lastKey = toDateKey(state.lastActiveAt)
+  const gap = daysBetween(lastKey, todayKey)
+  if (gap <= 1) return state.currentStreak // today or yesterday — streak is still alive
+  return 0 // gap of 2+ days — streak is broken
 }
 
 export async function getOrCreateStreakState(userId: string) {

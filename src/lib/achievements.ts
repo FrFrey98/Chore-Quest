@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { getTotalEarned, getLevel } from '@/lib/points'
-import { getOrCreateStreakState } from '@/lib/streak'
+import { getOrCreateStreakState, getEffectiveStreak } from '@/lib/streak'
 import { type LevelDef } from '@/lib/config'
 
 export type AchievementStats = {
@@ -56,7 +56,7 @@ export async function computeStats(userId: string, levels?: LevelDef[]): Promise
   return {
     totalTaskCount,
     categoryCounts,
-    currentStreakDays: streakState.currentStreak,
+    currentStreakDays: getEffectiveStreak(streakState),
     totalPointsEarned,
     currentLevel,
   }

@@ -6,6 +6,7 @@ import { loadGameConfig } from '@/lib/config'
 import { getCurrentPoints, getTotalEarned } from '@/lib/points'
 import {
   getOrCreateStreakState,
+  getEffectiveStreak,
   getStreakTier,
   getNextTier,
   isRestoreAvailable,
@@ -21,8 +22,9 @@ export default async function StreakPage() {
   const userId = session.user.id
   const config = await loadGameConfig()
   const state = await getOrCreateStreakState(userId)
-  const tier = getStreakTier(state.currentStreak, config.streakTiers)
-  const nextTier = getNextTier(state.currentStreak, config.streakTiers)
+  const effectiveStreak = getEffectiveStreak(state)
+  const tier = getStreakTier(effectiveStreak, config.streakTiers)
+  const nextTier = getNextTier(effectiveStreak, config.streakTiers)
   const restoreInfo = await isRestoreAvailable(userId, { basePrice: config.restoreBasePrice, perDayPrice: config.restorePerDayPrice })
 
   // Points balance for display
@@ -51,7 +53,7 @@ export default async function StreakPage() {
 
   return (
     <StreakClient
-      currentStreak={state.currentStreak}
+      currentStreak={effectiveStreak}
       bestStreak={state.bestStreak}
       restoreCount={state.restoreCount}
       tierName={tier.name}
