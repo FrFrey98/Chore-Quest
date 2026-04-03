@@ -47,7 +47,7 @@ export function BonusTab({ config }: { config: GameConfig }) {
     })
     setSaving(false)
     if (res.ok) {
-      setMsg('Gespeichert \u2713')
+      setMsg('Gespeichert ✓')
       setIntervals(Object.entries(intervalsObj).map(([name, days]) => ({ name, days })))
       router.refresh()
     } else {
@@ -59,7 +59,7 @@ export function BonusTab({ config }: { config: GameConfig }) {
     <div className="space-y-6">
       <div>
         <h2 className="font-semibold mb-1">Teamwork-Bonus</h2>
-        <p className="text-sm text-slate-500 mb-3">Zus\u00e4tzlicher Bonus wenn eine Aufgabe zusammen erledigt wird.</p>
+        <p className="text-sm text-slate-500 mb-3">Zusätzlicher Bonus wenn eine Aufgabe zusammen erledigt wird.</p>
         <div className="flex items-center gap-2">
           <Input type="number" className="w-20 text-center" value={teamworkPercent} onChange={(e) => setTeamworkPercent(Number(e.target.value))} />
           <span className="text-sm text-slate-500">%</span>
@@ -68,18 +68,18 @@ export function BonusTab({ config }: { config: GameConfig }) {
 
       <div className="border-t pt-4">
         <h2 className="font-semibold mb-1">Wiederkehr-Intervalle</h2>
-        <p className="text-sm text-slate-500 mb-3">Definiert die verf\u00fcgbaren Intervalle f\u00fcr wiederkehrende Aufgaben.</p>
+        <p className="text-sm text-slate-500 mb-3">Definiert die verfügbaren Intervalle für wiederkehrende Aufgaben.</p>
         <div className="space-y-2">
           {intervals.map((item, i) => (
             <div key={i} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center">
               <Input className="flex-1" placeholder="Name (z.B. daily)" value={item.name} onChange={(e) => updateInterval(i, 'name', e.target.value)} />
               <Input type="number" className="w-16 text-center" value={item.days} onChange={(e) => updateInterval(i, 'days', Number(e.target.value))} />
               <span className="text-sm text-slate-400">Tage</span>
-              <button onClick={() => removeInterval(i)} className="text-red-400 hover:text-red-600 text-lg px-1">\u00d7</button>
+              <button onClick={() => removeInterval(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
             </div>
           ))}
         </div>
-        <Button variant="outline" className="w-full mt-2" onClick={addInterval}>+ Intervall hinzuf\u00fcgen</Button>
+        <Button variant="outline" className="w-full mt-2" onClick={addInterval}>+ Intervall hinzufügen</Button>
       </div>
 
       <div className="flex items-center justify-between">

@@ -22,7 +22,7 @@ export function UsersTab({ users }: { users: { id: string; name: string }[] }) {
       body: JSON.stringify({ name }),
     })
     if (res.ok) {
-      setMsg((prev) => ({ ...prev, [uid]: 'Name gespeichert \u2713' }))
+      setMsg((prev) => ({ ...prev, [uid]: 'Name gespeichert ✓' }))
       router.refresh()
     } else {
       const data = await res.json()
@@ -44,7 +44,7 @@ export function UsersTab({ users }: { users: { id: string; name: string }[] }) {
     })
     if (res.ok) {
       setPins((prev) => ({ ...prev, [uid]: '' }))
-      setMsg((prev) => ({ ...prev, [`pin-${uid}`]: 'PIN ge\u00e4ndert \u2713' }))
+      setMsg((prev) => ({ ...prev, [`pin-${uid}`]: 'PIN geändert ✓' }))
     } else {
       setMsg((prev) => ({ ...prev, [`pin-${uid}`]: 'Fehler' }))
     }
@@ -52,7 +52,7 @@ export function UsersTab({ users }: { users: { id: string; name: string }[] }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">Namen und PINs f\u00fcr beide Benutzer verwalten.</p>
+      <p className="text-sm text-slate-500">Namen und PINs für beide Benutzer verwalten.</p>
       {users.map((u) => (
         <div key={u.id} className="bg-white rounded-xl p-4 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
@@ -83,7 +83,7 @@ export function UsersTab({ users }: { users: { id: string; name: string }[] }) {
                 onChange={(e) => setPins((prev) => ({ ...prev, [u.id]: e.target.value }))}
               />
               <Button onClick={() => changePin(u.id)} disabled={!pins[u.id]}>
-                \u00c4ndern
+                Ändern
               </Button>
             </div>
             {msg[`pin-${u.id}`] && <p className="text-xs text-slate-500 mt-1">{msg[`pin-${u.id}`]}</p>}

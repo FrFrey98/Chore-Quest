@@ -44,7 +44,7 @@ export function StreakTab({ config }: { config: GameConfig }) {
     setSaving(false)
     if (res.ok) {
       setTiers(sorted)
-      setMsg('Gespeichert \u2713')
+      setMsg('Gespeichert ✓')
       router.refresh()
     } else {
       setMsg('Fehler beim Speichern')
@@ -82,16 +82,16 @@ export function StreakTab({ config }: { config: GameConfig }) {
                 value={tier.name}
                 onChange={(e) => updateTier(i, 'name', e.target.value)}
               />
-              <button onClick={() => removeTier(i)} className="text-red-400 hover:text-red-600 text-lg px-1">\u00d7</button>
+              <button onClick={() => removeTier(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
             </div>
           ))}
         </div>
-        <Button variant="outline" className="w-full mt-2" onClick={addTier}>+ Tier hinzuf\u00fcgen</Button>
+        <Button variant="outline" className="w-full mt-2" onClick={addTier}>+ Tier hinzufügen</Button>
       </div>
 
       <div className="border-t pt-4">
         <h2 className="font-semibold mb-1">Streak-Restore Preisformel</h2>
-        <p className="text-sm text-slate-500 mb-3">Preis = Basis + (Pro-Tag \u00d7 aktuelle Streak-Tage)</p>
+        <p className="text-sm text-slate-500 mb-3">Preis = Basis + (Pro-Tag × aktuelle Streak-Tage)</p>
         <div className="flex gap-4">
           <div>
             <label className="text-xs text-slate-500">Basis-Preis</label>

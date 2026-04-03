@@ -40,7 +40,7 @@ export function LevelTab({ config }: { config: GameConfig }) {
     setSaving(false)
     if (res.ok) {
       setLevels(sorted)
-      setMsg('Gespeichert \u2713')
+      setMsg('Gespeichert ✓')
       router.refresh()
     } else {
       setMsg('Fehler beim Speichern')
@@ -72,13 +72,13 @@ export function LevelTab({ config }: { config: GameConfig }) {
                   onChange={(e) => updateLevel(i, 'minPoints', Number(e.target.value))}
                 />
                 <span className="text-xs text-slate-400">Pkt</span>
-                <button onClick={() => removeLevel(i)} className="text-red-400 hover:text-red-600 text-lg px-1">\u00d7</button>
+                <button onClick={() => removeLevel(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
               </>
             )}
           </div>
         ))}
       </div>
-      <Button variant="outline" className="w-full" onClick={addLevel}>+ Level hinzuf\u00fcgen</Button>
+      <Button variant="outline" className="w-full" onClick={addLevel}>+ Level hinzufügen</Button>
 
       <div className="flex items-center justify-between">
         {msg && <p className="text-sm text-slate-500">{msg}</p>}
