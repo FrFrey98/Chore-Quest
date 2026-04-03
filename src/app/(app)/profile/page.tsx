@@ -49,18 +49,6 @@ export default async function ProfilePage() {
     })),
   }
 
-  // --- Admin data (from old admin page) ---
-  const storeItems = await prisma.storeItem.findMany({
-    where: { type: 'real_reward' },
-    orderBy: { createdAt: 'desc' },
-  })
-
-  const tasks = await prisma.task.findMany({
-    where: { status: { in: ['active', 'pending_approval'] } },
-    include: { category: true },
-    orderBy: { createdAt: 'desc' },
-  })
-
   const userName = session.user.name ?? 'Profil'
 
   return (
@@ -78,9 +66,6 @@ export default async function ProfilePage() {
       categories={categories}
       achievementsSummary={achievementsSummary}
       isOwnProfile={true}
-      storeItems={storeItems}
-      tasks={tasks}
-      userId={userId}
     />
   )
 }

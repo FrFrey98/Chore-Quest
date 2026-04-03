@@ -1,10 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Heatmap } from '@/components/stats/heatmap'
 
 type Category = { id: string; name: string; emoji: string }
@@ -16,8 +11,6 @@ type Purchase = {
   item: { title: string; emoji: string; type: string }
 }
 type Level = { level: number; title: string; minPoints: number }
-type StoreItem = { id: string; title: string; emoji: string; pointCost: number; type: string; isActive: boolean }
-type Task = { id: string; title: string; emoji: string; points: number; status: string; category: Category }
 
 type Personal = {
   heatmap: Record<string, number>
@@ -48,9 +41,6 @@ export function ProfileClient({
   categories,
   achievementsSummary,
   isOwnProfile,
-  storeItems,
-  tasks,
-  userId,
 }: {
   userName: string
   personal: Personal
@@ -58,50 +48,7 @@ export function ProfileClient({
   categories: Category[]
   achievementsSummary: AchievementsSummary
   isOwnProfile: boolean
-  storeItems?: StoreItem[]
-  tasks?: Task[]
-  userId?: string
 }) {
-  const router = useRouter()
-
-  // --- Archive task ---
-  async function archiveTask(id: string) {
-    const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
-    if (res.ok) router.refresh()
-  }
-
-  // --- PIN change ---
-  const [users, setUsers] = useState<{ id: string; name: string | null }[]>([])
-  const [newPin, setNewPin] = useState<Record<string, string>>({})
-  const [pinMsg, setPinMsg] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    if (!isOwnProfile) return
-    fetch('/api/users')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('Fehler'))))
-      .then(setUsers)
-      .catch(() => setUsers([]))
-  }, [isOwnProfile])
-
-  async function changePin(uid: string) {
-    const pin = newPin[uid]
-    if (!pin || pin.length < 4) {
-      setPinMsg((prev) => ({ ...prev, [uid]: 'Mindestens 4 Zeichen' }))
-      return
-    }
-    const res = await fetch(`/api/users/${uid}/pin`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin }),
-    })
-    if (res.ok) {
-      setNewPin((prev) => ({ ...prev, [uid]: '' }))
-      setPinMsg((prev) => ({ ...prev, [uid]: 'PIN geändert ✓' }))
-    } else {
-      setPinMsg((prev) => ({ ...prev, [uid]: 'Fehler' }))
-    }
-  }
-
   return (
     <div className="space-y-6">
       {/* Header card */}
@@ -120,6 +67,13 @@ export function ProfileClient({
             <p className="text-xs text-slate-400">Punkte</p>
             <p className="font-bold text-indigo-700">{personal.totalPointsEarned.toLocaleString()}</p>
           </div>
+          {isOwnProfile && (
+            <Link href="/settings" className="ml-2 text-slate-400 hover:text-slate-600 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              </svg>
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-4 mb-3">
@@ -242,72 +196,6 @@ export function ProfileClient({
           </div>
         )}
       </div>
-
-      {/* Settings section — own profile only */}
-      {isOwnProfile && (
-        <div className="space-y-4">
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Einstellungen</h2>
-
-          {/* Task management */}
-          <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
-            <h3 className="font-semibold text-sm">Aufgaben</h3>
-            {(!tasks || tasks.length === 0) && (
-              <p className="text-slate-400 text-sm">Keine aktiven Aufgaben.</p>
-            )}
-            {tasks?.map((t) => (
-              <div key={t.id} className="flex items-center gap-3">
-                <span>{t.emoji}</span>
-                <span className="flex-1 text-sm">{t.title}</span>
-                <span className="text-xs text-slate-400">{t.status}</span>
-                <Button variant="outline" size="sm" onClick={() => archiveTask(t.id)}>
-                  Archivieren
-                </Button>
-              </div>
-            ))}
-          </div>
-
-          {/* Store items */}
-          {storeItems && storeItems.length > 0 && (
-            <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
-              <h3 className="font-semibold text-sm">Store-Artikel</h3>
-              {storeItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-3">
-                  <span>{item.emoji}</span>
-                  <span className="flex-1 text-sm">{item.title}</span>
-                  <span className="text-xs text-slate-400">{item.pointCost} Pkt</span>
-                  <span className="text-xs text-slate-400">{item.isActive ? 'Aktiv' : 'Inaktiv'}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* PIN change */}
-          <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
-            <h3 className="font-semibold text-sm">PIN ändern</h3>
-            {users.length === 0 && (
-              <p className="text-slate-400 text-sm">Nutzer konnten nicht geladen werden.</p>
-            )}
-            {users.map((u) => (
-              <div key={u.id} className="space-y-2">
-                <Label>{u.name ?? 'Unbekannt'}</Label>
-                <div className="flex gap-2">
-                  <Input
-                    type="password"
-                    inputMode="numeric"
-                    placeholder="Neuer PIN (min. 4 Zeichen)"
-                    value={newPin[u.id] ?? ''}
-                    onChange={(e) => setNewPin((prev) => ({ ...prev, [u.id]: e.target.value }))}
-                  />
-                  <Button onClick={() => changePin(u.id)} disabled={!newPin[u.id]}>
-                    Ändern
-                  </Button>
-                </div>
-                {pinMsg[u.id] && <p className="text-xs text-slate-500">{pinMsg[u.id]}</p>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
