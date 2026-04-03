@@ -64,14 +64,25 @@ export type GameConfig = {
 }
 
 export async function loadGameConfig(): Promise<GameConfig> {
-  const [streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals] =
-    await Promise.all([
-      getConfig('streak_tiers', DEFAULT_STREAK_TIERS),
-      getConfig('teamwork_bonus_percent', DEFAULT_TEAMWORK_BONUS_PERCENT),
-      getConfig('restore_base_price', DEFAULT_RESTORE_BASE_PRICE),
-      getConfig('restore_per_day_price', DEFAULT_RESTORE_PER_DAY_PRICE),
-      getConfig('level_definitions', DEFAULT_LEVEL_DEFINITIONS),
-      getConfig('recurring_intervals', DEFAULT_RECURRING_INTERVALS),
-    ])
-  return { streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals }
+  try {
+    const [streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals] =
+      await Promise.all([
+        getConfig('streak_tiers', DEFAULT_STREAK_TIERS),
+        getConfig('teamwork_bonus_percent', DEFAULT_TEAMWORK_BONUS_PERCENT),
+        getConfig('restore_base_price', DEFAULT_RESTORE_BASE_PRICE),
+        getConfig('restore_per_day_price', DEFAULT_RESTORE_PER_DAY_PRICE),
+        getConfig('level_definitions', DEFAULT_LEVEL_DEFINITIONS),
+        getConfig('recurring_intervals', DEFAULT_RECURRING_INTERVALS),
+      ])
+    return { streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals }
+  } catch {
+    return {
+      streakTiers: DEFAULT_STREAK_TIERS,
+      teamworkBonusPercent: DEFAULT_TEAMWORK_BONUS_PERCENT,
+      restoreBasePrice: DEFAULT_RESTORE_BASE_PRICE,
+      restorePerDayPrice: DEFAULT_RESTORE_PER_DAY_PRICE,
+      levelDefinitions: DEFAULT_LEVEL_DEFINITIONS,
+      recurringIntervals: DEFAULT_RECURRING_INTERVALS,
+    }
+  }
 }
