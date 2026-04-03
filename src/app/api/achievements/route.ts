@@ -3,10 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { computeStats } from '@/lib/achievements'
+import { loadGameConfig } from '@/lib/config'
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const config = await loadGameConfig()
 
   const userIdParam = new URL(req.url).searchParams.get('userId')
   const userId = userIdParam ?? session.user.id
@@ -18,7 +21,7 @@ export async function GET(req: NextRequest) {
   })
 
   const unlockedMap = new Map(userAchievements.map((ua) => [ua.achievementId, ua.unlockedAt]))
-  const stats = await computeStats(userId)
+  const stats = await computeStats(userId, config.levelDefinitions)
 
   const achievements = allAchievements.map((a) => {
     const unlocked = unlockedMap.has(a.id)

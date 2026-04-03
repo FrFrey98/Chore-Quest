@@ -4,10 +4,13 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { computeStats } from '@/lib/achievements'
 import { AchievementsClient } from './achievements-client'
+import { loadGameConfig } from '@/lib/config'
 
 export default async function AchievementsPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) redirect('/login')
+
+  const config = await loadGameConfig()
 
   const allAchievements = await prisma.achievement.findMany({ orderBy: { sortOrder: 'asc' } })
   const userAchievements = await prisma.userAchievement.findMany({
@@ -16,7 +19,7 @@ export default async function AchievementsPage() {
   })
 
   const unlockedMap = new Map(userAchievements.map((ua) => [ua.achievementId, ua.unlockedAt]))
-  const stats = await computeStats(session.user.id)
+  const stats = await computeStats(session.user.id, config.levelDefinitions)
 
   const achievements = allAchievements.map((a) => {
     const unlocked = unlockedMap.has(a.id)
