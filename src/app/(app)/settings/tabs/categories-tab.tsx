@@ -92,7 +92,12 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
                   <span className="flex-1 text-sm font-medium">{cat.name}</span>
                   <span className="text-xs text-slate-400">{cat.taskCount} Tasks</span>
                   <button onClick={() => startEdit(cat)} className="text-slate-400 hover:text-slate-600 text-sm">✏️</button>
-                  <button onClick={() => deleteCat(cat.id)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
+                  <button
+                    onClick={() => deleteCat(cat.id)}
+                    disabled={cat.taskCount > 0}
+                    className={`text-lg px-1 ${cat.taskCount > 0 ? 'text-slate-300 cursor-not-allowed' : 'text-red-400 hover:text-red-600'}`}
+                    title={cat.taskCount > 0 ? 'Erst Tasks umziehen' : 'Löschen'}
+                  >×</button>
                 </>
               )}
             </div>

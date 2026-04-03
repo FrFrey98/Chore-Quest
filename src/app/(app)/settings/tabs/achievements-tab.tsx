@@ -71,6 +71,9 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
       setAchievements((prev) => prev.filter((a) => a.id !== id))
       setMsg('Gelöscht ✓')
       router.refresh()
+    } else {
+      const data = await res.json()
+      setMsg(data.error ?? 'Fehler')
     }
   }
 
