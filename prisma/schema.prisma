@@ -143,3 +143,9 @@ model StreakState {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model AppConfig {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
