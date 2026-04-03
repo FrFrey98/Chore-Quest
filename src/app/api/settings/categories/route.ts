@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
 
   const { name, emoji } = body as { name: string; emoji: string }
 
-  if (!name || !emoji) {
-    return NextResponse.json({ error: 'Name und Emoji sind Pflichtfelder' }, { status: 400 })
+  if (!name || typeof name !== 'string' || !emoji || typeof emoji !== 'string') {
+    return NextResponse.json({ error: 'Name und Emoji sind Pflichtfelder (strings)' }, { status: 400 })
   }
 
   const category = await prisma.category.create({

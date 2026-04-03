@@ -19,6 +19,13 @@ export async function PATCH(
 
   const { name, emoji } = body as { name?: string; emoji?: string }
 
+  if (name !== undefined && (typeof name !== 'string' || name.trim().length === 0)) {
+    return NextResponse.json({ error: 'Name darf nicht leer sein' }, { status: 400 })
+  }
+  if (emoji !== undefined && (typeof emoji !== 'string' || emoji.trim().length === 0)) {
+    return NextResponse.json({ error: 'Emoji darf nicht leer sein' }, { status: 400 })
+  }
+
   const category = await prisma.category.findUnique({ where: { id: params.id } })
   if (!category) {
     return NextResponse.json({ error: 'Kategorie nicht gefunden' }, { status: 404 })
@@ -41,6 +48,11 @@ export async function DELETE(
 ) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const category = await prisma.category.findUnique({ where: { id: params.id } })
+  if (!category) {
+    return NextResponse.json({ error: 'Kategorie nicht gefunden' }, { status: 404 })
+  }
 
   const taskCount = await prisma.task.count({ where: { categoryId: params.id } })
   if (taskCount > 0) {
