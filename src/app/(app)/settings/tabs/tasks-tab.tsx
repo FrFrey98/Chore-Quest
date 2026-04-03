@@ -35,8 +35,14 @@ export function TasksTab({ tasks, categories, userId }: { tasks: Task[]; categor
   }
 
   async function archiveTask(id: string) {
+    setError('')
     const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
-    if (res.ok) router.refresh()
+    if (res.ok) {
+      router.refresh()
+    } else {
+      const data = await res.json()
+      setError(data.error ?? 'Fehler beim Archivieren')
+    }
   }
 
   return (
