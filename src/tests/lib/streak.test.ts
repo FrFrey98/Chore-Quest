@@ -166,3 +166,26 @@ describe('getNextTier', () => {
     expect(getNextTier(100)).toBeNull()
   })
 })
+
+describe('custom config parameters', () => {
+  it('getStreakTier respects custom tiers', () => {
+    const custom = [{ minDays: 5, percent: 99, name: 'Custom' }, { minDays: 0, percent: 0, name: 'None' }]
+    expect(getStreakTier(5, custom).percent).toBe(99)
+    expect(getStreakTier(4, custom).percent).toBe(0)
+  })
+
+  it('calculateRestorePrice respects custom opts', () => {
+    expect(calculateRestorePrice(10, { basePrice: 50, perDayPrice: 2 })).toBe(70)
+  })
+
+  it('applyBonus respects custom teamworkPercent', () => {
+    expect(applyBonus(100, 0, true, { teamworkPercent: 20 })).toBe(120)
+  })
+
+  it('getNextTier respects custom tiers', () => {
+    const custom = [{ minDays: 10, percent: 50, name: 'Top' }, { minDays: 0, percent: 0, name: 'Base' }]
+    const result = getNextTier(5, custom)
+    expect(result?.tier.name).toBe('Top')
+    expect(result?.daysNeeded).toBe(5)
+  })
+})
