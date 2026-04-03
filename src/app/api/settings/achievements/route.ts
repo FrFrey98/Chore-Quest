@@ -35,8 +35,21 @@ export async function POST(req: NextRequest) {
     sortOrder?: number
   }
 
-  if (!title || !description || !emoji || !conditionType || conditionValue == null) {
-    return NextResponse.json({ error: 'Pflichtfelder: title, description, emoji, conditionType, conditionValue' }, { status: 400 })
+  // Validate required string fields
+  if (!title || typeof title !== 'string' || title.trim().length === 0) {
+    return NextResponse.json({ error: 'title ist ein Pflichtfeld' }, { status: 400 })
+  }
+  if (!description || typeof description !== 'string' || description.trim().length === 0) {
+    return NextResponse.json({ error: 'description ist ein Pflichtfeld' }, { status: 400 })
+  }
+  if (!emoji || typeof emoji !== 'string' || emoji.trim().length === 0) {
+    return NextResponse.json({ error: 'emoji ist ein Pflichtfeld' }, { status: 400 })
+  }
+  if (!conditionType || typeof conditionType !== 'string') {
+    return NextResponse.json({ error: 'conditionType ist ein Pflichtfeld' }, { status: 400 })
+  }
+  if (conditionValue == null || isNaN(Number(conditionValue)) || Number(conditionValue) < 0) {
+    return NextResponse.json({ error: 'conditionValue muss eine nicht-negative Zahl sein' }, { status: 400 })
   }
 
   const validTypes = ['task_count', 'category_count', 'streak_days', 'total_points', 'level']

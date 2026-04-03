@@ -10,11 +10,6 @@ export async function PATCH(
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const achievement = await prisma.achievement.findUnique({ where: { id: params.id } })
-  if (!achievement) {
-    return NextResponse.json({ error: 'Achievement nicht gefunden' }, { status: 404 })
-  }
-
   let body: unknown
   try {
     body = await req.json()
@@ -32,9 +27,27 @@ export async function PATCH(
     sortOrder?: number
   }
 
-  if (conditionType) {
+  const achievement = await prisma.achievement.findUnique({ where: { id: params.id } })
+  if (!achievement) {
+    return NextResponse.json({ error: 'Achievement nicht gefunden' }, { status: 404 })
+  }
+
+  if (title !== undefined && (typeof title !== 'string' || title.trim().length === 0)) {
+    return NextResponse.json({ error: 'title darf nicht leer sein' }, { status: 400 })
+  }
+  if (description !== undefined && (typeof description !== 'string' || description.trim().length === 0)) {
+    return NextResponse.json({ error: 'description darf nicht leer sein' }, { status: 400 })
+  }
+  if (emoji !== undefined && (typeof emoji !== 'string' || emoji.trim().length === 0)) {
+    return NextResponse.json({ error: 'emoji darf nicht leer sein' }, { status: 400 })
+  }
+  if (conditionValue !== undefined && (isNaN(Number(conditionValue)) || Number(conditionValue) < 0)) {
+    return NextResponse.json({ error: 'conditionValue muss eine nicht-negative Zahl sein' }, { status: 400 })
+  }
+
+  if (conditionType !== undefined) {
     const validTypes = ['task_count', 'category_count', 'streak_days', 'total_points', 'level']
-    if (!validTypes.includes(conditionType)) {
+    if (typeof conditionType !== 'string' || !validTypes.includes(conditionType)) {
       return NextResponse.json({ error: `conditionType muss einer von: ${validTypes.join(', ')}` }, { status: 400 })
     }
   }
