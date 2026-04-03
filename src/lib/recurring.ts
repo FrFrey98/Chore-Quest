@@ -4,6 +4,7 @@ export function getNextDueAt(interval: string, from: Date, intervals?: Record<st
   const i = intervals ?? DEFAULT_RECURRING_INTERVALS
   const days = i[interval] ?? 7
   const next = new Date(from)
+  next.setUTCHours(0, 0, 0, 0)
   next.setUTCDate(next.getUTCDate() + days)
   return next
 }

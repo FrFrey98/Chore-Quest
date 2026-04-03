@@ -4,26 +4,32 @@ import { getNextDueAt, isTaskVisible } from '@/lib/recurring'
 describe('getNextDueAt', () => {
   const base = new Date('2026-04-01T10:00:00Z')
 
-  it('adds 1 day for daily', () => {
+  it('adds 1 day for daily, starting at midnight UTC', () => {
     const next = getNextDueAt('daily', base)
-    expect(next.toISOString()).toBe('2026-04-02T10:00:00.000Z')
+    expect(next.toISOString()).toBe('2026-04-02T00:00:00.000Z')
   })
 
-  it('adds 7 days for weekly', () => {
+  it('adds 7 days for weekly, starting at midnight UTC', () => {
     const next = getNextDueAt('weekly', base)
-    expect(next.toISOString()).toBe('2026-04-08T10:00:00.000Z')
+    expect(next.toISOString()).toBe('2026-04-08T00:00:00.000Z')
   })
 
-  it('adds 30 days for monthly', () => {
+  it('adds 30 days for monthly, starting at midnight UTC', () => {
     const next = getNextDueAt('monthly', base)
-    expect(next.toISOString()).toBe('2026-05-01T10:00:00.000Z')
+    expect(next.toISOString()).toBe('2026-05-01T00:00:00.000Z')
   })
 
   it('respects custom intervals', () => {
-    const base = new Date('2025-01-01T00:00:00Z')
+    const base = new Date('2025-01-01T15:30:00Z')
     const custom = { biweekly: 14 }
     const next = getNextDueAt('biweekly', base, custom)
-    expect(next.getUTCDate()).toBe(15)
+    expect(next.toISOString()).toBe('2025-01-15T00:00:00.000Z')
+  })
+
+  it('task completed late evening reappears at midnight next day', () => {
+    const lateEvening = new Date('2026-04-01T23:30:00Z')
+    const next = getNextDueAt('daily', lateEvening)
+    expect(next.toISOString()).toBe('2026-04-02T00:00:00.000Z')
   })
 })
 
