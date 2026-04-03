@@ -2,9 +2,9 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { loadGameConfig } from '@/lib/config'
 import { getCurrentPoints, getTotalEarned } from '@/lib/points'
 import {
-  STREAK_TIERS,
   getOrCreateStreakState,
   getStreakTier,
   getNextTier,
@@ -19,10 +19,11 @@ export default async function StreakPage() {
   if (!session?.user?.id) redirect('/login')
 
   const userId = session.user.id
+  const config = await loadGameConfig()
   const state = await getOrCreateStreakState(userId)
-  const tier = getStreakTier(state.currentStreak)
-  const nextTier = getNextTier(state.currentStreak)
-  const restoreInfo = await isRestoreAvailable(userId)
+  const tier = getStreakTier(state.currentStreak, config.streakTiers)
+  const nextTier = getNextTier(state.currentStreak, config.streakTiers)
+  const restoreInfo = await isRestoreAvailable(userId, { basePrice: config.restoreBasePrice, perDayPrice: config.restorePerDayPrice })
 
   // Points balance for display
   const [completions, purchases] = await Promise.all([
@@ -46,7 +47,7 @@ export default async function StreakPage() {
     heatmap[day] = (heatmap[day] ?? 0) + c.points
   }
 
-  const tiers = [...STREAK_TIERS].reverse()
+  const tiers = [...config.streakTiers].reverse()
 
   return (
     <StreakClient

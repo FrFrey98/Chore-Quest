@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { getTotalEarned, getLevel } from '@/lib/points'
 import { getOrCreateStreakState } from '@/lib/streak'
+import { type LevelDef } from '@/lib/config'
 
 export type AchievementStats = {
   totalTaskCount: number
@@ -32,7 +33,7 @@ export function checkAchievementCondition(
   }
 }
 
-export async function computeStats(userId: string): Promise<AchievementStats> {
+export async function computeStats(userId: string, levels?: LevelDef[]): Promise<AchievementStats> {
   const [completions, streakState] = await Promise.all([
     prisma.taskCompletion.findMany({
       where: { userId },
@@ -44,7 +45,7 @@ export async function computeStats(userId: string): Promise<AchievementStats> {
 
   const totalTaskCount = completions.length
   const totalPointsEarned = getTotalEarned(completions)
-  const currentLevel = getLevel(totalPointsEarned).level
+  const currentLevel = getLevel(totalPointsEarned, levels).level
 
   const categoryCounts: Record<string, number> = {}
   for (const c of completions) {
@@ -61,8 +62,8 @@ export async function computeStats(userId: string): Promise<AchievementStats> {
   }
 }
 
-export async function checkAndUnlockAchievements(userId: string): Promise<string[]> {
-  const stats = await computeStats(userId)
+export async function checkAndUnlockAchievements(userId: string, levels?: LevelDef[]): Promise<string[]> {
+  const stats = await computeStats(userId, levels)
 
   const allAchievements = await prisma.achievement.findMany()
   const existing = await prisma.userAchievement.findMany({

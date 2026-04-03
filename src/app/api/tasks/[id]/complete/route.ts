@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { loadGameConfig } from '@/lib/config'
 import { getNextDueAt } from '@/lib/recurring'
 import { checkAndUnlockAchievements } from '@/lib/achievements'
 import { applyBonus, updateStreakOnCompletion } from '@/lib/streak'
@@ -12,6 +13,8 @@ export async function POST(
 ) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const config = await loadGameConfig()
 
   const userId = session.user.id
   let withUserId: string | undefined
@@ -63,8 +66,8 @@ export async function POST(
   const isShared = !!withUserId
 
   // Update streak and calculate bonus for current user
-  const { currentStreak } = await updateStreakOnCompletion(userId)
-  const pointsWithBonus = applyBonus(task.points, currentStreak, isShared)
+  const { currentStreak } = await updateStreakOnCompletion(userId, config.streakTiers)
+  const pointsWithBonus = applyBonus(task.points, currentStreak, isShared, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
 
   const completion = await prisma.taskCompletion.create({
     data: {
@@ -78,8 +81,8 @@ export async function POST(
   // Create partner completion if shared
   let partnerCompletion = null
   if (withUserId) {
-    const { currentStreak: partnerStreak } = await updateStreakOnCompletion(withUserId)
-    const partnerPoints = applyBonus(task.points, partnerStreak, true)
+    const { currentStreak: partnerStreak } = await updateStreakOnCompletion(withUserId, config.streakTiers)
+    const partnerPoints = applyBonus(task.points, partnerStreak, true, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
     partnerCompletion = await prisma.taskCompletion.create({
       data: {
         taskId: task.id,
@@ -100,13 +103,13 @@ export async function POST(
         where: { taskId: task.id, userId, completedAt: { gte: todayStart } },
       })
       if (newCount >= task.dailyLimit) {
-        const nextDueAt = getNextDueAt(task.recurringInterval, new Date())
+        const nextDueAt = getNextDueAt(task.recurringInterval, new Date(), config.recurringIntervals)
         await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
       }
     }
     // For allowMultiple tasks (recurring or not), never archive
   } else if (task.isRecurring && task.recurringInterval) {
-    const nextDueAt = getNextDueAt(task.recurringInterval, new Date())
+    const nextDueAt = getNextDueAt(task.recurringInterval, new Date(), config.recurringIntervals)
     await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
   } else {
     await prisma.task.update({
@@ -118,7 +121,7 @@ export async function POST(
   // Achievement check for current user
   let newAchievements: { id: string; title: string; emoji: string }[] = []
   try {
-    const newAchievementIds = await checkAndUnlockAchievements(userId)
+    const newAchievementIds = await checkAndUnlockAchievements(userId, config.levelDefinitions)
     if (newAchievementIds.length > 0) {
       newAchievements = await prisma.achievement.findMany({
         where: { id: { in: newAchievementIds } },
@@ -133,7 +136,7 @@ export async function POST(
   // Achievement check for partner
   if (withUserId) {
     try {
-      await checkAndUnlockAchievements(withUserId)
+      await checkAndUnlockAchievements(withUserId, config.levelDefinitions)
     } catch {
       // Silent fail
     }

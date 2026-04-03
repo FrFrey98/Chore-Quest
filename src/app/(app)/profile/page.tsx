@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { loadGameConfig } from '@/lib/config'
 import { ProfileClient } from './profile-client'
 import { computeProfileStats } from '@/lib/profile-stats'
 
@@ -9,9 +10,10 @@ export default async function ProfilePage() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) redirect('/login')
   const userId = session.user.id
+  const config = await loadGameConfig()
 
   // --- Personal stats (from old stats page) ---
-  const stats = await computeProfileStats(userId)
+  const stats = await computeProfileStats(userId, config.levelDefinitions)
 
   const categories = await prisma.category.findMany()
 

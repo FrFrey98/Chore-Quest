@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { loadGameConfig } from '@/lib/config'
 import { getLevel, getTotalEarned } from '@/lib/points'
 import { getOrCreateStreakState } from '@/lib/streak'
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const config = await loadGameConfig()
 
   const { searchParams } = new URL(req.url)
   const tab = searchParams.get('tab') ?? 'personal'
@@ -56,7 +59,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       totalCompletions: completions.length,
       totalPointsEarned: completions.reduce((s, c) => s + c.points, 0),
-      level: getLevel(totalEarned),
+      level: getLevel(totalEarned, config.levelDefinitions),
       streak,
       topTasks,
       heatmap,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { loadGameConfig } from '@/lib/config'
 import { getCurrentPoints, getTotalEarned } from '@/lib/points'
 import {
   getOrCreateStreakState,
@@ -14,11 +15,12 @@ export async function GET(_req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const config = await loadGameConfig()
   const userId = session.user.id
   const state = await getOrCreateStreakState(userId)
-  const tier = getStreakTier(state.currentStreak)
-  const nextTier = getNextTier(state.currentStreak)
-  const restoreInfo = await isRestoreAvailable(userId)
+  const tier = getStreakTier(state.currentStreak, config.streakTiers)
+  const nextTier = getNextTier(state.currentStreak, config.streakTiers)
+  const restoreInfo = await isRestoreAvailable(userId, { basePrice: config.restoreBasePrice, perDayPrice: config.restorePerDayPrice })
 
   // Points balance
   const [completions, purchases] = await Promise.all([

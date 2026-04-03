@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import { getTotalEarned, getLevel } from '@/lib/points'
 import { getOrCreateStreakState } from '@/lib/streak'
+import { type LevelDef } from '@/lib/config'
 
-export async function computeProfileStats(userId: string) {
+export async function computeProfileStats(userId: string, levels?: LevelDef[]) {
   const completions = await prisma.taskCompletion.findMany({
     where: { userId },
     include: { task: { select: { title: true, emoji: true, categoryId: true } } },
@@ -26,7 +27,7 @@ export async function computeProfileStats(userId: string) {
   const streak = streakState.currentStreak
 
   const totalEarned = getTotalEarned(completions)
-  const level = getLevel(totalEarned)
+  const level = getLevel(totalEarned, levels)
 
   return {
     completionCount: completions.length,

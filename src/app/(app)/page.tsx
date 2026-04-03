@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { loadGameConfig } from '@/lib/config'
 import { getTotalEarned, getLevel, getCurrentPoints } from '@/lib/points'
 import { computeStats } from '@/lib/achievements'
 import { getOrCreateStreakState, getStreakTier, isRestoreAvailable } from '@/lib/streak'
@@ -18,12 +19,13 @@ const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   const userId = session!.user.id
+  const config = await loadGameConfig()
 
   const now = new Date()
 
   // --- Stat Pills Data ---
   const [stats, spent, users] = await Promise.all([
-    computeStats(userId),
+    computeStats(userId, config.levelDefinitions),
     prisma.purchase.aggregate({
       where: { userId },
       _sum: { pointsSpent: true },
@@ -37,15 +39,15 @@ export default async function DashboardPage() {
   ])
   const [streakState, restoreInfo] = await Promise.all([
     getOrCreateStreakState(userId),
-    isRestoreAvailable(userId),
+    isRestoreAvailable(userId, { basePrice: config.restoreBasePrice, perDayPrice: config.restorePerDayPrice }),
   ])
-  const streakTier = getStreakTier(streakState.currentStreak)
+  const streakTier = getStreakTier(streakState.currentStreak, config.streakTiers)
 
-  const levelInfo = getLevel(stats.totalPointsEarned)
+  const levelInfo = getLevel(stats.totalPointsEarned, config.levelDefinitions)
   const balance = getCurrentPoints(stats.totalPointsEarned, spent._sum.pointsSpent ?? 0)
   const me = users.find((u) => u.id === userId)!
   const partner = users.find((u) => u.id !== userId)
-  const partnerLevel = partner ? getLevel(getTotalEarned(partner.completions)) : null
+  const partnerLevel = partner ? getLevel(getTotalEarned(partner.completions), config.levelDefinitions) : null
   const partnerAchievementCount = partner ? partner.userAchievements.length : 0
 
   // --- Today Section Data ---
@@ -210,6 +212,7 @@ export default async function DashboardPage() {
         levelTitle={levelInfo.title}
         totalEarned={stats.totalPointsEarned}
         balance={balance}
+        levelDefinitions={config.levelDefinitions}
       />
 
       {partner && partnerLevel && (

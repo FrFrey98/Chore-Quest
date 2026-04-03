@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { LEVELS } from '@/lib/points'
+import { type LevelDef } from '@/lib/config'
 
 type StatPillsProps = {
   streakDays: number
@@ -11,6 +11,7 @@ type StatPillsProps = {
   levelTitle: string
   totalEarned: number
   balance: number
+  levelDefinitions: LevelDef[]
 }
 
 export function StatPills({
@@ -23,9 +24,10 @@ export function StatPills({
   levelTitle,
   totalEarned,
   balance,
+  levelDefinitions,
 }: StatPillsProps) {
-  const currentLevel = LEVELS.find((l) => l.level === level) ?? LEVELS[0]
-  const nextLevel = LEVELS.find((l) => l.level === level + 1)
+  const currentLevel = levelDefinitions.find((l) => l.level === level) ?? levelDefinitions[0]
+  const nextLevel = levelDefinitions.find((l) => l.level === level + 1)
   const progressPercent = nextLevel
     ? Math.round(((totalEarned - currentLevel.minPoints) / (nextLevel.minPoints - currentLevel.minPoints)) * 100)
     : 100
