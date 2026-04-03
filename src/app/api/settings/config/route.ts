@@ -9,7 +9,7 @@ import {
   DEFAULT_RESTORE_PER_DAY_PRICE,
   DEFAULT_LEVEL_DEFINITIONS,
   DEFAULT_RECURRING_INTERVALS,
-  getConfig,
+  loadGameConfig,
 } from '@/lib/config'
 
 const CONFIG_DEFAULTS: Record<string, unknown> = {
@@ -25,22 +25,32 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const result: Record<string, unknown> = {}
-  for (const [key, defaultValue] of Object.entries(CONFIG_DEFAULTS)) {
-    result[key] = await getConfig(key, defaultValue)
-  }
-  return NextResponse.json(result)
+  const config = await loadGameConfig()
+  return NextResponse.json({
+    streak_tiers: config.streakTiers,
+    teamwork_bonus_percent: config.teamworkBonusPercent,
+    restore_base_price: config.restoreBasePrice,
+    restore_per_day_price: config.restorePerDayPrice,
+    level_definitions: config.levelDefinitions,
+    recurring_intervals: config.recurringIntervals,
+  })
 }
 
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json()
-  const { entries } = body as { entries: { key: string; value: unknown }[] }
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  const { entries } = (body as { entries?: unknown }) ?? {}
 
   if (!Array.isArray(entries)) {
-    return NextResponse.json({ error: 'entries must be an array' }, { status: 400 })
+    return NextResponse.json({ error: "Missing or invalid 'entries' field" }, { status: 400 })
   }
 
   const validKeys = new Set(Object.keys(CONFIG_DEFAULTS))
@@ -50,13 +60,15 @@ export async function PUT(req: NextRequest) {
     }
   }
 
-  for (const entry of entries) {
-    await prisma.appConfig.upsert({
-      where: { key: entry.key },
-      update: { value: JSON.stringify(entry.value) },
-      create: { key: entry.key, value: JSON.stringify(entry.value) },
-    })
-  }
+  await prisma.$transaction(
+    entries.map((entry: { key: string; value: unknown }) =>
+      prisma.appConfig.upsert({
+        where: { key: entry.key },
+        update: { value: JSON.stringify(entry.value) },
+        create: { key: entry.key, value: JSON.stringify(entry.value) },
+      })
+    )
+  )
 
   return NextResponse.json({ success: true })
 }
