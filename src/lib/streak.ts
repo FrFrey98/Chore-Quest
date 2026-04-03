@@ -1,37 +1,41 @@
 import { prisma } from '@/lib/prisma'
+import {
+  DEFAULT_STREAK_TIERS,
+  DEFAULT_TEAMWORK_BONUS_PERCENT,
+  DEFAULT_RESTORE_BASE_PRICE,
+  DEFAULT_RESTORE_PER_DAY_PRICE,
+  type StreakTierDef,
+} from '@/lib/config'
 
-export const STREAK_TIERS = [
-  { minDays: 30, percent: 50, name: 'Monats-Marathon' },
-  { minDays: 14, percent: 25, name: 'Wochen-Star' },
-  { minDays: 7,  percent: 10, name: 'Feuer-Starter' },
-  { minDays: 3,  percent: 5,  name: 'Warm-up' },
-  { minDays: 0,  percent: 0,  name: 'Kein Bonus' },
-] as const
-
-export const TEAMWORK_BONUS_PERCENT = 10
-
-export type StreakTier = {
-  minDays: number
-  percent: number
-  name: string
+export function getStreakTier(currentStreak: number, tiers?: StreakTierDef[]): StreakTierDef {
+  const t = tiers ?? DEFAULT_STREAK_TIERS
+  return t.find((tier) => currentStreak >= tier.minDays) ?? t[t.length - 1]
 }
 
-export function getStreakTier(currentStreak: number): StreakTier {
-  return STREAK_TIERS.find((t) => currentStreak >= t.minDays) ?? STREAK_TIERS[STREAK_TIERS.length - 1]
-}
-
-export function applyBonus(basePoints: number, currentStreak: number, isShared: boolean = false): number {
-  const tier = getStreakTier(currentStreak)
-  const totalPercent = tier.percent + (isShared ? TEAMWORK_BONUS_PERCENT : 0)
+export function applyBonus(
+  basePoints: number,
+  currentStreak: number,
+  isShared: boolean = false,
+  opts?: { tiers?: StreakTierDef[]; teamworkPercent?: number }
+): number {
+  const tier = getStreakTier(currentStreak, opts?.tiers)
+  const teamwork = opts?.teamworkPercent ?? DEFAULT_TEAMWORK_BONUS_PERCENT
+  const totalPercent = tier.percent + (isShared ? teamwork : 0)
   return Math.floor(basePoints * (1 + totalPercent / 100))
 }
 
-export function calculateRestorePrice(currentStreak: number): number {
-  return 20 + 5 * currentStreak
+export function calculateRestorePrice(
+  currentStreak: number,
+  opts?: { basePrice?: number; perDayPrice?: number }
+): number {
+  const base = opts?.basePrice ?? DEFAULT_RESTORE_BASE_PRICE
+  const perDay = opts?.perDayPrice ?? DEFAULT_RESTORE_PER_DAY_PRICE
+  return base + perDay * currentStreak
 }
 
-export function getNextTier(currentStreak: number): { tier: StreakTier; daysNeeded: number } | null {
-  const nextTier = [...STREAK_TIERS].reverse().find((t) => t.minDays > currentStreak)
+export function getNextTier(currentStreak: number, tiers?: StreakTierDef[]): { tier: StreakTierDef; daysNeeded: number } | null {
+  const t = tiers ?? DEFAULT_STREAK_TIERS
+  const nextTier = [...t].reverse().find((tier) => tier.minDays > currentStreak)
   if (!nextTier) return null
   return { tier: nextTier, daysNeeded: nextTier.minDays - currentStreak }
 }
@@ -101,7 +105,10 @@ export async function getOrCreateStreakState(userId: string) {
   })
 }
 
-export async function updateStreakOnCompletion(userId: string): Promise<{ currentStreak: number; bonusPercent: number }> {
+export async function updateStreakOnCompletion(
+  userId: string,
+  tiers?: StreakTierDef[]
+): Promise<{ currentStreak: number; bonusPercent: number }> {
   const state = await getOrCreateStreakState(userId)
   const todayKey = toDateKey(new Date())
   const lastActiveKey = state.lastActiveAt ? toDateKey(state.lastActiveAt) : null
@@ -129,11 +136,12 @@ export async function updateStreakOnCompletion(userId: string): Promise<{ curren
     },
   })
 
-  return { currentStreak: newStreak, bonusPercent: getStreakTier(newStreak).percent }
+  return { currentStreak: newStreak, bonusPercent: getStreakTier(newStreak, tiers).percent }
 }
 
 export async function isRestoreAvailable(
-  userId: string
+  userId: string,
+  opts?: { basePrice?: number; perDayPrice?: number }
 ): Promise<{ available: boolean; price: number; currentStreak: number }> {
   const state = await getOrCreateStreakState(userId)
 
@@ -155,7 +163,7 @@ export async function isRestoreAvailable(
     return { available: false, price: 0, currentStreak: state.currentStreak }
   }
 
-  const price = calculateRestorePrice(state.currentStreak)
+  const price = calculateRestorePrice(state.currentStreak, opts)
 
   // Check if user has enough points
   const [completions, purchases] = await Promise.all([
@@ -180,8 +188,11 @@ export async function isRestoreAvailable(
   }
 }
 
-export async function executeRestore(userId: string): Promise<{ success: boolean; error?: string }> {
-  const restoreInfo = await isRestoreAvailable(userId)
+export async function executeRestore(
+  userId: string,
+  opts?: { basePrice?: number; perDayPrice?: number }
+): Promise<{ success: boolean; error?: string }> {
+  const restoreInfo = await isRestoreAvailable(userId, opts)
   if (!restoreInfo.available) {
     return { success: false, error: 'Wiederherstellung nicht verfügbar' }
   }

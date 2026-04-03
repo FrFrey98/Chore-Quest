@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import {
-  STREAK_TIERS,
   getStreakTier,
   applyBonus,
   calculateRestorePrice,
   getNextTier,
 } from '@/lib/streak'
+import { DEFAULT_STREAK_TIERS } from '@/lib/config'
 
 describe('getStreakTier', () => {
   it('returns no bonus for streak 0', () => {
