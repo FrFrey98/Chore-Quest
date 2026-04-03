@@ -18,6 +18,7 @@ export function StreakTab({ config }: { config: GameConfig }) {
   }
 
   function removeTier(index: number) {
+    if (tiers.length <= 1) return
     setTiers((prev) => prev.filter((_, i) => i !== index))
   }
 

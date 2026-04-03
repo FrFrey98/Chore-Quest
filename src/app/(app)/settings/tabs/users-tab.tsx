@@ -13,6 +13,7 @@ export function UsersTab({ users }: { users: { id: string; name: string }[] }) {
   const [msg, setMsg] = useState<Record<string, string>>({})
 
   async function saveName(uid: string) {
+    setMsg((prev) => ({ ...prev, [uid]: '' }))
     const name = names[uid]?.trim()
     if (!name) return
     const res = await fetch(`/api/settings/users/${uid}`, {
@@ -30,6 +31,7 @@ export function UsersTab({ users }: { users: { id: string; name: string }[] }) {
   }
 
   async function changePin(uid: string) {
+    setMsg((prev) => ({ ...prev, [`pin-${uid}`]: '' }))
     const pin = pins[uid]
     if (!pin || pin.length < 4) {
       setMsg((prev) => ({ ...prev, [`pin-${uid}`]: 'Mindestens 4 Zeichen' }))

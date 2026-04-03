@@ -48,6 +48,7 @@ export function BonusTab({ config }: { config: GameConfig }) {
     setSaving(false)
     if (res.ok) {
       setMsg('Gespeichert \u2713')
+      setIntervals(Object.entries(intervalsObj).map(([name, days]) => ({ name, days })))
       router.refresh()
     } else {
       setMsg('Fehler beim Speichern')
