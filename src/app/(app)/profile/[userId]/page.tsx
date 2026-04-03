@@ -19,8 +19,6 @@ export default async function UserProfilePage({ params }: { params: { userId: st
 
   const stats = await computeProfileStats(userId, config.levelDefinitions)
 
-  const categories = await prisma.category.findMany()
-
   // --- Achievements summary ---
   const allAchievements = await prisma.achievement.findMany({ orderBy: { sortOrder: 'asc' } })
   const userAchievements = await prisma.userAchievement.findMany({
@@ -53,7 +51,6 @@ export default async function UserProfilePage({ params }: { params: { userId: st
         level: stats.level,
         purchases: [],
       }}
-      categories={categories}
       achievementsSummary={achievementsSummary}
       isOwnProfile={false}
     />

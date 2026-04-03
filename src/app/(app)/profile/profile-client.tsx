@@ -2,7 +2,6 @@
 import Link from 'next/link'
 import { Heatmap } from '@/components/stats/heatmap'
 
-type Category = { id: string; name: string; emoji: string }
 type Purchase = {
   id: string
   purchasedAt: string
@@ -22,12 +21,6 @@ type Personal = {
   purchases: Purchase[]
 }
 
-type Comparison = {
-  byWeek: Record<string, Record<string, number>>
-  byCategory: Record<string, Record<string, number>>
-  byMonth: Record<string, Record<string, number>>
-}
-
 type AchievementsSummary = {
   total: number
   unlocked: number
@@ -37,15 +30,11 @@ type AchievementsSummary = {
 export function ProfileClient({
   userName,
   personal,
-  comparison: _comparison,
-  categories,
   achievementsSummary,
   isOwnProfile,
 }: {
   userName: string
   personal: Personal
-  comparison?: Comparison
-  categories: Category[]
   achievementsSummary: AchievementsSummary
   isOwnProfile: boolean
 }) {

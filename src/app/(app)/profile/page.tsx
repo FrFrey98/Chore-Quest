@@ -15,8 +15,6 @@ export default async function ProfilePage() {
   // --- Personal stats (from old stats page) ---
   const stats = await computeProfileStats(userId, config.levelDefinitions)
 
-  const categories = await prisma.category.findMany()
-
   const purchases = await prisma.purchase.findMany({
     where: { userId },
     include: { item: { select: { title: true, emoji: true, type: true } } },
@@ -63,7 +61,6 @@ export default async function ProfilePage() {
         level: stats.level,
         purchases: purchasesForClient,
       }}
-      categories={categories}
       achievementsSummary={achievementsSummary}
       isOwnProfile={true}
     />
