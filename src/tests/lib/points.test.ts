@@ -1,10 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import {
-  getCurrentPoints,
-  getTotalEarned,
-  getLevel,
-  LEVELS,
-} from '@/lib/points'
+import { getCurrentPoints, getTotalEarned, getLevel } from '@/lib/points'
+import { DEFAULT_LEVEL_DEFINITIONS } from '@/lib/config'
 
 describe('getCurrentPoints', () => {
   it('returns earned minus spent', () => {
@@ -45,7 +41,7 @@ describe('getLevel', () => {
   })
 
   it('returns max level for very high points', () => {
-    expect(getLevel(99999).level).toBe(LEVELS.length)
+    expect(getLevel(99999).level).toBe(DEFAULT_LEVEL_DEFINITIONS.length)
   })
 
   it('returns level 1 just below level 2 threshold (199 points)', () => {
@@ -55,5 +51,14 @@ describe('getLevel', () => {
   it('returns correct title', () => {
     expect(getLevel(0).title).toBe('Haushaltslehrling')
     expect(getLevel(500).title).toBe('Putz-Profi')
+  })
+
+  it('respects custom level definitions', () => {
+    const custom = [
+      { level: 1, minPoints: 0, title: 'Beginner' },
+      { level: 2, minPoints: 100, title: 'Pro' },
+    ]
+    expect(getLevel(50, custom).title).toBe('Beginner')
+    expect(getLevel(100, custom).title).toBe('Pro')
   })
 })

@@ -1,11 +1,8 @@
-const INTERVAL_DAYS: Record<string, number> = {
-  daily: 1,
-  weekly: 7,
-  monthly: 30,
-}
+import { DEFAULT_RECURRING_INTERVALS } from '@/lib/config'
 
-export function getNextDueAt(interval: string, from: Date): Date {
-  const days = INTERVAL_DAYS[interval] ?? 7
+export function getNextDueAt(interval: string, from: Date, intervals?: Record<string, number>): Date {
+  const i = intervals ?? DEFAULT_RECURRING_INTERVALS
+  const days = i[interval] ?? 7
   const next = new Date(from)
   next.setUTCDate(next.getUTCDate() + days)
   return next

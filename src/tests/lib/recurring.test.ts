@@ -18,6 +18,13 @@ describe('getNextDueAt', () => {
     const next = getNextDueAt('monthly', base)
     expect(next.toISOString()).toBe('2026-05-01T10:00:00.000Z')
   })
+
+  it('respects custom intervals', () => {
+    const base = new Date('2025-01-01T00:00:00Z')
+    const custom = { biweekly: 14 }
+    const next = getNextDueAt('biweekly', base, custom)
+    expect(next.getUTCDate()).toBe(15)
+  })
 })
 
 describe('isTaskVisible', () => {
