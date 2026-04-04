@@ -12,7 +12,7 @@ const mockItem = {
 }
 
 vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-1', name: 'Franz' } }),
+  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'seed-user-1', name: 'Alice' } }),
 }))
 
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))

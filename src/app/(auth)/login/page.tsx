@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { LoginForm } from './login-form'
 
@@ -7,6 +8,11 @@ export default async function LoginPage() {
   const users = await prisma.user.findMany({
     select: { id: true, name: true },
   })
+
+  if (users.length === 0) {
+    redirect('/setup')
+  }
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-sm p-8 bg-white rounded-2xl shadow-lg">

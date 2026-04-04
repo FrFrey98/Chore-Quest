@@ -3,10 +3,10 @@ import { vi, describe, it, expect } from 'vitest'
 import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/prisma'
 
-const mockSession = { user: { id: 'user-1', name: 'Franz' } }
+const mockSession = { user: { id: 'seed-user-1', name: 'Alice' } }
 const mockItem = { id: 'item-1', title: 'Putz-Profi', pointCost: 500, type: 'real_reward', isActive: true }
 
-vi.mock('next-auth', () => ({ getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-1', name: 'Franz' } }) }))
+vi.mock('next-auth', () => ({ getServerSession: vi.fn().mockResolvedValue({ user: { id: 'seed-user-1', name: 'Alice' } }) }))
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))
 vi.mock('@/lib/prisma', () => {
   const mock = {
@@ -21,7 +21,7 @@ vi.mock('@/lib/prisma', () => {
       findMany: vi.fn().mockResolvedValue([]),
       findFirst: vi.fn().mockResolvedValue(null),
       create: vi.fn().mockResolvedValue({ id: 'pur-1', pointsSpent: 500 }),
-      findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'user-1', redeemedAt: null }),
+      findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'seed-user-1', redeemedAt: null }),
       update: vi.fn().mockResolvedValue({ id: 'pur-1', redeemedAt: new Date() }),
     },
     $transaction: vi.fn(),
@@ -103,7 +103,7 @@ describe('POST /api/store/[id]/redeem', () => {
   it('returns 409 when already redeemed', async () => {
     vi.mocked(prisma.purchase.findUnique).mockResolvedValueOnce({
       id: 'pur-1',
-      userId: 'user-1',
+      userId: 'seed-user-1',
       redeemedAt: new Date('2024-01-01'),
     } as any)
     const { POST } = await import('@/app/api/store/[id]/redeem/route')

@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 
 vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-2', name: 'Michelle' } }),
+  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'seed-user-2', name: 'Bob' } }),
 }))
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))
 vi.mock('@/lib/prisma', () => ({
@@ -10,7 +10,7 @@ vi.mock('@/lib/prisma', () => ({
       findUnique: vi.fn().mockResolvedValue({
         id: 'approval-1',
         taskId: 'task-1',
-        requestedById: 'user-1',
+        requestedById: 'seed-user-1',
         status: 'pending',
       }),
       update: vi.fn().mockResolvedValue({ id: 'approval-1', status: 'approved' }),
@@ -73,9 +73,9 @@ describe('POST /api/approvals/[id]', () => {
   })
 
   it('returns 403 when user tries to approve their own task', async () => {
-    // User-1 is the session user, but requestedById is also user-1
+    // seed-user-1 is the session user, but requestedById is also seed-user-1
     const { getServerSession } = await import('next-auth')
-    vi.mocked(getServerSession).mockResolvedValueOnce({ user: { id: 'user-1', name: 'Franz' } })
+    vi.mocked(getServerSession).mockResolvedValueOnce({ user: { id: 'seed-user-1', name: 'Alice' } })
 
     const { POST } = await import('@/app/api/approvals/[id]/route')
     const req = new Request('http://localhost/api/approvals/approval-1', {

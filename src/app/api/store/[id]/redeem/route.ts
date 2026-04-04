@@ -18,7 +18,7 @@ export async function POST(
     return NextResponse.json({ error: 'Kauf nicht gefunden' }, { status: 404 })
   }
 
-  // Nur der Käufer selbst kann einlösen
+  // Only the buyer themselves can redeem
   if (purchase.userId !== session.user.id) {
     return NextResponse.json({ error: 'Nur der Käufer kann seine eigene Belohnung einlösen' }, { status: 403 })
   }

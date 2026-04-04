@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
-const mockSession = { user: { id: 'user-1', name: 'Franz' } }
+const mockSession = { user: { id: 'seed-user-1', name: 'Alice' } }
 const mockTask = {
   id: 'task-1',
   title: 'Abwasch',
@@ -10,7 +10,7 @@ const mockTask = {
   recurringInterval: null,
   status: 'active',
   categoryId: 'cat-kitchen',
-  createdById: 'user-1',
+  createdById: 'seed-user-1',
   nextDueAt: null,
   category: { id: 'cat-kitchen', name: 'Küche', emoji: '🍳' },
 }

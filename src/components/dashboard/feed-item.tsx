@@ -20,7 +20,7 @@ export function FeedItem({ entry, currentUserId }: { entry: FeedEntry; currentUs
         <p className="text-sm font-medium text-slate-800 truncate">
           <span className={isMe ? 'text-indigo-600' : 'text-pink-600'}>{entry.user.name}</span>
           {' '}hat{' '}
-          <span className="font-semibold">"{entry.task.title}"</span>
+          <span className="font-semibold">&ldquo;{entry.task.title}&rdquo;</span>
           {' '}erledigt
         </p>
         <p className="text-xs text-slate-500">{time}</p>

@@ -2,7 +2,7 @@
 import { vi, describe, it, expect } from 'vitest'
 
 vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'user-1', name: 'Franz' } }),
+  getServerSession: vi.fn().mockResolvedValue({ user: { id: 'seed-user-1', name: 'Alice' } }),
 }))
 vi.mock('@/lib/auth', () => ({ authOptions: {} }))
 vi.mock('@/lib/prisma', () => ({
@@ -11,12 +11,12 @@ vi.mock('@/lib/prisma', () => ({
       findMany: vi.fn().mockResolvedValue([
         { taskId: 'task-1', points: 50, completedAt: new Date('2026-04-01'),
           task: { title: 'Abwasch', emoji: '🍽️', categoryId: 'cat-1' },
-          user: { id: 'user-1', name: 'Franz' } },
+          user: { id: 'seed-user-1', name: 'Alice' } },
       ]),
     },
     streakState: {
       findUnique: vi.fn().mockResolvedValue({
-        userId: 'user-1',
+        userId: 'seed-user-1',
         currentStreak: 3,
         longestStreak: 5,
         lastCompletedDate: new Date('2026-04-01'),

@@ -164,13 +164,13 @@ describe('buildScoreboard', () => {
       { userId: 'u2', points: 40 },
     ] as any[]
     const users = [
-      { id: 'u1', name: 'Franz' },
-      { id: 'u2', name: 'Michelle' },
+      { id: 'u1', name: 'Alice' },
+      { id: 'u2', name: 'Bob' },
     ]
     const result = buildScoreboard(completions, users)
     expect(result).toEqual([
-      { userId: 'u1', name: 'Franz', taskCount: 2, points: 50 },
-      { userId: 'u2', name: 'Michelle', taskCount: 1, points: 40 },
+      { userId: 'u1', name: 'Alice', taskCount: 2, points: 50 },
+      { userId: 'u2', name: 'Bob', taskCount: 1, points: 40 },
     ])
   })
 })

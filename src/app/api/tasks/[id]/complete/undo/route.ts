@@ -34,7 +34,7 @@ export async function POST(
     return NextResponse.json({ error: 'Nicht berechtigt' }, { status: 403 })
   }
 
-  // Nur innerhalb von 5 Minuten rückgängig machbar
+  // Can only be undone within 5 minutes
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
   if (completion.completedAt < fiveMinutesAgo) {
     return NextResponse.json({ error: 'Zeitfenster abgelaufen' }, { status: 410 })
@@ -65,10 +65,10 @@ export async function POST(
     const task = await tx.task.findUnique({ where: { id: params.id } })
     if (task) {
       if (task.isRecurring && task.recurringInterval) {
-        // Wiederkehrende Aufgabe: nextDueAt zurücksetzen auf jetzt (sofort wieder sichtbar)
+        // Recurring task: reset nextDueAt to now (immediately visible again)
         await tx.task.update({ where: { id: params.id }, data: { nextDueAt: new Date() } })
       } else if (task.status === 'archived') {
-        // Einmalige Aufgabe: zurück auf active
+        // One-time task: revert to active
         await tx.task.update({ where: { id: params.id }, data: { status: 'active' } })
       }
     }
