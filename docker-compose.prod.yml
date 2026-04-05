@@ -1,10 +1,10 @@
-# Production deployment template for Haushalt-Quest
+# Production deployment template for TidyQuest
 # Copy this file and replace <your-github-username> with your GitHub username.
 # For optional auto-updates with Watchtower, see the README.
 
 services:
   app:
-    image: ghcr.io/<your-github-username>/haushalt-quest:latest
+    image: ghcr.io/<your-github-username>/tidyquest:latest
     ports:
       - "3333:3000"
     volumes:

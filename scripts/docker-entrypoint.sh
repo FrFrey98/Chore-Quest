@@ -6,7 +6,7 @@ if [ -z "$DATABASE_URL" ]; then
   exit 1
 fi
 
-echo "Starting Haushalt-Quest..."
+echo "Starting TidyQuest..."
 
 # Apply database migrations
 echo "Running database migrations..."

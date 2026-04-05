@@ -79,7 +79,7 @@ export function SetupForm() {
   if (step === 1) {
     return (
       <div className="text-center space-y-4">
-        <p className="text-lg font-medium">Willkommen bei Haushalt-Quest!</p>
+        <p className="text-lg font-medium">Willkommen bei TidyQuest!</p>
         <p className="text-slate-500 text-sm">Richte dein Duo ein, um zu starten.</p>
         <Button className="w-full" onClick={() => setStep(2)}>
           Los geht&apos;s
