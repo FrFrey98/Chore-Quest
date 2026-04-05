@@ -1,10 +1,10 @@
-# TidyQuest
+# Chore-Quest
 
 A gamified household task manager for couples — earn points, unlock achievements, and keep your streak alive.
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build](https://github.com/FrFrey98/tidyquest/actions/workflows/build.yml/badge.svg)](https://github.com/FrFrey98/tidyquest/actions/workflows/build.yml)
-[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue.svg)](https://github.com/FrFrey98/tidyquest/pkgs/container/tidyquest)
+[![Build](https://github.com/FrFrey98/chore-quest/actions/workflows/build.yml/badge.svg)](https://github.com/FrFrey98/chore-quest/actions/workflows/build.yml)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue.svg)](https://github.com/FrFrey98/chore-quest/pkgs/container/chore-quest)
 
 ## Features
 
@@ -29,14 +29,14 @@ Screenshots coming soon. See `docs/screenshots/` for future additions.
 
 ```yaml
 services:
-  tidyquest:
-    image: ghcr.io/frfrey98/tidyquest:latest
+  chore-quest:
+    image: ghcr.io/frfrey98/chore-quest:latest
     ports:
       - "3000:3000"
     volumes:
       - ./data:/app/data
     environment:
-      - DATABASE_URL=file:/app/data/tidyquest.db
+      - DATABASE_URL=file:/app/data/chore-quest.db
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - NEXTAUTH_URL=http://localhost:3000
     restart: unless-stopped
@@ -80,8 +80,8 @@ Note: If your registry requires authentication (e.g., GHCR with a private repo),
 
 ```bash
 # Clone the repository
-git clone https://github.com/FrFrey98/tidyquest.git
-cd tidyquest
+git clone https://github.com/FrFrey98/chore-quest.git
+cd chore-quest
 
 # Install dependencies
 npm install

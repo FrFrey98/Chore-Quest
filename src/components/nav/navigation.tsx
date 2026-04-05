@@ -40,7 +40,7 @@ export function Navigation() {
 
       {/* Desktop sidebar */}
       <nav aria-label="Seitenleiste" className="hidden md:flex flex-col w-56 min-h-screen bg-white border-r border-slate-200 p-4 gap-1">
-        <div className="text-lg font-bold mb-6 px-3">🏠 TidyQuest</div>
+        <div className="text-lg font-bold mb-6 px-3">🏠 Chore-Quest</div>
         {NAV_ITEMS.map(({ href, icon: Icon, label }) => (
           <Link
             key={href}

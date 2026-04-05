@@ -1,4 +1,4 @@
-# Contributing to TidyQuest
+# Contributing to Chore-Quest
 
 Thanks for your interest in contributing! Whether it's a bug report, feature idea, or code contribution, all input is welcome.
 
@@ -28,7 +28,7 @@ See the [README](README.md#development-setup) for instructions on setting up a l
 
 ## Reporting Issues
 
-Use [GitHub Issues](https://github.com/FrFrey98/tidyquest/issues) to report bugs or suggest features. When reporting a bug, please include:
+Use [GitHub Issues](https://github.com/FrFrey98/chore-quest/issues) to report bugs or suggest features. When reporting a bug, please include:
 
 - Steps to reproduce the issue
 - Expected vs. actual behavior
