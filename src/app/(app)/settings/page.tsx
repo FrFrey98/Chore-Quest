@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
 import { getVapidPublicKey } from '@/lib/push'
@@ -9,6 +10,7 @@ import { SettingsClient } from './settings-client'
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) redirect('/login')
+  if (!hasPermission(session.user.role, 'editSettings')) redirect('/')
 
   const [config, users, categories, achievements, storeItems, tasks, currentUser] = await Promise.all([
     loadGameConfig(),
