@@ -59,6 +59,65 @@ export function getEffectiveStreak(state: { currentStreak: number; lastActiveAt:
   return 0 // gap of 2+ days — streak is broken
 }
 
+/**
+ * Calculate the current streak from a list of UTC date keys (YYYY-MM-DD).
+ * Walks backwards from today/yesterday counting consecutive days.
+ * Pure function — no DB access. Used by recalculateStreak().
+ */
+export function recalculateStreakFromDates(dateKeys: string[]): number {
+  if (dateKeys.length === 0) return 0
+
+  const uniqueDays = [...new Set(dateKeys)].sort().reverse()
+  const todayKey = toDateKey(new Date())
+  const yesterdayDate = new Date()
+  yesterdayDate.setUTCDate(yesterdayDate.getUTCDate() - 1)
+  const yesterdayKey = toDateKey(yesterdayDate)
+
+  // Find start: must be today or yesterday
+  const startKey = uniqueDays[0]
+  if (startKey !== todayKey && startKey !== yesterdayKey) return 0
+
+  let streak = 1
+  for (let i = 1; i < uniqueDays.length; i++) {
+    if (daysBetween(uniqueDays[i], uniqueDays[i - 1]) === 1) {
+      streak++
+    } else {
+      break
+    }
+  }
+
+  return streak
+}
+
+/**
+ * Recalculate streak for a user from their actual completion records.
+ * Updates StreakState in the database. Used after undo/backfill.
+ */
+export async function recalculateStreak(userId: string): Promise<void> {
+  const completions = await prisma.taskCompletion.findMany({
+    where: { userId },
+    select: { completedAt: true },
+  })
+
+  const dateKeys = completions.map((c) => toDateKey(c.completedAt))
+  const newStreak = recalculateStreakFromDates(dateKeys)
+  const lastCompletion = completions.length > 0
+    ? completions.reduce((latest, c) => c.completedAt > latest.completedAt ? c : latest).completedAt
+    : null
+
+  const state = await getOrCreateStreakState(userId)
+  const newBest = Math.max(state.bestStreak, newStreak)
+
+  await prisma.streakState.update({
+    where: { userId },
+    data: {
+      currentStreak: newStreak,
+      bestStreak: newBest,
+      lastActiveAt: lastCompletion,
+    },
+  })
+}
+
 export async function getOrCreateStreakState(userId: string) {
   const existing = await prisma.streakState.findUnique({ where: { userId } })
   if (existing) return existing

@@ -5,7 +5,9 @@ import {
   calculateRestorePrice,
   getNextTier,
   getEffectiveStreak,
+  recalculateStreakFromDates,
 } from '@/lib/streak'
+import { toDateKey } from '@/lib/streak'
 import { DEFAULT_STREAK_TIERS } from '@/lib/config'
 
 describe('getStreakTier', () => {
@@ -188,6 +190,60 @@ describe('custom config parameters', () => {
     const result = getNextTier(5, custom)
     expect(result?.tier.name).toBe('Top')
     expect(result?.daysNeeded).toBe(5)
+  })
+})
+
+describe('recalculateStreakFromDates', () => {
+  function makeDateKeys(...daysAgo: number[]): string[] {
+    return daysAgo.map((d) => {
+      const date = new Date()
+      date.setUTCDate(date.getUTCDate() - d)
+      return toDateKey(date)
+    })
+  }
+
+  it('returns 0 for empty dates', () => {
+    expect(recalculateStreakFromDates([])).toBe(0)
+  })
+
+  it('returns 1 for only today', () => {
+    const dates = makeDateKeys(0)
+    expect(recalculateStreakFromDates(dates)).toBe(1)
+  })
+
+  it('returns 1 for only yesterday', () => {
+    const dates = makeDateKeys(1)
+    expect(recalculateStreakFromDates(dates)).toBe(1)
+  })
+
+  it('returns 2 for today and yesterday', () => {
+    const dates = makeDateKeys(0, 1)
+    expect(recalculateStreakFromDates(dates)).toBe(2)
+  })
+
+  it('returns 3 for three consecutive days ending today', () => {
+    const dates = makeDateKeys(0, 1, 2)
+    expect(recalculateStreakFromDates(dates)).toBe(3)
+  })
+
+  it('returns 1 for today with gap (no yesterday)', () => {
+    const dates = makeDateKeys(0, 2, 3)
+    expect(recalculateStreakFromDates(dates)).toBe(1)
+  })
+
+  it('returns 2 for yesterday and day before, no today', () => {
+    const dates = makeDateKeys(1, 2)
+    expect(recalculateStreakFromDates(dates)).toBe(2)
+  })
+
+  it('returns 0 for only 2 days ago (streak broken)', () => {
+    const dates = makeDateKeys(2)
+    expect(recalculateStreakFromDates(dates)).toBe(0)
+  })
+
+  it('handles duplicate dates', () => {
+    const dates = makeDateKeys(0, 0, 1, 1, 2)
+    expect(recalculateStreakFromDates(dates)).toBe(3)
   })
 })
 
