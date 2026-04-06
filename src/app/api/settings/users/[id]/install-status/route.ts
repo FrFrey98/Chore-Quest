@@ -10,6 +10,10 @@ export async function GET(
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  if (params.id !== session.user.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: params.id },
     select: { installPromptDismissed: true },

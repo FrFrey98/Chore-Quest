@@ -24,6 +24,9 @@ export async function sendPush(
   subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
   payload: object,
 ): Promise<boolean> {
+  if (!isPushConfigured()) {
+    throw new Error('VAPID keys not configured')
+  }
   ensureVapid()
   try {
     await webpush.sendNotification(subscription, JSON.stringify(payload))

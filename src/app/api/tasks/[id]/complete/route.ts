@@ -97,6 +97,7 @@ export async function POST(
     const conflicting = await prisma.taskCompletion.findFirst({
       where: {
         taskId: task.id,
+        userId: { not: userId },
         completedAt: { gte: offlineTime },
       },
       include: { user: { select: { name: true } } },

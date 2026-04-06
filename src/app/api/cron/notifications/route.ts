@@ -86,14 +86,18 @@ export async function GET(req: NextRequest) {
     const payload = buildNotificationPayload(task)
 
     for (const sub of subscriptions) {
-      const success = await sendPush(
-        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-        payload,
-      )
-      if (success) {
-        sentCount++
-      } else {
-        expiredSubscriptionIds.push(sub.id)
+      try {
+        const success = await sendPush(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          payload,
+        )
+        if (success) {
+          sentCount++
+        } else {
+          expiredSubscriptionIds.push(sub.id)
+        }
+      } catch {
+        // Transient push failure — skip this subscription, continue with others
       }
     }
 
