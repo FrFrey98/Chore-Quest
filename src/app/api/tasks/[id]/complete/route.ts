@@ -19,11 +19,13 @@ export async function POST(
   const userId = session.user.id
   let withUserId: string | undefined
   let dateParam: string | undefined
+  let offlineAt: string | undefined
 
   try {
     const body = await req.json()
     withUserId = body.withUserId
     dateParam = body.date
+    offlineAt = body.offlineAt
   } catch {
     // No body or invalid JSON — solo completion, today
   }
@@ -86,6 +88,24 @@ export async function POST(
     })
     if (dayCount >= task.dailyLimit) {
       return NextResponse.json({ error: `Tageslimit erreicht (${task.dailyLimit}x)` }, { status: 409 })
+    }
+  }
+
+  // Offline conflict detection
+  if (offlineAt) {
+    const offlineTime = new Date(offlineAt)
+    const conflicting = await prisma.taskCompletion.findFirst({
+      where: {
+        taskId: task.id,
+        completedAt: { gte: offlineTime },
+      },
+      include: { user: { select: { name: true } } },
+    })
+    if (conflicting) {
+      return NextResponse.json(
+        { error: 'already_completed', completedBy: conflicting.user.name },
+        { status: 409 }
+      )
     }
   }
 
