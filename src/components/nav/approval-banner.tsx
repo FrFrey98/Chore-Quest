@@ -2,21 +2,26 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Shield } from 'lucide-react'
+import { hasPermission } from '@/lib/permissions'
 
 export function ApprovalBanner() {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const [count, setCount] = useState(0)
 
   useEffect(() => {
+    if (!session?.user?.role || !hasPermission(session.user.role as any, 'approveTasks')) return
     const controller = new AbortController()
     fetch('/api/approvals/count', { signal: controller.signal })
       .then(r => r.ok ? r.json() : { count: 0 })
       .then(d => setCount(d.count ?? 0))
       .catch(() => {})
     return () => controller.abort()
-  }, [pathname])
+  }, [pathname, session])
 
+  if (!session?.user?.role || !hasPermission(session.user.role as any, 'approveTasks')) return null
   if (count === 0) return null
 
   return (
