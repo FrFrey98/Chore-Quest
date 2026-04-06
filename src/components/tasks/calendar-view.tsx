@@ -88,8 +88,16 @@ export function CalendarView({
         headers: { 'Content-Type': 'application/json' },
         body: isYesterday ? JSON.stringify({ date: 'yesterday' }) : undefined,
       })
+      const data = await res.json()
+
+      // Handle offline queued completion
+      if (data.queued) {
+        const taskTitle = selectedDay?.tasks.find((t) => t.taskId === taskId)?.title ?? ''
+        toast(`"${taskTitle}" wird synchronisiert`, 'info')
+        return
+      }
+
       if (!res.ok) {
-        const data = await res.json()
         throw new Error(data.error ?? 'Fehler')
       }
       toast('Aufgabe abgehakt', 'success')

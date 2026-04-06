@@ -30,6 +30,13 @@ export function SwRegister() {
         window.location.reload()
       }
     })
+
+    // Fallback: sync pending completions on app start (for browsers without Background Sync)
+    navigator.serviceWorker.ready.then((registration) => {
+      if (!('sync' in registration)) {
+        registration.active?.postMessage({ type: 'MANUAL_SYNC' })
+      }
+    })
   }, [])
 
   function handleUpdate() {

@@ -80,11 +80,21 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
         headers: isShared ? { 'Content-Type': 'application/json' } : undefined,
         body: isShared ? JSON.stringify({ withUserId: partnerId }) : undefined,
       })
+      const data = await res.json()
+
+      // Handle offline queued completion
+      if (data.queued) {
+        if (!task.allowMultiple) {
+          setDoneIds((prev) => new Set(prev).add(task.id))
+        }
+        setSharedTaskId(null)
+        toast(`"${task.title}" wird synchronisiert`, 'info')
+        return
+      }
+
       if (!res.ok) {
-        const data = await res.json()
         throw new Error(data.error ?? 'Fehler')
       }
-      const data = await res.json()
 
       if (!task.allowMultiple) {
         setDoneIds((prev) => new Set(prev).add(task.id))
