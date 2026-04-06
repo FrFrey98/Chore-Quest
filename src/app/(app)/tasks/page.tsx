@@ -15,7 +15,7 @@ export default async function TasksPage({ searchParams }: { searchParams: { view
   const calMonth = searchParams.month ? parseInt(searchParams.month) : now.getUTCMonth() + 1
 
   const userId = session.user?.id
-  const users = await prisma.user.findMany()
+  const users = await prisma.user.findMany({ select: { id: true, name: true } })
   const partner = users.find((u) => u.id !== userId)
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } })
 
@@ -94,6 +94,8 @@ export default async function TasksPage({ searchParams }: { searchParams: { view
     <TasksClient
       grouped={grouped}
       categories={categories}
+      users={users}
+      userRole={session.user.role}
       partnerId={partner?.id}
       partnerName={partner?.name ?? undefined}
       view={view}

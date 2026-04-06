@@ -14,9 +14,13 @@ type Task = {
 type Category = { id: string; name: string; emoji: string; tasks: Task[] }
 type SimpleCategory = { id: string; name: string; emoji: string }
 
+type UserItem = { id: string; name: string }
+
 type TasksClientProps = {
   grouped: Category[]
   categories: SimpleCategory[]
+  users?: UserItem[]
+  userRole?: string
   partnerId?: string
   partnerName?: string
   view: string
@@ -27,7 +31,7 @@ type TasksClientProps = {
   availableTasks: { id: string; emoji: string; title: string }[]
 }
 
-export function TasksClient({ grouped, categories, partnerId, partnerName, view, calendarDays, calYear, calMonth, today, availableTasks }: TasksClientProps) {
+export function TasksClient({ grouped, categories, users, userRole, partnerId, partnerName, view, calendarDays, calYear, calMonth, today, availableTasks }: TasksClientProps) {
   const router = useRouter()
 
   async function handleComplete(_taskId: string) {
@@ -58,7 +62,7 @@ export function TasksClient({ grouped, categories, partnerId, partnerName, view,
               <Calendar size={16} />
             </button>
           </div>
-          {!isCalendar && <CreateTaskDialog categories={categories} />}
+          {!isCalendar && <CreateTaskDialog categories={categories} users={users} userRole={userRole} />}
         </div>
       </div>
 

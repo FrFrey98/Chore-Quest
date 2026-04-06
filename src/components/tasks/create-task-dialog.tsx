@@ -12,8 +12,11 @@ import {
 import { Plus } from 'lucide-react'
 
 type Category = { id: string; name: string; emoji: string }
+type UserItem = { id: string; name: string }
 
-export function CreateTaskDialog({ categories }: { categories: Category[] }) {
+export function CreateTaskDialog({ categories, users, userRole }: {
+  categories: Category[]; users?: UserItem[]; userRole?: string
+}) {
   const router = useRouter()
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
@@ -26,6 +29,7 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
     allowMultiple: false, dailyLimit: 3,
     scheduleDays: '' as string,
     scheduleTime: '' as string,
+    assignedUserIds: [] as string[],
   })
 
   async function handleSubmit() {
@@ -40,6 +44,7 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
           scheduleDays: form.scheduleDays || null,
           scheduleTime: form.scheduleTime || null,
           recurringInterval: form.scheduleDays ? null : form.recurringInterval,
+          ...(form.assignedUserIds.length ? { assignedUserIds: form.assignedUserIds } : {}),
         }),
       })
       if (res.ok) {
@@ -95,6 +100,35 @@ export function CreateTaskDialog({ categories }: { categories: Category[] }) {
               {categories.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>)}
             </select>
           </div>
+          {users && users.length > 0 && (
+            <div>
+              <Label>Zugewiesen an (optional)</Label>
+              <div className="flex gap-1 flex-wrap">
+                {users.map((u) => {
+                  const active = form.assignedUserIds.includes(u.id)
+                  return (
+                    <button
+                      key={u.id}
+                      type="button"
+                      onClick={() => {
+                        setForm((prev) => ({
+                          ...prev,
+                          assignedUserIds: active
+                            ? prev.assignedUserIds.filter((id) => id !== u.id)
+                            : [...prev.assignedUserIds, u.id],
+                        }))
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                        active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      }`}
+                    >
+                      {u.name}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <input type="checkbox" id="task-recurring" checked={form.isRecurring}

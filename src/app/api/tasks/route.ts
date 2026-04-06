@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
   const body = await req.json()
-  const { title, emoji, points, categoryId, isRecurring, recurringInterval, allowMultiple, dailyLimit, scheduleDays, scheduleTime } = body
+  const { title, emoji, points, categoryId, isRecurring, recurringInterval, allowMultiple, dailyLimit, scheduleDays, scheduleTime, assignedUserIds } = body
 
   if (!title || !emoji || !points || !categoryId) {
     return NextResponse.json({ error: 'Fehlende Felder' }, { status: 400 })
@@ -67,6 +67,9 @@ export async function POST(req: NextRequest) {
         scheduleTime: scheduleTime ?? null,
         status: 'pending_approval',
         createdById: session.user.id,
+        ...(assignedUserIds?.length ? {
+          assignedUsers: { connect: assignedUserIds.map((id: string) => ({ id })) },
+        } : {}),
       },
     })
 

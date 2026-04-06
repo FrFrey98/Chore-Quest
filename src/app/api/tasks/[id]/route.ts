@@ -18,6 +18,7 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
+  const { assignedUserIds, ...updateFields } = body
   const allowedStatuses = ['active', 'archived']
 
   if (body.scheduleDays && !isValidScheduleDays(body.scheduleDays)) {
@@ -28,19 +29,22 @@ export async function PATCH(
     const task = await prisma.task.update({
       where: { id: params.id },
       data: {
-        title: body.title,
-        emoji: body.emoji,
-        points: body.points !== undefined ? Number(body.points) : undefined,
-        categoryId: body.categoryId,
-        isRecurring: body.isRecurring,
-        recurringInterval: body.recurringInterval ?? null,
-        allowMultiple: body.allowMultiple !== undefined ? Boolean(body.allowMultiple) : undefined,
-        dailyLimit: body.allowMultiple === false ? null : (body.dailyLimit !== undefined ? Number(body.dailyLimit) : undefined),
-        scheduleDays: body.scheduleDays !== undefined ? (body.scheduleDays || null) : undefined,
-        scheduleTime: body.scheduleTime !== undefined ? (body.scheduleTime || null) : undefined,
-        ...(typeof body.status === 'string' && allowedStatuses.includes(body.status)
-          ? { status: body.status }
+        title: updateFields.title,
+        emoji: updateFields.emoji,
+        points: updateFields.points !== undefined ? Number(updateFields.points) : undefined,
+        categoryId: updateFields.categoryId,
+        isRecurring: updateFields.isRecurring,
+        recurringInterval: updateFields.recurringInterval ?? null,
+        allowMultiple: updateFields.allowMultiple !== undefined ? Boolean(updateFields.allowMultiple) : undefined,
+        dailyLimit: updateFields.allowMultiple === false ? null : (updateFields.dailyLimit !== undefined ? Number(updateFields.dailyLimit) : undefined),
+        scheduleDays: updateFields.scheduleDays !== undefined ? (updateFields.scheduleDays || null) : undefined,
+        scheduleTime: updateFields.scheduleTime !== undefined ? (updateFields.scheduleTime || null) : undefined,
+        ...(typeof updateFields.status === 'string' && allowedStatuses.includes(updateFields.status)
+          ? { status: updateFields.status }
           : {}),
+        ...(assignedUserIds !== undefined ? {
+          assignedUsers: { set: assignedUserIds.map((id: string) => ({ id })) },
+        } : {}),
       },
     })
     return NextResponse.json(task)
