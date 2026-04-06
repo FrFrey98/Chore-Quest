@@ -74,6 +74,7 @@ export default async function DashboardPage() {
   ])
   const completedToday = todayCompletions.map((c) => ({
     id: c.id,
+    taskId: c.taskId,
     emoji: c.task.emoji,
     title: c.task.title,
     points: c.points,

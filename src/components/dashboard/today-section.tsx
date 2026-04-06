@@ -2,10 +2,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/toast-provider'
-import { Check, Users } from 'lucide-react'
+import { Check, Users, Undo2 } from 'lucide-react'
 
 type CompletedTask = {
   id: string
+  taskId: string
   emoji: string
   title: string
   points: number
@@ -41,6 +42,30 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set())
   const [sharedTaskId, setSharedTaskId] = useState<string | null>(null)
+  const [undoingId, setUndoingId] = useState<string | null>(null)
+  const [confirmUndoId, setConfirmUndoId] = useState<string | null>(null)
+
+  async function handleUndo(completion: CompletedTask) {
+    setUndoingId(completion.id)
+    try {
+      const res = await fetch(`/api/tasks/${completion.taskId}/complete/undo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completionId: completion.id }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error ?? 'Fehler')
+      }
+      setConfirmUndoId(null)
+      toast('Erledigung rückgängig gemacht', 'info')
+      router.refresh()
+    } catch (err: any) {
+      toast(err.message ?? 'Rückgängig fehlgeschlagen', 'error')
+    } finally {
+      setUndoingId(null)
+    }
+  }
 
   const totalTasks = completed.length + due.length
   const doneCount = completed.length + doneIds.size
@@ -99,6 +124,31 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
             <span className="text-lg">{t.emoji}</span>
             <span className="flex-1 text-sm text-slate-400 line-through truncate">{t.title}</span>
             <span className="text-xs text-green-600 font-semibold">✓ +{t.points}</span>
+            {confirmUndoId === t.id ? (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => handleUndo(t)}
+                  disabled={undoingId === t.id}
+                  className="text-xs text-red-600 font-semibold hover:text-red-700"
+                >
+                  {undoingId === t.id ? '…' : 'Ja'}
+                </button>
+                <button
+                  onClick={() => setConfirmUndoId(null)}
+                  className="text-xs text-slate-400 hover:text-slate-600"
+                >
+                  Nein
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmUndoId(t.id)}
+                className="text-slate-300 hover:text-slate-500 transition-colors p-1"
+                title="Rückgängig"
+              >
+                <Undo2 size={14} />
+              </button>
+            )}
           </div>
         ))}
         {/* Due tasks */}
