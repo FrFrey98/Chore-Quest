@@ -6,8 +6,8 @@ import {
   getNextTier,
   getEffectiveStreak,
   recalculateStreakFromDates,
+  toDateKey,
 } from '@/lib/streak'
-import { toDateKey } from '@/lib/streak'
 import { DEFAULT_STREAK_TIERS } from '@/lib/config'
 
 describe('getStreakTier', () => {
