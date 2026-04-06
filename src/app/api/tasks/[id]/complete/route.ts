@@ -47,10 +47,21 @@ export async function POST(
     return NextResponse.json({ error: 'Ungültiges Datum' }, { status: 400 })
   }
 
-  const task = await prisma.task.findUnique({ where: { id: params.id } })
+  const task = await prisma.task.findUnique({
+    where: { id: params.id },
+    include: {
+      scheduleOverrides: {
+        select: { date: true, type: true },
+      },
+    },
+  })
   if (!task || task.status !== 'active') {
     return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
   }
+
+  const scheduleOpts = task.scheduleDays
+    ? { scheduleDays: task.scheduleDays, overrides: task.scheduleOverrides.map((o) => ({ date: o.date, type: o.type as 'add' | 'skip' })) }
+    : undefined
 
   // Determine the day start for duplicate checking
   const checkDayStart = new Date()
@@ -138,18 +149,22 @@ export async function POST(
 
   // Handle recurring/one-time task state
   if (task.allowMultiple) {
-    if (task.dailyLimit && task.isRecurring && task.recurringInterval) {
+    if (task.dailyLimit && task.isRecurring && (task.recurringInterval || task.scheduleDays)) {
       const newCount = await prisma.taskCompletion.count({
         where: { taskId: task.id, userId, completedAt: { gte: checkDayStart, lt: checkDayEnd } },
       })
       if (newCount >= task.dailyLimit) {
-        const nextDueAt = getNextDueAt(task.recurringInterval, recurringBaseDate, config.recurringIntervals)
-        await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
+        const nextDueAt = getNextDueAt(task.recurringInterval ?? 'daily', recurringBaseDate, config.recurringIntervals, scheduleOpts)
+        if (nextDueAt) {
+          await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
+        }
       }
     }
-  } else if (task.isRecurring && task.recurringInterval) {
-    const nextDueAt = getNextDueAt(task.recurringInterval, recurringBaseDate, config.recurringIntervals)
-    await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
+  } else if (task.isRecurring && (task.recurringInterval || task.scheduleDays)) {
+    const nextDueAt = getNextDueAt(task.recurringInterval ?? 'daily', recurringBaseDate, config.recurringIntervals, scheduleOpts)
+    if (nextDueAt) {
+      await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
+    }
   } else {
     await prisma.task.update({
       where: { id: task.id },
