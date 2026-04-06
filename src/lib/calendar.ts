@@ -56,7 +56,7 @@ export function getTasksForMonth(
   overrides: CalendarOverride[]
 ): CalendarDay[] {
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  today.setUTCHours(0, 0, 0, 0)
 
   // Index completions by "date:taskId" for O(1) lookup
   const completionMap = new Map<string, CalendarCompletion>()
@@ -93,11 +93,11 @@ export function getTasksForMonth(
       } else if (task.recurringInterval === 'daily') {
         isDue = true
       } else if (task.recurringInterval === 'weekly') {
-        // Simplified: show on all days
-        isDue = true
+        // Weekly without specific days: don't show in calendar
+        // Users should set scheduleDays for calendar visibility
+        isDue = false
       } else if (task.recurringInterval === 'monthly') {
-        // Simplified: show on day 1 only
-        isDue = day === 1
+        isDue = false
       }
 
       // Apply overrides

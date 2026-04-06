@@ -3,6 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+const VALID_DAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
+
+function isValidScheduleDays(value: string): boolean {
+  const parts = value.split(',')
+  return parts.length > 0 && parts.every((d) => VALID_DAYS.has(d.trim()))
+}
+
 export async function GET(_req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -35,6 +42,10 @@ export async function POST(req: NextRequest) {
   const parsedPoints = Number(points)
   if (!Number.isInteger(parsedPoints) || parsedPoints <= 0) {
     return NextResponse.json({ error: 'Punkte müssen eine positive ganze Zahl sein' }, { status: 400 })
+  }
+
+  if (body.scheduleDays && !isValidScheduleDays(body.scheduleDays)) {
+    return NextResponse.json({ error: 'Ungültige Wochentage' }, { status: 400 })
   }
 
   const { task } = await prisma.$transaction(async (tx) => {

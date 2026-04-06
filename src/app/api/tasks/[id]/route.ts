@@ -3,6 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+const VALID_DAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
+
+function isValidScheduleDays(value: string): boolean {
+  const parts = value.split(',')
+  return parts.length > 0 && parts.every((d) => VALID_DAYS.has(d.trim()))
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -12,6 +19,10 @@ export async function PATCH(
 
   const body = await req.json()
   const allowedStatuses = ['active', 'archived']
+
+  if (body.scheduleDays && !isValidScheduleDays(body.scheduleDays)) {
+    return NextResponse.json({ error: 'Ungültige Wochentage' }, { status: 400 })
+  }
 
   try {
     const task = await prisma.task.update({
