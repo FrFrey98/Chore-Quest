@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function LoginPage() {
   const users = await prisma.user.findMany({
-    select: { id: true, name: true },
+    select: { id: true, name: true, role: true },
   })
 
   if (users.length === 0) {

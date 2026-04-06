@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-type User = { id: string; name: string }
+type User = { id: string; name: string; role: string }
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Admin',
+  member: 'Mitglied',
+  child: 'Kind',
+}
 
 export function LoginForm({ users }: { users: User[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -41,13 +47,14 @@ export function LoginForm({ users }: { users: User[] }) {
             type="button"
             disabled={loading}
             onClick={() => { setSelectedId(u.id); setError(''); setPin('') }}
-            className={`p-4 rounded-xl border-2 text-center font-medium transition-colors ${
+            className={`p-4 rounded-xl border-2 text-center transition-colors ${
               selectedId === u.id
                 ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                 : 'border-slate-200 hover:border-slate-300'
             }`}
           >
-            {u.name}
+            <span className="font-medium block">{u.name}</span>
+            <span className="text-xs text-slate-400">{ROLE_LABELS[u.role] ?? u.role}</span>
           </button>
         ))}
       </div>
