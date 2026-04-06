@@ -21,23 +21,27 @@ export async function POST(
   const config = await loadGameConfig()
 
   const userId = session.user.id
-  let withUserId: string | undefined
+  let withUserIds: string[] = []
   let dateParam: string | undefined
   let offlineAt: string | undefined
 
   try {
     const body = await req.json()
-    withUserId = body.withUserId
     dateParam = body.date
     offlineAt = body.offlineAt
+    if (body.withUserIds && Array.isArray(body.withUserIds)) {
+      withUserIds = body.withUserIds
+    } else if (body.withUserId) {
+      withUserIds = [body.withUserId]
+    }
   } catch {
     // No body or invalid JSON — solo completion, today
   }
 
-  // Validate partner exists if shared
-  if (withUserId) {
-    const partner = await prisma.user.findUnique({ where: { id: withUserId } })
-    if (!partner) {
+  // Validate all partners exist
+  if (withUserIds.length > 0) {
+    const partners = await prisma.user.findMany({ where: { id: { in: withUserIds } } })
+    if (partners.length !== withUserIds.length) {
       return NextResponse.json({ error: 'Partner nicht gefunden' }, { status: 400 })
     }
   }
@@ -114,8 +118,6 @@ export async function POST(
     }
   }
 
-  const isShared = !!withUserId
-
   // Update streak and calculate bonus for current user
   let currentStreak: number
   if (dateParam === 'yesterday') {
@@ -126,46 +128,47 @@ export async function POST(
     const result = await updateStreakOnCompletion(userId, config.streakTiers)
     currentStreak = result.currentStreak
   }
-  const pointsWithBonus = applyBonus(task.points, currentStreak, isShared, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
+  const pointsWithBonus = applyBonus(task.points, currentStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
 
   const completion = await prisma.taskCompletion.create({
     data: {
       taskId: task.id,
       userId,
       points: pointsWithBonus,
-      withUserId: withUserId ?? null,
+      withUserId: withUserIds[0] ?? null,
       ...(completedAt ? { completedAt } : {}),
     },
   })
 
-  // Create partner completion if shared
-  let partnerCompletion = null
-  if (withUserId) {
+  // Create partner completions
+  const partnerCompletions = []
+  for (const partnerId of withUserIds) {
     let partnerStreak: number
     if (dateParam === 'yesterday') {
-      const partnerState = await getOrCreateStreakState(withUserId)
+      const partnerState = await getOrCreateStreakState(partnerId)
       partnerStreak = getEffectiveStreak(partnerState)
     } else {
-      const result = await updateStreakOnCompletion(withUserId, config.streakTiers)
+      const result = await updateStreakOnCompletion(partnerId, config.streakTiers)
       partnerStreak = result.currentStreak
     }
-    const partnerPoints = applyBonus(task.points, partnerStreak, true, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
-    partnerCompletion = await prisma.taskCompletion.create({
+    const partnerPoints = applyBonus(task.points, partnerStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
+    const partnerCompletion = await prisma.taskCompletion.create({
       data: {
         taskId: task.id,
-        userId: withUserId,
+        userId: partnerId,
         points: partnerPoints,
-        withUserId: userId,
+        withUserId: session.user.id,
         ...(completedAt ? { completedAt } : {}),
       },
     })
+    partnerCompletions.push(partnerCompletion)
   }
 
   // For yesterday backfills, recalculate streak from actual completion records
   if (dateParam === 'yesterday') {
     await recalculateStreak(userId)
-    if (withUserId) {
-      await recalculateStreak(withUserId)
+    for (const partnerId of withUserIds) {
+      await recalculateStreak(partnerId)
     }
   }
 
@@ -212,10 +215,10 @@ export async function POST(
     // Achievement check failure should not block the completion response
   }
 
-  // Achievement check for partner
-  if (withUserId) {
+  // Achievement check for partners
+  for (const partnerId of withUserIds) {
     try {
-      await checkAndUnlockAchievements(withUserId, config.levelDefinitions)
+      await checkAndUnlockAchievements(partnerId, config.levelDefinitions)
     } catch {
       // Silent fail
     }
@@ -226,7 +229,8 @@ export async function POST(
     basePoints: task.points,
     bonusPoints: pointsWithBonus - task.points,
     streakDays: currentStreak,
-    isShared,
+    isShared: withUserIds.length > 0,
+    partnerCount: withUserIds.length,
     newAchievements,
   }, { status: 201 })
 }

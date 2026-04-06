@@ -89,31 +89,31 @@ describe('applyBonus', () => {
 
   // Teamwork bonus tests
   it('applies 10% teamwork bonus when shared, no streak', () => {
-    expect(applyBonus(20, 0, true)).toBe(22)
+    expect(applyBonus(20, 0, 1)).toBe(22)
   })
 
   it('applies teamwork + streak bonus additively (5% + 10%)', () => {
     // 35 * 1.15 = 40.25 → 40
-    expect(applyBonus(35, 3, true)).toBe(40)
+    expect(applyBonus(35, 3, 1)).toBe(40)
   })
 
   it('applies teamwork + streak bonus additively (10% + 10%)', () => {
     // 35 * 1.20 = 42
-    expect(applyBonus(35, 7, true)).toBe(42)
+    expect(applyBonus(35, 7, 1)).toBe(42)
   })
 
   it('applies teamwork + streak bonus additively (25% + 10%)', () => {
     // 20 * 1.35 = 27
-    expect(applyBonus(20, 14, true)).toBe(27)
+    expect(applyBonus(20, 14, 1)).toBe(27)
   })
 
   it('applies teamwork + streak bonus additively (50% + 10%)', () => {
     // 20 * 1.60 = 32
-    expect(applyBonus(20, 30, true)).toBe(32)
+    expect(applyBonus(20, 30, 1)).toBe(32)
   })
 
-  it('isShared defaults to false', () => {
-    expect(applyBonus(20, 7)).toBe(applyBonus(20, 7, false))
+  it('partnerCount defaults to 0', () => {
+    expect(applyBonus(20, 7)).toBe(applyBonus(20, 7, 0))
   })
 })
 
@@ -182,7 +182,7 @@ describe('custom config parameters', () => {
   })
 
   it('applyBonus respects custom teamworkPercent', () => {
-    expect(applyBonus(100, 0, true, { teamworkPercent: 20 })).toBe(120)
+    expect(applyBonus(100, 0, 1, { teamworkPercent: 20 })).toBe(120)
   })
 
   it('getNextTier respects custom tiers', () => {

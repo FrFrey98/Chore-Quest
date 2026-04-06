@@ -15,12 +15,12 @@ export function getStreakTier(currentStreak: number, tiers?: StreakTierDef[]): S
 export function applyBonus(
   basePoints: number,
   currentStreak: number,
-  isShared: boolean = false,
+  partnerCount: number = 0,
   opts?: { tiers?: StreakTierDef[]; teamworkPercent?: number }
 ): number {
   const tier = getStreakTier(currentStreak, opts?.tiers)
   const teamwork = opts?.teamworkPercent ?? DEFAULT_TEAMWORK_BONUS_PERCENT
-  const totalPercent = tier.percent + (isShared ? teamwork : 0)
+  const totalPercent = tier.percent + (partnerCount > 0 ? teamwork * partnerCount : 0)
   return Math.floor(basePoints * (1 + totalPercent / 100))
 }
 
