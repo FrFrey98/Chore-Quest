@@ -37,7 +37,7 @@ export function SettingsClient({
   config, users, categories, achievements, storeItems, tasks, userId, notificationsEnabled, vapidPublicKey,
 }: {
   config: GameConfig
-  users: { id: string; name: string }[]
+  users: { id: string; name: string; role: string; createdAt: string }[]
   categories: Category[]
   achievements: Achievement[]
   storeItems: StoreItem[]
@@ -68,7 +68,7 @@ export function SettingsClient({
         ))}
       </div>
 
-      {tab === 'users' && <UsersTab users={users} />}
+      {tab === 'users' && <UsersTab users={users} currentUserId={userId} />}
       {tab === 'streak' && <StreakTab config={config} />}
       {tab === 'level' && <LevelTab config={config} />}
       {tab === 'bonus' && <BonusTab config={config} />}
