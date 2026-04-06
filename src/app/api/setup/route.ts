@@ -52,6 +52,10 @@ export async function POST(request: Request) {
       )
     }
 
+    if (typeof user.pin !== 'string') {
+      return NextResponse.json({ error: `PIN für "${name}" ist ungültig` }, { status: 400 })
+    }
+
     if (!pinRegex.test(user.pin)) {
       return NextResponse.json(
         { error: `Benutzer ${i + 1}: PIN muss 4-8 Ziffern lang sein` },

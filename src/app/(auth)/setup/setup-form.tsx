@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 type Role = 'admin' | 'member' | 'child'
 
 type MemberEntry = {
+  id: string
   name: string
   pin: string
   pinConfirm: string
@@ -21,7 +22,7 @@ const ROLE_LABELS: Record<Role, string> = {
 }
 
 function emptyMember(): MemberEntry {
-  return { name: '', pin: '', pinConfirm: '', role: 'member' }
+  return { id: crypto.randomUUID(), name: '', pin: '', pinConfirm: '', role: 'member' }
 }
 
 function validateName(name: string): string | null {
@@ -171,6 +172,9 @@ export function SetupForm() {
           maxLength={8}
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
+        <Button variant="outline" className="w-full" onClick={() => setStep(1)}>
+          Zurück
+        </Button>
         <Button className="w-full" onClick={handleAdminNext}>
           Weiter
         </Button>
@@ -184,7 +188,7 @@ export function SetupForm() {
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-center">Familienmitglieder</h2>
         {members.map((m, i) => (
-          <div key={i} className="space-y-2 border border-slate-200 rounded-xl p-4">
+          <div key={m.id} className="space-y-2 border border-slate-200 rounded-xl p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-slate-600">Mitglied {i + 1}</span>
               {members.length > 1 && (
@@ -236,6 +240,9 @@ export function SetupForm() {
         <Button variant="outline" className="w-full" onClick={addMember}>
           Weiteres Mitglied
         </Button>
+        <Button variant="outline" className="w-full" onClick={() => setStep(2)}>
+          Zurück
+        </Button>
         <Button className="w-full" onClick={handleMembersNext}>
           Weiter
         </Button>
@@ -261,6 +268,9 @@ export function SetupForm() {
         ))}
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
+      <Button variant="outline" className="w-full" onClick={() => setStep(3)}>
+        Zurück
+      </Button>
       <Button className="w-full" onClick={handleSubmit} disabled={loading}>
         {loading ? 'Wird eingerichtet...' : 'Einrichtung abschließen'}
       </Button>
