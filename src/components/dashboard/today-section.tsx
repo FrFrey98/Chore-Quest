@@ -103,8 +103,8 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
       }
 
       router.refresh()
-    } catch (err: any) {
-      toast(err.message ?? 'Fehler beim Erledigen', 'error')
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : 'Fehler beim Erledigen', 'error')
     } finally {
       setLoadingId(null)
     }
