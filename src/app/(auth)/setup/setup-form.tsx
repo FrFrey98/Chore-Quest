@@ -5,63 +5,114 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
+type Role = 'admin' | 'member' | 'child'
+
+type MemberEntry = {
+  name: string
+  pin: string
+  pinConfirm: string
+  role: Role
+}
+
+const ROLE_LABELS: Record<Role, string> = {
+  admin: 'Admin',
+  member: 'Mitglied',
+  child: 'Kind',
+}
+
+function emptyMember(): MemberEntry {
+  return { name: '', pin: '', pinConfirm: '', role: 'member' }
+}
+
+function validateName(name: string): string | null {
+  if (name.trim().length < 2) return 'Name muss mindestens 2 Zeichen lang sein.'
+  if (name.trim().length > 50) return 'Name darf maximal 50 Zeichen lang sein.'
+  return null
+}
+
+function validatePin(pin: string, pinConfirm: string): string | null {
+  if (!/^\d{4,8}$/.test(pin)) return 'PIN muss 4-8 Ziffern lang sein.'
+  if (pin !== pinConfirm) return 'PINs stimmen nicht überein.'
+  return null
+}
+
 export function SetupForm() {
   const [step, setStep] = useState(1)
-  const [user1Name, setUser1Name] = useState('')
-  const [user1Pin, setUser1Pin] = useState('')
-  const [user1PinConfirm, setUser1PinConfirm] = useState('')
-  const [user2Name, setUser2Name] = useState('')
-  const [user2Pin, setUser2Pin] = useState('')
-  const [user2PinConfirm, setUser2PinConfirm] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  function validateName(name: string): string | null {
-    if (name.trim().length < 2) return 'Name muss mindestens 2 Zeichen lang sein.'
-    if (name.trim().length > 50) return 'Name darf maximal 50 Zeichen lang sein.'
-    return null
-  }
+  // Step 2: admin
+  const [adminName, setAdminName] = useState('')
+  const [adminPin, setAdminPin] = useState('')
+  const [adminPinConfirm, setAdminPinConfirm] = useState('')
 
-  function validatePin(pin: string, pinConfirm: string): string | null {
-    if (!/^\d{4,8}$/.test(pin)) return 'PIN muss 4-8 Ziffern lang sein.'
-    if (pin !== pinConfirm) return 'PINs stimmen nicht überein.'
-    return null
-  }
+  // Step 3: members
+  const [members, setMembers] = useState<MemberEntry[]>([emptyMember()])
 
-  function handleStep2() {
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  // --- Step 2 handlers ---
+  function handleAdminNext() {
     setError('')
-    const nameErr = validateName(user1Name)
+    const nameErr = validateName(adminName)
     if (nameErr) { setError(nameErr); return }
-    const pinErr = validatePin(user1Pin, user1PinConfirm)
+    const pinErr = validatePin(adminPin, adminPinConfirm)
     if (pinErr) { setError(pinErr); return }
     setStep(3)
   }
 
-  function handleStep3() {
+  // --- Step 3 handlers ---
+  function updateMember(index: number, patch: Partial<MemberEntry>) {
+    setMembers((prev) => prev.map((m, i) => (i === index ? { ...m, ...patch } : m)))
+  }
+
+  function addMember() {
+    setMembers((prev) => [...prev, emptyMember()])
+  }
+
+  function removeMember(index: number) {
+    setMembers((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function handleMembersNext() {
     setError('')
-    const nameErr = validateName(user2Name)
-    if (nameErr) { setError(nameErr); return }
-    if (user2Name.trim().toLowerCase() === user1Name.trim().toLowerCase()) {
-      setError('Die Namen müssen unterschiedlich sein.')
-      return
+
+    const allNames = [adminName.trim().toLowerCase()]
+
+    for (let i = 0; i < members.length; i++) {
+      const m = members[i]
+      const nameErr = validateName(m.name)
+      if (nameErr) { setError(`Mitglied ${i + 1}: ${nameErr}`); return }
+
+      const lowerName = m.name.trim().toLowerCase()
+      if (allNames.includes(lowerName)) {
+        setError(`Mitglied ${i + 1}: Name muss eindeutig sein.`)
+        return
+      }
+      allNames.push(lowerName)
+
+      const pinErr = validatePin(m.pin, m.pinConfirm)
+      if (pinErr) { setError(`Mitglied ${i + 1}: ${pinErr}`); return }
     }
-    const pinErr = validatePin(user2Pin, user2PinConfirm)
-    if (pinErr) { setError(pinErr); return }
+
     setStep(4)
   }
 
+  // --- Step 4: submit ---
   async function handleSubmit() {
     setError('')
     setLoading(true)
+
+    const users = [
+      { name: adminName.trim(), pin: adminPin, role: 'admin' as Role },
+      ...members.map((m) => ({ name: m.name.trim(), pin: m.pin, role: m.role })),
+    ]
+
     try {
       const res = await fetch('/api/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user1: { name: user1Name.trim(), pin: user1Pin },
-          user2: { name: user2Name.trim(), pin: user2Pin },
-        }),
+        body: JSON.stringify({ users }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -76,11 +127,12 @@ export function SetupForm() {
     }
   }
 
+  // --- Step 1: Welcome ---
   if (step === 1) {
     return (
       <div className="text-center space-y-4">
         <p className="text-lg font-medium">Willkommen bei Chore-Quest!</p>
-        <p className="text-slate-500 text-sm">Richte dein Duo ein, um zu starten.</p>
+        <p className="text-slate-500 text-sm">Richte deine Familie ein, um zu starten.</p>
         <Button className="w-full" onClick={() => setStep(2)}>
           Los geht&apos;s
         </Button>
@@ -88,14 +140,15 @@ export function SetupForm() {
     )
   }
 
+  // --- Step 2: Admin ---
   if (step === 2) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-center">Spieler 1</h2>
+        <h2 className="text-lg font-semibold text-center">Admin einrichten</h2>
         <Input
           placeholder="Name"
-          value={user1Name}
-          onChange={(e) => setUser1Name(e.target.value)}
+          value={adminName}
+          onChange={(e) => setAdminName(e.target.value)}
           maxLength={50}
           autoFocus
         />
@@ -104,8 +157,8 @@ export function SetupForm() {
           inputMode="numeric"
           pattern="\d*"
           placeholder="PIN (4-8 Ziffern)"
-          value={user1Pin}
-          onChange={(e) => setUser1Pin(e.target.value.replace(/\D/g, ''))}
+          value={adminPin}
+          onChange={(e) => setAdminPin(e.target.value.replace(/\D/g, ''))}
           maxLength={8}
         />
         <Input
@@ -113,68 +166,99 @@ export function SetupForm() {
           inputMode="numeric"
           pattern="\d*"
           placeholder="PIN bestätigen"
-          value={user1PinConfirm}
-          onChange={(e) => setUser1PinConfirm(e.target.value.replace(/\D/g, ''))}
+          value={adminPinConfirm}
+          onChange={(e) => setAdminPinConfirm(e.target.value.replace(/\D/g, ''))}
           maxLength={8}
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
-        <Button className="w-full" onClick={handleStep2}>
+        <Button className="w-full" onClick={handleAdminNext}>
           Weiter
         </Button>
       </div>
     )
   }
 
+  // --- Step 3: Members ---
   if (step === 3) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-center">Spieler 2</h2>
-        <Input
-          placeholder="Name"
-          value={user2Name}
-          onChange={(e) => setUser2Name(e.target.value)}
-          maxLength={50}
-          autoFocus
-        />
-        <Input
-          type="password"
-          inputMode="numeric"
-          pattern="\d*"
-          placeholder="PIN (4-8 Ziffern)"
-          value={user2Pin}
-          onChange={(e) => setUser2Pin(e.target.value.replace(/\D/g, ''))}
-          maxLength={8}
-        />
-        <Input
-          type="password"
-          inputMode="numeric"
-          pattern="\d*"
-          placeholder="PIN bestätigen"
-          value={user2PinConfirm}
-          onChange={(e) => setUser2PinConfirm(e.target.value.replace(/\D/g, ''))}
-          maxLength={8}
-        />
+        <h2 className="text-lg font-semibold text-center">Familienmitglieder</h2>
+        {members.map((m, i) => (
+          <div key={i} className="space-y-2 border border-slate-200 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-600">Mitglied {i + 1}</span>
+              {members.length > 1 && (
+                <button
+                  type="button"
+                  className="text-red-500 text-sm hover:underline"
+                  onClick={() => removeMember(i)}
+                >
+                  Entfernen
+                </button>
+              )}
+            </div>
+            <Input
+              placeholder="Name"
+              value={m.name}
+              onChange={(e) => updateMember(i, { name: e.target.value })}
+              maxLength={50}
+            />
+            <Input
+              type="password"
+              inputMode="numeric"
+              pattern="\d*"
+              placeholder="PIN (4-8 Ziffern)"
+              value={m.pin}
+              onChange={(e) => updateMember(i, { pin: e.target.value.replace(/\D/g, '') })}
+              maxLength={8}
+            />
+            <Input
+              type="password"
+              inputMode="numeric"
+              pattern="\d*"
+              placeholder="PIN bestätigen"
+              value={m.pinConfirm}
+              onChange={(e) => updateMember(i, { pinConfirm: e.target.value.replace(/\D/g, '') })}
+              maxLength={8}
+            />
+            <select
+              className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm bg-white"
+              value={m.role}
+              onChange={(e) => updateMember(i, { role: e.target.value as Role })}
+            >
+              <option value="admin">Admin</option>
+              <option value="member">Mitglied</option>
+              <option value="child">Kind</option>
+            </select>
+          </div>
+        ))}
         {error && <p className="text-red-500 text-sm">{error}</p>}
-        <Button className="w-full" onClick={handleStep3}>
+        <Button variant="outline" className="w-full" onClick={addMember}>
+          Weiteres Mitglied
+        </Button>
+        <Button className="w-full" onClick={handleMembersNext}>
           Weiter
         </Button>
       </div>
     )
   }
 
-  // Step 4: Confirmation
+  // --- Step 4: Summary ---
+  const allUsers = [
+    { name: adminName.trim(), role: 'admin' as Role },
+    ...members.map((m) => ({ name: m.name.trim(), role: m.role })),
+  ]
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-center">Zusammenfassung</h2>
       <div className="space-y-2 bg-slate-50 rounded-xl p-4">
-        <p className="text-sm">
-          <span className="text-slate-500">Spieler 1:</span>{' '}
-          <span className="font-medium">{user1Name.trim()}</span>
-        </p>
-        <p className="text-sm">
-          <span className="text-slate-500">Spieler 2:</span>{' '}
-          <span className="font-medium">{user2Name.trim()}</span>
-        </p>
+        {allUsers.map((u, i) => (
+          <p key={i} className="text-sm">
+            <span className="text-slate-500">{ROLE_LABELS[u.role]}:</span>{' '}
+            <span className="font-medium">{u.name}</span>
+          </p>
+        ))}
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <Button className="w-full" onClick={handleSubmit} disabled={loading}>

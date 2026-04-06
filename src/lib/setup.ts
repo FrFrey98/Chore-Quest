@@ -49,7 +49,7 @@ export const DEFAULT_ACHIEVEMENTS = [
  * within a Prisma transaction context.
  * Note: Tasks are NOT seeded — users create their own via the task creation flow.
  */
-export async function seedDefaults(tx: any, user1Id: string, user2Id: string) { // eslint-disable-line
+export async function seedDefaults(tx: any, userIds: string[]) { // eslint-disable-line
   // Seed categories
   for (const cat of DEFAULT_CATEGORIES) {
     await tx.category.create({ data: cat })
@@ -67,7 +67,8 @@ export async function seedDefaults(tx: any, user1Id: string, user2Id: string) { 
     await tx.achievement.create({ data: ach })
   }
 
-  // Seed streak states for both users
-  await tx.streakState.create({ data: { userId: user1Id } })
-  await tx.streakState.create({ data: { userId: user2Id } })
+  // Seed streak states for all users
+  for (const userId of userIds) {
+    await tx.streakState.create({ data: { userId } })
+  }
 }
