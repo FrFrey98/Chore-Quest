@@ -99,6 +99,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
     }
   }
 
+  const pendingDue = due.filter((t) => !doneIds.has(t.id))
   const hasContent = completed.length > 0 || due.length > 0
 
   return (
@@ -145,11 +146,11 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       )}
 
       {/* Due yesterday — backfill */}
-      {due.filter((t) => !doneIds.has(t.id)).length > 0 && (
+      {pendingDue.length > 0 && (
         <div className="bg-white border border-slate-200 rounded-xl p-4">
           <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Nachtragen</h2>
           <div className="flex flex-col gap-2">
-            {due.filter((t) => !doneIds.has(t.id)).map((t) => (
+            {pendingDue.map((t) => (
               <div key={t.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400">
                 <span className="text-lg">{t.emoji}</span>
                 <div className="flex-1 min-w-0">
