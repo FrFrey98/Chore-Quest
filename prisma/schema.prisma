@@ -7,10 +7,17 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Role {
+  admin
+  member
+  child
+}
+
 model User {
   id          String   @id @default(cuid())
   name        String
   pin         String
+  role        Role     @default(member)
   createdAt   DateTime @default(now())
   notificationsEnabled     Boolean @default(false)
   installPromptDismissed   Boolean @default(false)
@@ -24,6 +31,7 @@ model User {
   streakState        StreakState?
   sharedCompletions  TaskCompletion[] @relation("sharedCompletions")
   pushSubscriptions  PushSubscription[]
+  assignedTasks      Task[]           @relation("TaskAssignments")
 }
 
 model Category {
@@ -58,6 +66,7 @@ model Task {
   completions       TaskCompletion[]
   approval          TaskApproval?
   scheduleOverrides TaskScheduleOverride[]
+  assignedUsers     User[]               @relation("TaskAssignments")
 }
 
 model TaskApproval {
