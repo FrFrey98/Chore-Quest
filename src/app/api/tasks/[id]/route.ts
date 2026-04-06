@@ -25,6 +25,8 @@ export async function PATCH(
         recurringInterval: body.recurringInterval ?? null,
         allowMultiple: body.allowMultiple !== undefined ? Boolean(body.allowMultiple) : undefined,
         dailyLimit: body.allowMultiple === false ? null : (body.dailyLimit !== undefined ? Number(body.dailyLimit) : undefined),
+        scheduleDays: body.scheduleDays !== undefined ? (body.scheduleDays || null) : undefined,
+        scheduleTime: body.scheduleTime !== undefined ? (body.scheduleTime || null) : undefined,
         ...(typeof body.status === 'string' && allowedStatuses.includes(body.status)
           ? { status: body.status }
           : {}),
