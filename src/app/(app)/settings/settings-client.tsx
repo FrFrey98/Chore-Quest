@@ -74,7 +74,7 @@ export function SettingsClient({
       {tab === 'bonus' && <BonusTab config={config} />}
       {tab === 'categories' && <CategoriesTab categories={categories} />}
       {tab === 'achievements' && <AchievementsTab achievements={achievements} categories={categories} />}
-      {tab === 'tasks' && <TasksTab tasks={tasks} categories={categories} userId={userId} />}
+      {tab === 'tasks' && <TasksTab tasks={tasks} categories={categories} users={users.map((u) => ({ id: u.id, name: u.name }))} userId={userId} />}
       {tab === 'store' && <StoreTab storeItems={storeItems} />}
       {tab === 'notifications' && <NotificationsTab userId={userId} notificationsEnabled={notificationsEnabled} vapidPublicKey={vapidPublicKey} />}
     </div>

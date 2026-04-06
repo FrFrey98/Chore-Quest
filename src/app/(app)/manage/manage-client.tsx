@@ -30,15 +30,17 @@ type Reward = {
 }
 
 type Category = { id: string; name: string; emoji: string }
+type UserItem = { id: string; name: string }
 
 type ManageClientProps = {
   tasks: Task[]
   categories: Category[]
   rewards: Reward[]
+  users?: UserItem[]
   initialTab: string
 }
 
-export function ManageClient({ tasks, categories, rewards, initialTab }: ManageClientProps) {
+export function ManageClient({ tasks, categories, rewards, users, initialTab }: ManageClientProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tab = searchParams.get('tab') ?? initialTab
@@ -95,6 +97,7 @@ export function ManageClient({ tasks, categories, rewards, initialTab }: ManageC
               key={`${task.id}-${task.title}-${task.status}`}
               task={task}
               categories={categories}
+              users={users}
               isEditing={editingId === task.id}
               onStartEdit={() => setEditingId(task.id)}
               onCancelEdit={() => setEditingId(null)}

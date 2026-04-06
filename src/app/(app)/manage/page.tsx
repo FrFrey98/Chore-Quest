@@ -9,15 +9,22 @@ export default async function ManagePage({ searchParams }: { searchParams: { tab
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
 
-  const [tasks, categories, rewards] = await Promise.all([
+  const [tasks, categories, rewards, users] = await Promise.all([
     prisma.task.findMany({
-      include: { category: { select: { id: true, name: true, emoji: true } } },
+      include: {
+        category: { select: { id: true, name: true, emoji: true } },
+        assignedUsers: { select: { id: true } },
+      },
       orderBy: [{ status: 'asc' }, { title: 'asc' }],
     }),
     prisma.category.findMany({ orderBy: { name: 'asc' } }),
     prisma.storeItem.findMany({
       where: { type: 'real_reward' },
       orderBy: [{ isActive: 'desc' }, { title: 'asc' }],
+    }),
+    prisma.user.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
     }),
   ])
 
@@ -34,6 +41,7 @@ export default async function ManagePage({ searchParams }: { searchParams: { tab
     dailyLimit: t.dailyLimit,
     scheduleDays: t.scheduleDays ?? null,
     scheduleTime: t.scheduleTime ?? null,
+    assignedUserIds: t.assignedUsers.map((u) => u.id),
   }))
 
   const serializedRewards = rewards.map((r) => ({
@@ -51,6 +59,7 @@ export default async function ManagePage({ searchParams }: { searchParams: { tab
         tasks={serializedTasks}
         categories={categories}
         rewards={serializedRewards}
+        users={users}
         initialTab={searchParams.tab ?? 'tasks'}
       />
     </Suspense>

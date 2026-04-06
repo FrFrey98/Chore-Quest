@@ -9,6 +9,7 @@ import { ConfirmDialog } from '@/components/manage/confirm-dialog'
 import { Pencil, Trash2, RotateCcw, Check, X } from 'lucide-react'
 
 type Category = { id: string; name: string; emoji: string }
+type UserItem = { id: string; name: string }
 
 type Task = {
   id: string
@@ -23,11 +24,13 @@ type Task = {
   dailyLimit: number | null
   scheduleDays: string | null
   scheduleTime: string | null
+  assignedUserIds?: string[]
 }
 
 type TaskRowProps = {
   task: Task
   categories: Category[]
+  users?: UserItem[]
   isEditing: boolean
   onStartEdit: () => void
   onCancelEdit: () => void
@@ -39,7 +42,7 @@ const STATUS_BADGES: Record<string, { label: string; className: string }> = {
   archived: { label: 'Archiviert', className: 'bg-slate-100 text-slate-500' },
 }
 
-export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit }: TaskRowProps) {
+export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCancelEdit }: TaskRowProps) {
   const router = useRouter()
   const { toast } = useToast()
   const [form, setForm] = useState({
@@ -54,6 +57,7 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
     dailyLimit: task.dailyLimit ?? 3,
     scheduleDays: task.scheduleDays ?? '',
     scheduleTime: task.scheduleTime ?? '',
+    assignedUserIds: task.assignedUserIds ?? [],
   })
   const [saving, setSaving] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -75,6 +79,7 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
           dailyLimit: form.allowMultiple ? form.dailyLimit : null,
           scheduleDays: form.scheduleDays || null,
           scheduleTime: form.scheduleTime || null,
+          assignedUserIds: form.assignedUserIds,
         }),
       })
       if (res.ok) {
@@ -171,6 +176,35 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
             </select>
           </div>
         </div>
+        {users && users.length > 0 && (
+          <div>
+            <label className="text-xs text-slate-500 mb-1 block">Zugewiesen an (optional)</label>
+            <div className="flex gap-1 flex-wrap">
+              {users.map((u) => {
+                const active = form.assignedUserIds.includes(u.id)
+                return (
+                  <button
+                    key={u.id}
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        assignedUserIds: active
+                          ? prev.assignedUserIds.filter((id) => id !== u.id)
+                          : [...prev.assignedUserIds, u.id],
+                      }))
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    }`}
+                  >
+                    {u.name}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <input

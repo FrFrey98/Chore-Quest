@@ -8,14 +8,18 @@ import { Label } from '@/components/ui/label'
 
 type Category = { id: string; name: string; emoji: string; taskCount: number }
 type Task = { id: string; title: string; emoji: string; points: number; status: string; category: { id: string; name: string; emoji: string } }
+type UserItem = { id: string; name: string }
 
-export function TasksTab({ tasks, categories, userId }: { tasks: Task[]; categories: Category[]; userId: string }) {
+export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; categories: Category[]; users?: UserItem[]; userId: string }) {
   const router = useRouter()
   const [error, setError] = useState('')
   const [form, setForm] = useState({
     title: '', emoji: '🏠', points: 30, categoryId: categories[0]?.id ?? '',
     isRecurring: false, recurringInterval: 'weekly',
     allowMultiple: false, dailyLimit: 3,
+    scheduleDays: '' as string,
+    scheduleTime: '' as string,
+    assignedUserIds: [] as string[],
   })
 
   async function createTask() {
@@ -23,7 +27,13 @@ export function TasksTab({ tasks, categories, userId }: { tasks: Task[]; categor
     const res = await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        scheduleDays: form.scheduleDays || null,
+        scheduleTime: form.scheduleTime || null,
+        recurringInterval: form.scheduleDays ? null : form.recurringInterval,
+        ...(form.assignedUserIds.length ? { assignedUserIds: form.assignedUserIds } : {}),
+      }),
     })
     if (res.ok) {
       setForm((prev) => ({ ...prev, title: '' }))
@@ -73,20 +83,94 @@ export function TasksTab({ tasks, categories, userId }: { tasks: Task[]; categor
             {categories.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>)}
           </select>
         </div>
-        <div className="flex items-center gap-3">
-          <input type="checkbox" id="recurring" checked={form.isRecurring}
-            onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })} />
-          <Label htmlFor="recurring">Wiederkehrend</Label>
+        {users && users.length > 0 && (
+          <div>
+            <Label>Zugewiesen an (optional)</Label>
+            <div className="flex gap-1 flex-wrap mt-1">
+              {users.map((u) => {
+                const active = form.assignedUserIds.includes(u.id)
+                return (
+                  <button
+                    key={u.id}
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        assignedUserIds: active
+                          ? prev.assignedUserIds.filter((id) => id !== u.id)
+                          : [...prev.assignedUserIds, u.id],
+                      }))
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    }`}
+                  >
+                    {u.name}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <input type="checkbox" id="recurring" checked={form.isRecurring}
+              onChange={(e) => setForm({ ...form, isRecurring: e.target.checked, scheduleDays: '' })} />
+            <Label htmlFor="recurring">Wiederkehrend</Label>
+            {form.isRecurring && !form.scheduleDays && (
+              <select
+                className="border rounded-md px-2 py-1 text-sm"
+                value={form.recurringInterval}
+                onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}
+              >
+                <option value="daily">Täglich</option>
+                <option value="weekly">Wöchentlich</option>
+                <option value="monthly">Monatlich</option>
+                <option value="custom">Bestimmte Tage…</option>
+              </select>
+            )}
+          </div>
+          {form.isRecurring && (form.recurringInterval === 'custom' || form.scheduleDays) && (
+            <div className="flex gap-1 flex-wrap">
+              {[
+                { key: 'mon', label: 'Mo' }, { key: 'tue', label: 'Di' },
+                { key: 'wed', label: 'Mi' }, { key: 'thu', label: 'Do' },
+                { key: 'fri', label: 'Fr' }, { key: 'sat', label: 'Sa' },
+                { key: 'sun', label: 'So' },
+              ].map(({ key, label }) => {
+                const days = form.scheduleDays ? form.scheduleDays.split(',') : []
+                const isActive = days.includes(key)
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => {
+                      const newDays = isActive
+                        ? days.filter((d) => d !== key)
+                        : [...days, key]
+                      setForm({ ...form, scheduleDays: newDays.join(',') })
+                    }}
+                    className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
+                      isActive ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          )}
           {form.isRecurring && (
-            <select
-              className="border rounded-md px-2 py-1 text-sm"
-              value={form.recurringInterval}
-              onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}
-            >
-              <option value="daily">Täglich</option>
-              <option value="weekly">Wöchentlich</option>
-              <option value="monthly">Monatlich</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="schedule-time">Erinnerung</Label>
+              <input
+                type="time"
+                id="schedule-time"
+                value={form.scheduleTime}
+                onChange={(e) => setForm({ ...form, scheduleTime: e.target.value })}
+                className="border rounded-md px-2 py-1 text-sm"
+              />
+            </div>
           )}
         </div>
         <div className="flex items-center gap-3">
