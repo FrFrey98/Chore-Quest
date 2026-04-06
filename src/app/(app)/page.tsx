@@ -13,6 +13,7 @@ import { TodaySection } from '@/components/dashboard/today-section'
 import { WeekChart } from '@/components/dashboard/week-chart'
 import { GroupedFeed } from '@/components/dashboard/grouped-feed'
 import { DashboardNotifications } from '@/components/dashboard/dashboard-notifications'
+import { YesterdayBanner } from '@/components/dashboard/yesterday-banner'
 
 const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
 
@@ -55,7 +56,10 @@ export default async function DashboardPage() {
   const todayStart = new Date(now)
   todayStart.setUTCHours(0, 0, 0, 0)
 
-  const [todayCompletions, recurringTasks] = await Promise.all([
+  const yesterdayStart = new Date(todayStart)
+  yesterdayStart.setUTCDate(yesterdayStart.getUTCDate() - 1)
+
+  const [todayCompletions, recurringTasks, yesterdayCompletions] = await Promise.all([
     prisma.taskCompletion.findMany({
       where: { userId, completedAt: { gte: todayStart } },
       include: { task: { select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true } } },
@@ -71,7 +75,18 @@ export default async function DashboardPage() {
       },
       select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true },
     }),
+    prisma.taskCompletion.findMany({
+      where: { userId, completedAt: { gte: yesterdayStart, lt: todayStart } },
+      select: { taskId: true },
+    }),
   ])
+  // Count tasks that were due yesterday but not completed
+  const yesterdayCompletedTaskIds = new Set(yesterdayCompletions.map((c) => c.taskId))
+  const yesterdayUncompletedCount = recurringTasks.filter((t) => {
+    if (yesterdayCompletedTaskIds.has(t.id)) return false
+    return true
+  }).length
+
   const completedToday = todayCompletions.map((c) => ({
     id: c.id,
     taskId: c.taskId,
@@ -202,6 +217,7 @@ export default async function DashboardPage() {
   return (
     <div>
       <DashboardNotifications />
+      <YesterdayBanner count={yesterdayUncompletedCount} />
       <h1 className="text-xl font-bold mb-4">Dashboard</h1>
 
       <StatPills
