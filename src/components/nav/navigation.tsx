@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation'
 import { Home, CheckSquare, ShoppingBag, Trophy, User, ClipboardCheck, ListTodo, Settings, type LucideIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { getVisibleNavItems } from '@/lib/permissions'
-import type { Role } from '@/generated/prisma'
 
 function isActive(pathname: string, href: string): boolean {
   if (href === '/') return pathname === '/'
@@ -25,7 +24,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 export function Navigation() {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const role = (session?.user as { role?: Role } | undefined)?.role ?? 'child'
+  const role = session?.user?.role ?? 'child'
   const navItems = getVisibleNavItems(role)
 
   return (
@@ -33,7 +32,7 @@ export function Navigation() {
       {/* Mobile bottom bar */}
       <nav aria-label="Hauptnavigation" className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex md:hidden z-50">
         {navItems.map(({ href, icon, label }) => {
-          const Icon = ICON_MAP[icon]
+          const Icon = ICON_MAP[icon] ?? Home
           return (
             <Link
               key={href}
@@ -43,7 +42,7 @@ export function Navigation() {
                 isActive(pathname, href) ? 'text-indigo-600' : 'text-slate-500'
               }`}
             >
-              {Icon && <Icon size={20} />}
+              <Icon size={20} />
               <span>{label}</span>
             </Link>
           )
@@ -54,7 +53,7 @@ export function Navigation() {
       <nav aria-label="Seitenleiste" className="hidden md:flex flex-col w-56 min-h-screen bg-white border-r border-slate-200 p-4 gap-1">
         <div className="text-lg font-bold mb-6 px-3">🏠 Chore-Quest</div>
         {navItems.map(({ href, icon, label }) => {
-          const Icon = ICON_MAP[icon]
+          const Icon = ICON_MAP[icon] ?? Home
           return (
             <Link
               key={href}
@@ -66,7 +65,7 @@ export function Navigation() {
                   : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {Icon && <Icon size={18} />}
+              <Icon size={18} />
               {label}
             </Link>
           )
