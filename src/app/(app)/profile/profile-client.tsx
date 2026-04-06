@@ -1,6 +1,10 @@
 'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Bell, BellOff } from 'lucide-react'
 import { Heatmap } from '@/components/stats/heatmap'
+import { useToast } from '@/components/toast-provider'
 
 type Purchase = {
   id: string
@@ -29,15 +33,121 @@ type AchievementsSummary = {
 
 export function ProfileClient({
   userName,
+  userId,
   personal,
   achievementsSummary,
   isOwnProfile,
+  notificationsEnabled,
+  vapidPublicKey,
 }: {
   userName: string
+  userId: string
   personal: Personal
   achievementsSummary: AchievementsSummary
   isOwnProfile: boolean
+  notificationsEnabled: boolean
+  vapidPublicKey: string | null
 }) {
+  const router = useRouter()
+  const { toast } = useToast()
+
+  // PIN change state
+  const [currentPin, setCurrentPin] = useState('')
+  const [newPin, setNewPin] = useState('')
+  const [pinMsg, setPinMsg] = useState('')
+
+  // Notification state
+  const [notifEnabled, setNotifEnabled] = useState(notificationsEnabled)
+  const [notifLoading, setNotifLoading] = useState(false)
+
+  const pushSupported = typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
+  const configured = !!vapidPublicKey
+
+  async function handlePinChange() {
+    setPinMsg('')
+    if (!currentPin) { setPinMsg('Aktueller PIN erforderlich'); return }
+    if (!/^\d{4,8}$/.test(newPin)) {
+      setPinMsg('PIN muss 4-8 Ziffern lang sein')
+      return
+    }
+    const res = await fetch(`/api/users/${userId}/pin`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: newPin, currentPin }),
+    })
+    if (res.ok) {
+      setCurrentPin('')
+      setNewPin('')
+      setPinMsg('PIN geändert ✓')
+    } else {
+      const d = await res.json()
+      setPinMsg(d.error ?? 'Fehler')
+    }
+  }
+
+  async function handleNotifToggle() {
+    if (!pushSupported) {
+      toast('Push-Benachrichtigungen werden von diesem Browser nicht unterstützt', 'error')
+      return
+    }
+    if (!configured) {
+      toast('Push ist serverseitig nicht konfiguriert', 'error')
+      return
+    }
+
+    setNotifLoading(true)
+    try {
+      if (!notifEnabled) {
+        const permission = await Notification.requestPermission()
+        if (permission !== 'granted') {
+          toast('Browser-Berechtigung für Benachrichtigungen benötigt', 'error')
+          setNotifLoading(false)
+          return
+        }
+
+        const registration = await navigator.serviceWorker.ready
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey!),
+        })
+
+        const subJson = subscription.toJSON()
+        const res = await fetch('/api/notifications/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: subJson.endpoint,
+            p256dh: subJson.keys?.p256dh,
+            auth: subJson.keys?.auth,
+          }),
+        })
+
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error ?? 'Fehler')
+        }
+
+        setNotifEnabled(true)
+        toast('Benachrichtigungen aktiviert', 'success')
+      } else {
+        const registration = await navigator.serviceWorker.ready
+        const subscription = await registration.pushManager.getSubscription()
+        if (subscription) {
+          await subscription.unsubscribe()
+        }
+
+        await fetch('/api/notifications/push/subscribe', { method: 'DELETE' })
+        setNotifEnabled(false)
+        toast('Benachrichtigungen deaktiviert', 'info')
+      }
+      router.refresh()
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : 'Fehler', 'error')
+    } finally {
+      setNotifLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header card */}
@@ -185,6 +295,96 @@ export function ProfileClient({
           </div>
         )}
       </div>
+
+      {/* PIN change section */}
+      {isOwnProfile && (
+        <div className="space-y-4">
+          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Sicherheit</h2>
+          <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">PIN ändern</p>
+            <input
+              type="password"
+              inputMode="numeric"
+              pattern="\d{4,8}"
+              maxLength={8}
+              placeholder="Aktueller PIN"
+              value={currentPin}
+              onChange={(e) => setCurrentPin(e.target.value.replace(/\D/g, ''))}
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+            <div className="flex gap-2">
+              <input
+                type="password"
+                inputMode="numeric"
+                pattern="\d{4,8}"
+                maxLength={8}
+                placeholder="Neuer PIN (4-8 Ziffern)"
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+              <button
+                onClick={handlePinChange}
+                disabled={!newPin || !currentPin}
+                className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Ändern
+              </button>
+            </div>
+            {pinMsg && (
+              <p className={`text-xs ${pinMsg.includes('✓') ? 'text-green-600' : 'text-red-500'}`}>
+                {pinMsg}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Notifications section */}
+      {isOwnProfile && (
+        <div className="space-y-4">
+          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Benachrichtigungen</h2>
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {notifEnabled ? <Bell size={20} className="text-indigo-600" /> : <BellOff size={20} className="text-slate-400" />}
+                <div>
+                  <div className="text-sm font-semibold text-slate-800">Push-Benachrichtigungen</div>
+                  <div className="text-xs text-slate-500">Erinnerung wenn Aufgaben mit Uhrzeit fällig sind</div>
+                </div>
+              </div>
+              <button
+                onClick={handleNotifToggle}
+                disabled={notifLoading || !pushSupported || !configured}
+                className={`relative w-12 h-7 rounded-full transition-colors ${
+                  notifEnabled ? 'bg-indigo-600' : 'bg-slate-300'
+                } ${notifLoading || !pushSupported || !configured ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                  notifEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+            {!pushSupported && (
+              <p className="text-xs text-amber-600 mt-2">Dieser Browser unterstützt keine Push-Benachrichtigungen.</p>
+            )}
+            {pushSupported && !configured && (
+              <p className="text-xs text-amber-600 mt-2">Push ist serverseitig nicht konfiguriert (VAPID-Keys fehlen).</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
+}
+
+function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = atob(base64)
+  const outputArray = new Uint8Array(rawData.length) as Uint8Array<ArrayBuffer>
+  for (let i = 0; i < rawData.length; i++) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
 }

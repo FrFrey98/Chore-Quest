@@ -42,6 +42,7 @@ export default async function UserProfilePage({ params }: { params: { userId: st
   return (
     <ProfileClient
       userName={userName}
+      userId={userId}
       personal={{
         heatmap: stats.heatmap,
         topTasks: stats.topTasks,
@@ -53,6 +54,8 @@ export default async function UserProfilePage({ params }: { params: { userId: st
       }}
       achievementsSummary={achievementsSummary}
       isOwnProfile={false}
+      notificationsEnabled={false}
+      vapidPublicKey={null}
     />
   )
 }

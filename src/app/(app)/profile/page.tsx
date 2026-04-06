@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
 import { ProfileClient } from './profile-client'
 import { computeProfileStats } from '@/lib/profile-stats'
+import { getVapidPublicKey } from '@/lib/push'
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions)
@@ -13,7 +14,13 @@ export default async function ProfilePage() {
   const config = await loadGameConfig()
 
   // --- Personal stats (from old stats page) ---
-  const stats = await computeProfileStats(userId, config.levelDefinitions)
+  const [stats, currentUser] = await Promise.all([
+    computeProfileStats(userId, config.levelDefinitions),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { notificationsEnabled: true },
+    }),
+  ])
 
   const purchases = await prisma.purchase.findMany({
     where: { userId },
@@ -52,6 +59,7 @@ export default async function ProfilePage() {
   return (
     <ProfileClient
       userName={userName}
+      userId={userId}
       personal={{
         heatmap: stats.heatmap,
         topTasks: stats.topTasks,
@@ -63,6 +71,8 @@ export default async function ProfilePage() {
       }}
       achievementsSummary={achievementsSummary}
       isOwnProfile={true}
+      notificationsEnabled={currentUser?.notificationsEnabled ?? false}
+      vapidPublicKey={getVapidPublicKey()}
     />
   )
 }
