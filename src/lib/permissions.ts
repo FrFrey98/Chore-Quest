@@ -20,21 +20,18 @@ export interface NavItem {
   minRole?: Role[]
 }
 
-const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
-  admin: [
-    'manageUsers',
-    'editSettings',
-    'manageStore',
-    'manageAchievements',
-    'manageCategories',
-    'createTasks',
-    'approveTasks',
-    'completeTasks',
-    'useStore',
-    'viewAllProfiles',
-  ],
-  member: ['createTasks', 'approveTasks', 'completeTasks', 'useStore', 'viewAllProfiles'],
-  child: ['completeTasks', 'useStore', 'viewAllProfiles'],
+const PERMISSION_MAP: Record<Role, Set<Permission>> = {
+  admin: new Set([
+    'manageUsers', 'editSettings', 'manageStore', 'manageAchievements',
+    'manageCategories', 'createTasks', 'approveTasks', 'completeTasks',
+    'useStore', 'viewAllProfiles',
+  ]),
+  member: new Set([
+    'createTasks', 'approveTasks', 'completeTasks', 'useStore', 'viewAllProfiles',
+  ]),
+  child: new Set([
+    'completeTasks', 'useStore', 'viewAllProfiles',
+  ]),
 }
 
 const ALL_NAV_ITEMS: NavItem[] = [
@@ -49,7 +46,7 @@ const ALL_NAV_ITEMS: NavItem[] = [
 ]
 
 export function hasPermission(role: Role, permission: Permission): boolean {
-  return ROLE_PERMISSIONS[role].includes(permission)
+  return PERMISSION_MAP[role]?.has(permission) ?? false
 }
 
 export function requirePermission(
@@ -57,7 +54,7 @@ export function requirePermission(
   permission: Permission,
 ): { error: string; status: number } | null {
   if (!role || !hasPermission(role, permission)) {
-    return { error: 'Forbidden', status: 403 }
+    return { error: 'Keine Berechtigung', status: 403 }
   }
   return null
 }
@@ -67,7 +64,7 @@ export function requireRole(
   ...allowed: Role[]
 ): { error: string; status: number } | null {
   if (!role || !allowed.includes(role)) {
-    return { error: 'Forbidden', status: 403 }
+    return { error: 'Keine Berechtigung', status: 403 }
   }
   return null
 }
