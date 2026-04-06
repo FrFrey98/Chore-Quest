@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
 import { getNextDueAt } from '@/lib/recurring'
 import { checkAndUnlockAchievements } from '@/lib/achievements'
-import { applyBonus, updateStreakOnCompletion } from '@/lib/streak'
+import { applyBonus, updateStreakOnCompletion, recalculateStreak } from '@/lib/streak'
 
 export async function POST(
   req: NextRequest,
@@ -18,12 +18,14 @@ export async function POST(
 
   const userId = session.user.id
   let withUserId: string | undefined
+  let dateParam: string | undefined
 
   try {
     const body = await req.json()
     withUserId = body.withUserId
+    dateParam = body.date
   } catch {
-    // No body or invalid JSON — solo completion
+    // No body or invalid JSON — solo completion, today
   }
 
   // Validate partner exists if shared
@@ -34,34 +36,47 @@ export async function POST(
     }
   }
 
+  // Determine completion timestamp
+  let completedAt: Date | undefined
+  if (dateParam === 'yesterday') {
+    const yesterday = new Date()
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1)
+    yesterday.setUTCHours(23, 59, 0, 0)
+    completedAt = yesterday
+  } else if (dateParam && dateParam !== 'today') {
+    return NextResponse.json({ error: 'Ungültiges Datum' }, { status: 400 })
+  }
+
   const task = await prisma.task.findUnique({ where: { id: params.id } })
   if (!task || task.status !== 'active') {
     return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
   }
 
+  // Determine the day start for duplicate checking
+  const checkDayStart = new Date()
+  if (dateParam === 'yesterday') {
+    checkDayStart.setUTCDate(checkDayStart.getUTCDate() - 1)
+  }
+  checkDayStart.setUTCHours(0, 0, 0, 0)
+  const checkDayEnd = new Date(checkDayStart)
+  checkDayEnd.setUTCDate(checkDayEnd.getUTCDate() + 1)
+
   // Multi-completion limit check
   if (!task.allowMultiple) {
-    // Standard: check if already completed today
-    const todayStart = new Date()
-    todayStart.setUTCHours(0, 0, 0, 0)
-    const existingToday = await prisma.taskCompletion.findFirst({
-      where: { taskId: task.id, userId, completedAt: { gte: todayStart } },
+    const existingOnDay = await prisma.taskCompletion.findFirst({
+      where: { taskId: task.id, userId, completedAt: { gte: checkDayStart, lt: checkDayEnd } },
     })
-    if (existingToday) {
-      return NextResponse.json({ error: 'Aufgabe heute bereits erledigt' }, { status: 409 })
+    if (existingOnDay) {
+      return NextResponse.json({ error: dateParam === 'yesterday' ? 'Aufgabe gestern bereits erledigt' : 'Aufgabe heute bereits erledigt' }, { status: 409 })
     }
   } else if (task.dailyLimit) {
-    // Multi: check against daily limit
-    const todayStart = new Date()
-    todayStart.setUTCHours(0, 0, 0, 0)
-    const todayCount = await prisma.taskCompletion.count({
-      where: { taskId: task.id, userId, completedAt: { gte: todayStart } },
+    const dayCount = await prisma.taskCompletion.count({
+      where: { taskId: task.id, userId, completedAt: { gte: checkDayStart, lt: checkDayEnd } },
     })
-    if (todayCount >= task.dailyLimit) {
+    if (dayCount >= task.dailyLimit) {
       return NextResponse.json({ error: `Tageslimit erreicht (${task.dailyLimit}x)` }, { status: 409 })
     }
   }
-  // else: allowMultiple=true with no dailyLimit → unlimited completions allowed
 
   const isShared = !!withUserId
 
@@ -75,6 +90,7 @@ export async function POST(
       userId,
       points: pointsWithBonus,
       withUserId: withUserId ?? null,
+      ...(completedAt ? { completedAt } : {}),
     },
   })
 
@@ -89,27 +105,35 @@ export async function POST(
         userId: withUserId,
         points: partnerPoints,
         withUserId: userId,
+        ...(completedAt ? { completedAt } : {}),
       },
     })
   }
 
+  // For yesterday backfills, recalculate streak from actual completion records
+  if (dateParam === 'yesterday') {
+    await recalculateStreak(userId)
+    if (withUserId) {
+      await recalculateStreak(withUserId)
+    }
+  }
+
+  // Base date for recurring calculations: yesterday if backfilling, today otherwise
+  const recurringBaseDate = completedAt ?? new Date()
+
   // Handle recurring/one-time task state
   if (task.allowMultiple) {
-    // Multi-completion: only update nextDueAt when daily limit is reached (for recurring tasks)
     if (task.dailyLimit && task.isRecurring && task.recurringInterval) {
-      const todayStart = new Date()
-      todayStart.setUTCHours(0, 0, 0, 0)
       const newCount = await prisma.taskCompletion.count({
-        where: { taskId: task.id, userId, completedAt: { gte: todayStart } },
+        where: { taskId: task.id, userId, completedAt: { gte: checkDayStart, lt: checkDayEnd } },
       })
       if (newCount >= task.dailyLimit) {
-        const nextDueAt = getNextDueAt(task.recurringInterval, new Date(), config.recurringIntervals)
+        const nextDueAt = getNextDueAt(task.recurringInterval, recurringBaseDate, config.recurringIntervals)
         await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
       }
     }
-    // For allowMultiple tasks (recurring or not), never archive
   } else if (task.isRecurring && task.recurringInterval) {
-    const nextDueAt = getNextDueAt(task.recurringInterval, new Date(), config.recurringIntervals)
+    const nextDueAt = getNextDueAt(task.recurringInterval, recurringBaseDate, config.recurringIntervals)
     await prisma.task.update({ where: { id: task.id }, data: { nextDueAt } })
   } else {
     await prisma.task.update({
