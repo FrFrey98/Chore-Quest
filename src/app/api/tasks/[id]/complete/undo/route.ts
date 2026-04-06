@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { recalculateStreak } from '@/lib/streak'
 
 export async function POST(
   req: NextRequest,
@@ -34,9 +35,12 @@ export async function POST(
     return NextResponse.json({ error: 'Nicht berechtigt' }, { status: 403 })
   }
 
-  // Can only be undone within 5 minutes
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-  if (completion.completedAt < fiveMinutesAgo) {
+  // Can only be undone until end of next calendar day (UTC)
+  const completionDay = new Date(completion.completedAt)
+  completionDay.setUTCHours(0, 0, 0, 0)
+  const deadline = new Date(completionDay)
+  deadline.setUTCDate(deadline.getUTCDate() + 2) // midnight after next day
+  if (new Date() >= deadline) {
     return NextResponse.json({ error: 'Zeitfenster abgelaufen' }, { status: 410 })
   }
 
@@ -73,6 +77,12 @@ export async function POST(
       }
     }
   })
+
+  // Recalculate streak for the user (and partner if shared)
+  await recalculateStreak(completion.userId)
+  if (completion.withUserId) {
+    await recalculateStreak(completion.withUserId)
+  }
 
   return NextResponse.json({ success: true })
 }
