@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
 import { getNextDueAt } from '@/lib/recurring'
 import { checkAndUnlockAchievements } from '@/lib/achievements'
-import { applyBonus, updateStreakOnCompletion, recalculateStreak } from '@/lib/streak'
+import { applyBonus, updateStreakOnCompletion, recalculateStreak, getOrCreateStreakState, getEffectiveStreak } from '@/lib/streak'
 
 export async function POST(
   req: NextRequest,
@@ -81,7 +81,15 @@ export async function POST(
   const isShared = !!withUserId
 
   // Update streak and calculate bonus for current user
-  const { currentStreak } = await updateStreakOnCompletion(userId, config.streakTiers)
+  let currentStreak: number
+  if (dateParam === 'yesterday') {
+    // For backfills: read current streak without mutating, recalculateStreak handles state after completion
+    const state = await getOrCreateStreakState(userId)
+    currentStreak = getEffectiveStreak(state)
+  } else {
+    const result = await updateStreakOnCompletion(userId, config.streakTiers)
+    currentStreak = result.currentStreak
+  }
   const pointsWithBonus = applyBonus(task.points, currentStreak, isShared, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
 
   const completion = await prisma.taskCompletion.create({
@@ -97,7 +105,14 @@ export async function POST(
   // Create partner completion if shared
   let partnerCompletion = null
   if (withUserId) {
-    const { currentStreak: partnerStreak } = await updateStreakOnCompletion(withUserId, config.streakTiers)
+    let partnerStreak: number
+    if (dateParam === 'yesterday') {
+      const partnerState = await getOrCreateStreakState(withUserId)
+      partnerStreak = getEffectiveStreak(partnerState)
+    } else {
+      const result = await updateStreakOnCompletion(withUserId, config.streakTiers)
+      partnerStreak = result.currentStreak
+    }
     const partnerPoints = applyBonus(task.points, partnerStreak, true, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
     partnerCompletion = await prisma.taskCompletion.create({
       data: {
