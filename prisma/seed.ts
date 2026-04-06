@@ -72,13 +72,13 @@ async function main() {
   const alice = await prisma.user.upsert({
     where: { id: 'seed-user-1' },
     update: {},
-    create: { id: 'seed-user-1', name: 'Alice', pin: pin1 },
+    create: { id: 'seed-user-1', name: 'Alice', pin: pin1, role: 'admin' },
   })
 
   const bob = await prisma.user.upsert({
     where: { id: 'seed-user-2' },
     update: {},
-    create: { id: 'seed-user-2', name: 'Bob', pin: pin2 },
+    create: { id: 'seed-user-2', name: 'Bob', pin: pin2, role: 'member' },
   })
 
   // Seed categories
