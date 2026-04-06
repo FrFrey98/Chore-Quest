@@ -16,6 +16,8 @@ type Task = {
   status: string
   allowMultiple: boolean
   dailyLimit: number | null
+  scheduleDays: string | null
+  scheduleTime: string | null
 }
 
 type Reward = {

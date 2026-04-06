@@ -21,6 +21,8 @@ type Task = {
   status: string
   allowMultiple: boolean
   dailyLimit: number | null
+  scheduleDays: string | null
+  scheduleTime: string | null
 }
 
 type TaskRowProps = {
@@ -50,6 +52,8 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
     status: task.status,
     allowMultiple: task.allowMultiple,
     dailyLimit: task.dailyLimit ?? 3,
+    scheduleDays: task.scheduleDays ?? '',
+    scheduleTime: task.scheduleTime ?? '',
   })
   const [saving, setSaving] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -67,8 +71,10 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          recurringInterval: form.isRecurring ? form.recurringInterval : null,
+          recurringInterval: form.scheduleDays ? null : (form.isRecurring ? form.recurringInterval : null),
           dailyLimit: form.allowMultiple ? form.dailyLimit : null,
+          scheduleDays: form.scheduleDays || null,
+          scheduleTime: form.scheduleTime || null,
         }),
       })
       if (res.ok) {
@@ -165,24 +171,69 @@ export function TaskRow({ task, categories, isEditing, onStartEdit, onCancelEdit
             </select>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id={`recurring-${task.id}`}
-            checked={form.isRecurring}
-            onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
-          />
-          <label htmlFor={`recurring-${task.id}`} className="text-sm">Wiederkehrend</label>
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id={`recurring-${task.id}`}
+              checked={form.isRecurring}
+              onChange={(e) => setForm({ ...form, isRecurring: e.target.checked, scheduleDays: '' })}
+            />
+            <label htmlFor={`recurring-${task.id}`} className="text-sm">Wiederkehrend</label>
+            {form.isRecurring && !form.scheduleDays && (
+              <select
+                className="border border-slate-200 rounded-md px-2 py-1 text-sm"
+                value={form.recurringInterval}
+                onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}
+              >
+                <option value="daily">Täglich</option>
+                <option value="weekly">Wöchentlich</option>
+                <option value="monthly">Monatlich</option>
+                <option value="custom">Bestimmte Tage…</option>
+              </select>
+            )}
+          </div>
+          {form.isRecurring && (form.recurringInterval === 'custom' || form.scheduleDays) && (
+            <div className="flex gap-1 flex-wrap">
+              {[
+                { key: 'mon', label: 'Mo' }, { key: 'tue', label: 'Di' },
+                { key: 'wed', label: 'Mi' }, { key: 'thu', label: 'Do' },
+                { key: 'fri', label: 'Fr' }, { key: 'sat', label: 'Sa' },
+                { key: 'sun', label: 'So' },
+              ].map(({ key, label }) => {
+                const days = form.scheduleDays ? form.scheduleDays.split(',') : []
+                const isActive = days.includes(key)
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => {
+                      const newDays = isActive
+                        ? days.filter((d) => d !== key)
+                        : [...days, key]
+                      setForm({ ...form, scheduleDays: newDays.join(',') })
+                    }}
+                    className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
+                      isActive ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          )}
           {form.isRecurring && (
-            <select
-              className="border border-slate-200 rounded-md px-2 py-1 text-sm"
-              value={form.recurringInterval}
-              onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}
-            >
-              <option value="daily">Täglich</option>
-              <option value="weekly">Wöchentlich</option>
-              <option value="monthly">Monatlich</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <label htmlFor={`schedule-time-${task.id}`} className="text-sm">Erinnerung</label>
+              <input
+                type="time"
+                id={`schedule-time-${task.id}`}
+                value={form.scheduleTime}
+                onChange={(e) => setForm({ ...form, scheduleTime: e.target.value })}
+                className="border border-slate-200 rounded-md px-2 py-1 text-sm"
+              />
+            </div>
           )}
         </div>
         <div className="flex items-center gap-3">

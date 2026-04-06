@@ -32,6 +32,8 @@ export default async function ManagePage({ searchParams }: { searchParams: { tab
     status: t.status,
     allowMultiple: t.allowMultiple,
     dailyLimit: t.dailyLimit,
+    scheduleDays: t.scheduleDays ?? null,
+    scheduleTime: t.scheduleTime ?? null,
   }))
 
   const serializedRewards = rewards.map((r) => ({
