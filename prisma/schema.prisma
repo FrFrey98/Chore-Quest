@@ -12,6 +12,8 @@ model User {
   name        String
   pin         String
   createdAt   DateTime @default(now())
+  notificationsEnabled     Boolean @default(false)
+  installPromptDismissed   Boolean @default(false)
 
   completions        TaskCompletion[]
   purchases          Purchase[]
@@ -21,6 +23,7 @@ model User {
   userAchievements   UserAchievement[]
   streakState        StreakState?
   sharedCompletions  TaskCompletion[] @relation("sharedCompletions")
+  pushSubscriptions  PushSubscription[]
 }
 
 model Category {
@@ -47,6 +50,7 @@ model Task {
   dailyLimit        Int?
   scheduleDays      String?
   scheduleTime      String?
+  lastNotifiedAt    DateTime?
 
   category          Category               @relation(fields: [categoryId], references: [id])
   createdBy         User                   @relation("CreatedBy", fields: [createdById], references: [id])
@@ -163,4 +167,17 @@ model TaskScheduleOverride {
 
   @@unique([taskId, date])
   @@index([taskId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
