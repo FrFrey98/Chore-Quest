@@ -60,10 +60,11 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
       setConfirmUndoId(null)
       toast('Erledigung rückgängig gemacht', 'info')
       router.refresh()
-    } catch (err: any) {
-      toast(err.message ?? 'Rückgängig fehlgeschlagen', 'error')
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : 'Rückgängig fehlgeschlagen', 'error')
     } finally {
       setUndoingId(null)
+      setConfirmUndoId(null)
     }
   }
 
