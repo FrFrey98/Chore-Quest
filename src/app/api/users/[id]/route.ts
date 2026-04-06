@@ -14,24 +14,34 @@ export async function DELETE(
   const permError = requirePermission(session.user.role, 'manageUsers')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  const target = await prisma.user.findUnique({ where: { id: params.id } })
-  if (!target) return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
-
-  // Prevent deleting the last admin
-  if (target.role === 'admin') {
-    const adminCount = await prisma.user.count({ where: { role: 'admin' } })
-    if (adminCount <= 1) {
-      return NextResponse.json({ error: 'Der letzte Admin kann nicht gelöscht werden' }, { status: 409 })
-    }
+  if (params.id === session.user.id) {
+    return NextResponse.json({ error: 'Du kannst dein eigenes Konto nicht löschen' }, { status: 400 })
   }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.pushSubscription.deleteMany({ where: { userId: params.id } })
-    await tx.streakState.deleteMany({ where: { userId: params.id } })
-    await tx.userAchievement.deleteMany({ where: { userId: params.id } })
-    await tx.taskApproval.deleteMany({ where: { requestedById: params.id } })
-    await tx.user.delete({ where: { id: params.id } })
-  })
+  try {
+    await prisma.$transaction(async (tx) => {
+      const target = await tx.user.findUnique({ where: { id: params.id } })
+      if (!target) throw new Error('NOT_FOUND')
+
+      // Prevent deleting the last admin
+      if (target.role === 'admin') {
+        const adminCount = await tx.user.count({ where: { role: 'admin' } })
+        if (adminCount <= 1) throw new Error('LAST_ADMIN')
+      }
+
+      await tx.pushSubscription.deleteMany({ where: { userId: params.id } })
+      await tx.streakState.deleteMany({ where: { userId: params.id } })
+      await tx.userAchievement.deleteMany({ where: { userId: params.id } })
+      await tx.taskApproval.deleteMany({ where: { requestedById: params.id } })
+      await tx.user.delete({ where: { id: params.id } })
+    })
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === 'NOT_FOUND') return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
+      if (error.message === 'LAST_ADMIN') return NextResponse.json({ error: 'Der letzte Admin kann nicht gelöscht werden' }, { status: 409 })
+    }
+    throw error
+  }
 
   return NextResponse.json({ success: true })
 }

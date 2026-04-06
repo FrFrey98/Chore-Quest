@@ -14,27 +14,32 @@ export async function PUT(
   const permError = requirePermission(session.user.role, 'manageUsers')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
+  if (params.id === session.user.id) {
+    return NextResponse.json({ error: 'Du kannst deine eigene Rolle nicht ändern' }, { status: 400 })
+  }
+
   const { role } = await req.json()
 
   if (!role || !['admin', 'member', 'child'].includes(role)) {
     return NextResponse.json({ error: 'Ungültige Rolle' }, { status: 400 })
   }
 
-  const target = await prisma.user.findUnique({ where: { id: params.id } })
-  if (!target) return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
-
-  // Prevent removing the last admin
-  if (target.role === 'admin' && role !== 'admin') {
-    const adminCount = await prisma.user.count({ where: { role: 'admin' } })
-    if (adminCount <= 1) {
-      return NextResponse.json({ error: 'Der letzte Admin kann nicht degradiert werden' }, { status: 409 })
+  try {
+    await prisma.$transaction(async (tx) => {
+      const target = await tx.user.findUnique({ where: { id: params.id } })
+      if (!target) throw new Error('NOT_FOUND')
+      if (target.role === 'admin' && role !== 'admin') {
+        const adminCount = await tx.user.count({ where: { role: 'admin' } })
+        if (adminCount <= 1) throw new Error('LAST_ADMIN')
+      }
+      await tx.user.update({ where: { id: params.id }, data: { role } })
+    })
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === 'NOT_FOUND') return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
+      if (error.message === 'LAST_ADMIN') return NextResponse.json({ error: 'Der letzte Admin kann nicht herabgestuft werden' }, { status: 409 })
     }
+    throw error
   }
-
-  await prisma.user.update({
-    where: { id: params.id },
-    data: { role: role as 'admin' | 'member' | 'child' },
-  })
-
-  return NextResponse.json({ success: true })
 }
