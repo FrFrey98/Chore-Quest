@@ -9,6 +9,7 @@ import { CategoriesTab } from './tabs/categories-tab'
 import { AchievementsTab } from './tabs/achievements-tab'
 import { TasksTab } from './tabs/tasks-tab'
 import { StoreTab } from './tabs/store-tab'
+import { NotificationsTab } from './tabs/notifications-tab'
 
 type Category = { id: string; name: string; emoji: string; taskCount: number }
 type Achievement = {
@@ -27,12 +28,13 @@ const TABS = [
   { key: 'achievements', label: 'Achievements' },
   { key: 'tasks', label: 'Tasks' },
   { key: 'store', label: 'Store' },
+  { key: 'notifications', label: 'Benachrichtigungen' },
 ] as const
 
 type TabKey = (typeof TABS)[number]['key']
 
 export function SettingsClient({
-  config, users, categories, achievements, storeItems, tasks, userId,
+  config, users, categories, achievements, storeItems, tasks, userId, notificationsEnabled, vapidPublicKey,
 }: {
   config: GameConfig
   users: { id: string; name: string }[]
@@ -41,6 +43,8 @@ export function SettingsClient({
   storeItems: StoreItem[]
   tasks: Task[]
   userId: string
+  notificationsEnabled: boolean
+  vapidPublicKey: string | null
 }) {
   const [tab, setTab] = useState<TabKey>('users')
 
@@ -72,6 +76,7 @@ export function SettingsClient({
       {tab === 'achievements' && <AchievementsTab achievements={achievements} categories={categories} />}
       {tab === 'tasks' && <TasksTab tasks={tasks} categories={categories} userId={userId} />}
       {tab === 'store' && <StoreTab storeItems={storeItems} />}
+      {tab === 'notifications' && <NotificationsTab userId={userId} notificationsEnabled={notificationsEnabled} vapidPublicKey={vapidPublicKey} />}
     </div>
   )
 }

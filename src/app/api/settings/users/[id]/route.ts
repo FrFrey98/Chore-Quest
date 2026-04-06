@@ -11,10 +11,10 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { name } = body as { name: string }
-
-  if (!name || typeof name !== 'string' || name.trim().length === 0) {
-    return NextResponse.json({ error: 'Name darf nicht leer sein' }, { status: 400 })
+  const { name, notificationsEnabled, installPromptDismissed } = body as {
+    name?: string
+    notificationsEnabled?: boolean
+    installPromptDismissed?: boolean
   }
 
   const user = await prisma.user.findUnique({ where: { id: params.id } })
@@ -22,9 +22,30 @@ export async function PATCH(
     return NextResponse.json({ error: 'User nicht gefunden' }, { status: 404 })
   }
 
+  const data: Record<string, unknown> = {}
+
+  if (name !== undefined) {
+    if (typeof name !== 'string' || name.trim().length === 0) {
+      return NextResponse.json({ error: 'Name darf nicht leer sein' }, { status: 400 })
+    }
+    data.name = name.trim()
+  }
+
+  if (typeof notificationsEnabled === 'boolean') {
+    data.notificationsEnabled = notificationsEnabled
+  }
+
+  if (typeof installPromptDismissed === 'boolean') {
+    data.installPromptDismissed = installPromptDismissed
+  }
+
+  if (Object.keys(data).length === 0) {
+    return NextResponse.json({ error: 'Keine Änderungen' }, { status: 400 })
+  }
+
   const updated = await prisma.user.update({
     where: { id: params.id },
-    data: { name: name.trim() },
+    data,
   })
 
   return NextResponse.json({ id: updated.id, name: updated.name })

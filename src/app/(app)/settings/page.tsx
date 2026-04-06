@@ -3,13 +3,14 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
+import { getVapidPublicKey } from '@/lib/push'
 import { SettingsClient } from './settings-client'
 
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) redirect('/login')
 
-  const [config, users, categories, achievements, storeItems, tasks] = await Promise.all([
+  const [config, users, categories, achievements, storeItems, tasks, currentUser] = await Promise.all([
     loadGameConfig(),
     prisma.user.findMany({ select: { id: true, name: true } }),
     prisma.category.findMany({
@@ -23,6 +24,10 @@ export default async function SettingsPage() {
       include: { category: true },
       orderBy: { createdAt: 'desc' },
     }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { notificationsEnabled: true, installPromptDismissed: true },
+    }),
   ])
 
   return (
@@ -34,6 +39,8 @@ export default async function SettingsPage() {
       storeItems={storeItems}
       tasks={tasks}
       userId={session.user.id}
+      notificationsEnabled={currentUser?.notificationsEnabled ?? false}
+      vapidPublicKey={getVapidPublicKey()}
     />
   )
 }
