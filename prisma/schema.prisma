@@ -45,12 +45,15 @@ model Task {
   nextDueAt         DateTime?
   allowMultiple     Boolean   @default(false)
   dailyLimit        Int?
+  scheduleDays      String?
+  scheduleTime      String?
 
-  category    Category         @relation(fields: [categoryId], references: [id])
-  createdBy   User             @relation("CreatedBy", fields: [createdById], references: [id])
-  approvedBy  User?            @relation("ApprovedBy", fields: [approvedById], references: [id])
-  completions TaskCompletion[]
-  approval    TaskApproval?
+  category          Category               @relation(fields: [categoryId], references: [id])
+  createdBy         User                   @relation("CreatedBy", fields: [createdById], references: [id])
+  approvedBy        User?                  @relation("ApprovedBy", fields: [approvedById], references: [id])
+  completions       TaskCompletion[]
+  approval          TaskApproval?
+  scheduleOverrides TaskScheduleOverride[]
 }
 
 model TaskApproval {
@@ -148,4 +151,16 @@ model AppConfig {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model TaskScheduleOverride {
+  id     String @id @default(cuid())
+  taskId String
+  date   String
+  type   String // "add" or "skip"
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, date])
+  @@index([taskId])
 }
