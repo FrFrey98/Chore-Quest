@@ -1,6 +1,9 @@
 # Production deployment template for Chore-Quest
 # Copy this file and replace <your-github-username> with your GitHub username.
 # For optional auto-updates with Watchtower, see the README.
+#
+# Generate VAPID keys:  npx web-push generate-vapid-keys
+# Generate CRON_SECRET: openssl rand -base64 32
 
 services:
   app:
@@ -13,4 +16,8 @@ services:
       - DATABASE_URL=file:/app/data/haushalts.db
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_SUBJECT=${VAPID_SUBJECT}
+      - CRON_SECRET=${CRON_SECRET}
     restart: unless-stopped

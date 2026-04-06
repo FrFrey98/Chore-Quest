@@ -26,6 +26,18 @@ if [ "$USER_COUNT" = "0" ]; then
   echo "No users found — setup wizard will handle initial configuration."
 fi
 
+# Start notification cron in background (if CRON_SECRET is configured)
+if [ -n "$CRON_SECRET" ] && [ -n "$VAPID_PUBLIC_KEY" ]; then
+  echo "Starting notification cron..."
+  (
+    sleep 15
+    while true; do
+      wget -qO- --header="X-Cron-Secret: $CRON_SECRET" "http://localhost:3000/api/cron/notifications" 2>/dev/null || true
+      sleep 60
+    done
+  ) &
+fi
+
 # Start the application (exec replaces shell, node becomes PID 1)
 echo "Starting server..."
 exec node server.js
