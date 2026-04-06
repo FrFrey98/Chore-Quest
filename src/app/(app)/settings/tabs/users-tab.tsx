@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,6 +42,12 @@ export function UsersTab({
   const [editRoles, setEditRoles] = useState<Record<string, string>>(
     Object.fromEntries(users.map((u) => [u.id, u.role]))
   )
+
+  // Sync editRoles when users prop changes
+  useEffect(() => {
+    setEditRoles(Object.fromEntries(users.map((u) => [u.id, u.role])))
+  }, [users])
+
   const [pins, setPins] = useState<Record<string, string>>({})
   const [msg, setMsg] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState<Record<string, boolean>>({})
@@ -182,7 +188,8 @@ export function UsersTab({
               type="password"
               inputMode="numeric"
               value={newPin}
-              onChange={(e) => setNewPin(e.target.value)}
+              onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+              maxLength={8}
               placeholder="PIN"
             />
           </div>
@@ -272,7 +279,8 @@ export function UsersTab({
                   inputMode="numeric"
                   placeholder="4–8 Ziffern"
                   value={pins[u.id] ?? ''}
-                  onChange={(e) => setPins((prev) => ({ ...prev, [u.id]: e.target.value }))}
+                  onChange={(e) => setPins((prev) => ({ ...prev, [u.id]: e.target.value.replace(/\D/g, '') }))}
+                  maxLength={8}
                 />
                 <Button
                   onClick={() => changePin(u.id)}
