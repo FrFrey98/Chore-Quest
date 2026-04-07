@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getTotalEarned, getCurrentPoints } from '@/lib/points'
+import { getTotalEarned, getCurrentPoints, getChallengeBonusEarned } from '@/lib/points'
 import { StoreClient } from './store-client'
 
 export default async function StorePage() {
@@ -14,14 +14,13 @@ export default async function StorePage() {
     where: { isActive: true, type: 'real_reward' },
     orderBy: { pointCost: 'asc' },
   })
-  const completions = await prisma.taskCompletion.findMany({
-    where: { userId }, select: { points: true },
-  })
-  const purchases = await prisma.purchase.findMany({
-    where: { userId }, select: { pointsSpent: true },
-  })
+  const [completions, purchases, challengeBonus] = await Promise.all([
+    prisma.taskCompletion.findMany({ where: { userId }, select: { points: true } }),
+    prisma.purchase.findMany({ where: { userId }, select: { pointsSpent: true } }),
+    getChallengeBonusEarned(userId),
+  ])
 
-  const earned = getTotalEarned(completions)
+  const earned = getTotalEarned(completions) + challengeBonus
   const spent = purchases.reduce((s, p) => s + p.pointsSpent, 0)
   const balance = getCurrentPoints(earned, spent)
 

@@ -1,14 +1,16 @@
 import { prisma } from '@/lib/prisma'
-import { getTotalEarned, getLevel } from '@/lib/points'
+import { getTotalEarned, getLevel, getChallengeBonusEarned } from '@/lib/points'
 import { getOrCreateStreakState } from '@/lib/streak'
 import { type LevelDef } from '@/lib/config'
 
 export async function computeProfileStats(userId: string, levels?: LevelDef[]) {
-  const completions = await prisma.taskCompletion.findMany({
-    where: { userId },
-    include: { task: { select: { title: true, emoji: true, categoryId: true } } },
-    orderBy: { completedAt: 'asc' },
-  })
+  const [completions] = await Promise.all([
+    prisma.taskCompletion.findMany({
+      where: { userId },
+      include: { task: { select: { title: true, emoji: true, categoryId: true } } },
+      orderBy: { completedAt: 'asc' },
+    }),
+  ])
 
   const heatmap: Record<string, number> = {}
   for (const c of completions) {
@@ -23,10 +25,13 @@ export async function computeProfileStats(userId: string, levels?: LevelDef[]) {
   }
   const topTasks = Object.values(taskCount).sort((a, b) => b.count - a.count).slice(0, 5)
 
-  const streakState = await getOrCreateStreakState(userId)
+  const [streakState, challengeBonus] = await Promise.all([
+    getOrCreateStreakState(userId),
+    getChallengeBonusEarned(userId),
+  ])
   const streak = streakState.currentStreak
 
-  const totalEarned = getTotalEarned(completions)
+  const totalEarned = getTotalEarned(completions) + challengeBonus
   const level = getLevel(totalEarned, levels)
 
   return {

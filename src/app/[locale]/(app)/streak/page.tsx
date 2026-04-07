@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
-import { getCurrentPoints, getTotalEarned } from '@/lib/points'
+import { getCurrentPoints, getTotalEarned, getChallengeBonusEarned } from '@/lib/points'
 import {
   getOrCreateStreakState,
   getEffectiveStreak,
@@ -28,7 +28,7 @@ export default async function StreakPage() {
   const restoreInfo = await isRestoreAvailable(userId, { basePrice: config.restoreBasePrice, perDayPrice: config.restorePerDayPrice })
 
   // Points balance for display
-  const [completions, purchases] = await Promise.all([
+  const [completions, purchases, challengeBonus] = await Promise.all([
     prisma.taskCompletion.findMany({
       where: { userId },
       select: { points: true, completedAt: true },
@@ -37,8 +37,9 @@ export default async function StreakPage() {
       where: { userId },
       select: { pointsSpent: true },
     }),
+    getChallengeBonusEarned(userId),
   ])
-  const earned = getTotalEarned(completions)
+  const earned = getTotalEarned(completions) + challengeBonus
   const spent = purchases.reduce((sum, p) => sum + p.pointsSpent, 0)
   const balance = getCurrentPoints(earned, spent)
 

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { getTotalEarned, getLevel } from '@/lib/points'
+import { getTotalEarned, getLevel, getChallengeBonusEarned } from '@/lib/points'
 import { getOrCreateStreakState, getEffectiveStreak } from '@/lib/streak'
 import { type LevelDef } from '@/lib/config'
 
@@ -34,17 +34,18 @@ export function checkAchievementCondition(
 }
 
 export async function computeStats(userId: string, levels?: LevelDef[]): Promise<AchievementStats> {
-  const [completions, streakState] = await Promise.all([
+  const [completions, streakState, challengeBonus] = await Promise.all([
     prisma.taskCompletion.findMany({
       where: { userId },
       include: { task: { select: { categoryId: true } } },
       orderBy: { completedAt: 'asc' },
     }),
     getOrCreateStreakState(userId),
+    getChallengeBonusEarned(userId),
   ])
 
   const totalTaskCount = completions.length
-  const totalPointsEarned = getTotalEarned(completions)
+  const totalPointsEarned = getTotalEarned(completions) + challengeBonus
   const currentLevel = getLevel(totalPointsEarned, levels).level
 
   const categoryCounts: Record<string, number> = {}

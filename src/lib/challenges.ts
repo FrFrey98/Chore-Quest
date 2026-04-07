@@ -53,7 +53,7 @@ const TEMPLATES: ChallengeTemplate[] = [
     descriptionFn: (t) => `Team up and complete ${t} shared tasks for bonus points!`,
     descriptionDeFn: (t) => `Arbeitet zusammen und erledigt ${t} gemeinsame Aufgaben für Bonuspunkte!`,
     getTarget: (avg) => Math.max(2, Math.round(avg * 1.2)),
-    bonusPoints: (t) => Math.min(30, Math.max(30, t * 3)),
+    bonusPoints: (t) => Math.min(35, Math.max(20, t * 3)),
   },
 ]
 
@@ -114,8 +114,9 @@ export async function generateWeeklyChallenges() {
   const sharedCompletions = recentCompletions.filter((c) => c.withUserId !== null)
   const avgWeeklyShared = sharedCompletions.length / 4 / Math.max(1, users.length)
 
-  // Get categories for category_count challenge
+  // Get categories that have at least one active task (for category_count challenge)
   const categories = await prisma.category.findMany({
+    where: { tasks: { some: { status: 'active' } } },
     select: { id: true, name: true },
   })
 
@@ -130,8 +131,13 @@ export async function generateWeeklyChallenges() {
     categoryCounts[c.task.categoryId] = (categoryCounts[c.task.categoryId] || 0) + 1
   }
 
-  // Pick 3 random challenge types
-  const pickedTemplates = shuffleAndPick(TEMPLATES, 3)
+  // Filter out category_count if no categories exist
+  const availableTemplates = categories.length > 0
+    ? TEMPLATES
+    : TEMPLATES.filter((t) => t.type !== 'category_count')
+
+  // Pick 3 random challenge types (at most the number available)
+  const pickedTemplates = shuffleAndPick(availableTemplates, Math.min(3, availableTemplates.length))
 
   const createdChallenges = []
 
@@ -234,24 +240,23 @@ export async function updateChallengeProgress(
     }
 
     if (shouldIncrement) {
-      const newProgress = uc.currentProgress + 1
-      const isNowComplete = newProgress >= uc.challenge.targetValue
-
-      await prisma.userChallenge.update({
+      const updated = await prisma.userChallenge.update({
         where: { id: uc.id },
-        data: {
-          currentProgress: newProgress,
-          completedAt: isNowComplete ? now : null,
-        },
+        data: { currentProgress: { increment: 1 } },
+        include: { challenge: true },
       })
 
-      if (isNowComplete) {
+      if (updated.currentProgress >= updated.challenge.targetValue && !updated.completedAt) {
+        await prisma.userChallenge.update({
+          where: { id: updated.id },
+          data: { completedAt: now },
+        })
         completed.push({
-          id: uc.challenge.id,
-          title: uc.challenge.title,
-          titleDe: uc.challenge.titleDe,
-          emoji: uc.challenge.emoji,
-          bonusPoints: uc.challenge.bonusPoints,
+          id: updated.challenge.id,
+          title: updated.challenge.title,
+          titleDe: updated.challenge.titleDe,
+          emoji: updated.challenge.emoji,
+          bonusPoints: updated.challenge.bonusPoints,
         })
       }
     }
