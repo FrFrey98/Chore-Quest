@@ -59,6 +59,7 @@ model Task {
   dailyLimit        Int?
   scheduleDays      String?
   scheduleTime      String?
+  decayHours        Int?
   lastNotifiedAt    DateTime?
 
   category          Category               @relation(fields: [categoryId], references: [id])
