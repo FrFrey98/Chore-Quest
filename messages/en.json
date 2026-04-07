@@ -671,6 +671,7 @@
     "noChallengesSubtitle": "Challenges are generated automatically every Monday.",
     "history": "History",
     "weekOf": "Week of {date}",
-    "dashboardHeading": "Weekly Challenges"
+    "dashboardHeading": "Weekly Challenges",
+    "challengeCompleted": "{emoji} Challenge completed: {title}"
   }
 }

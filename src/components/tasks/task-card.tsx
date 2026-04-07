@@ -30,6 +30,7 @@ export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursB
   const { toast } = useToast()
   const t = useTranslations('tasks')
   const tc = useTranslations('common')
+  const tCh = useTranslations('challenges')
   const locale = useLocale()
 
   async function handleComplete() {
@@ -82,7 +83,7 @@ export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursB
         data.completedChallenges.forEach((ch: { emoji: string; title: string; titleDe: string }, i: number) => {
           setTimeout(() => {
             const chTitle = locale === 'de' ? ch.titleDe : ch.title
-            toast(`${ch.emoji} Challenge completed: ${chTitle}`, 'success')
+            toast(tCh('challengeCompleted', { emoji: ch.emoji, title: chTitle }), 'success')
           }, 1500 + achDelay + i * 1500)
         })
       }
