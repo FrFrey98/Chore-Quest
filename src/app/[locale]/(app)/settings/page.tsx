@@ -12,7 +12,7 @@ export default async function SettingsPage() {
   if (!session?.user?.id) redirect('/login')
   if (!hasPermission(session.user.role, 'editSettings')) redirect('/')
 
-  const [config, users, categories, achievements, storeItems, tasks, currentUser] = await Promise.all([
+  const [config, users, categories, achievements, storeItems, tasks, currentUser, quests] = await Promise.all([
     loadGameConfig(),
     prisma.user.findMany({
       select: { id: true, name: true, role: true, createdAt: true, vacationStart: true, vacationEnd: true },
@@ -33,6 +33,15 @@ export default async function SettingsPage() {
       where: { id: session.user.id },
       select: { notificationsEnabled: true, installPromptDismissed: true },
     }),
+    prisma.quest.findMany({
+      include: {
+        steps: {
+          include: { task: { select: { id: true, title: true, emoji: true } } },
+          orderBy: { stepOrder: 'asc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
   ])
 
   return (
@@ -43,6 +52,7 @@ export default async function SettingsPage() {
       achievements={achievements}
       storeItems={storeItems}
       tasks={tasks}
+      quests={quests}
       userId={session.user.id}
       notificationsEnabled={currentUser?.notificationsEnabled ?? false}
       vapidPublicKey={getVapidPublicKey()}

@@ -70,6 +70,7 @@
     "achievements": "Erfolge",
     "profile": "Profil",
     "challenges": "Challenges",
+    "quests": "Quests",
     "mainNav": "Hauptnavigation",
     "sidebar": "Seitenleiste",
     "brand": "🏠 Chore-Quest",
@@ -382,7 +383,8 @@
       "tasks": "Tasks",
       "store": "Store",
       "notifications": "Benachrichtigungen",
-      "backup": "Backup"
+      "backup": "Backup",
+      "quests": "Quests"
     },
     "users": {
       "description": "Familienmitglieder verwalten",
@@ -673,5 +675,21 @@
     "weekOf": "Woche vom {date}",
     "dashboardHeading": "Wöchentliche Challenges",
     "challengeCompleted": "{emoji} Challenge abgeschlossen: {title}"
+  },
+  "quests": {
+    "heading": "Quests",
+    "available": "Verfügbar",
+    "active": "Aktiv",
+    "completed": "Abgeschlossen",
+    "accept": "Quest annehmen",
+    "accepted": "Angenommen!",
+    "bonusOnComplete": "+{points} Pkt bei Abschluss",
+    "step": "Schritt {n}",
+    "currentStep": "Aktueller Schritt",
+    "questCompleted": "{emoji} Quest abgeschlossen: {title}",
+    "noQuests": "Keine Quests verfügbar",
+    "noQuestsSubtitle": "Quests erscheinen hier, wenn ein Admin sie erstellt.",
+    "progress": "Schritt {current} von {total}",
+    "dashboardHeading": "Aktive Quests"
   }
 }
