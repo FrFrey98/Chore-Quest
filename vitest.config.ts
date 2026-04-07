@@ -8,5 +8,6 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
+    exclude: ['e2e/**', 'node_modules/**'],
   },
 })
