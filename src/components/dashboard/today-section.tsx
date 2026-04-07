@@ -51,6 +51,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   const t = useTranslations('dashboard')
   const tc = useTranslations('common')
   const tCh = useTranslations('challenges')
+  const tQ = useTranslations('quests')
   const locale = useLocale()
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set())
@@ -134,6 +135,16 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
             const chTitle = locale === 'de' ? ch.titleDe : ch.title
             toast(tCh('challengeCompleted', { emoji: ch.emoji, title: chTitle }), 'success')
           }, 1500 + achDelay + i * 1500)
+        })
+      }
+
+      if (data.completedQuests?.length) {
+        const prevDelay = 1500 + ((data.newAchievements?.length ?? 0) + (data.completedChallenges?.length ?? 0)) * 1500
+        data.completedQuests.forEach((q: { emoji: string; title: string; titleDe: string }, i: number) => {
+          setTimeout(() => {
+            const qTitle = locale === 'de' ? q.titleDe : q.title
+            toast(tQ('questCompleted', { emoji: q.emoji, title: qTitle }), 'success')
+          }, prevDelay + i * 1500)
         })
       }
 

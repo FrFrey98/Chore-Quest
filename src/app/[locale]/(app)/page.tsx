@@ -17,6 +17,7 @@ import { GroupedFeed } from '@/components/dashboard/grouped-feed'
 import { DashboardNotifications } from '@/components/dashboard/dashboard-notifications'
 import { YesterdayBanner } from '@/components/dashboard/yesterday-banner'
 import { ChallengesWidget } from '@/components/dashboard/challenges-widget'
+import { QuestsWidget } from '@/components/dashboard/quests-widget'
 
 const WEEKDAY_KEYS = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'] as const
 
@@ -95,6 +96,40 @@ export default async function DashboardPage() {
       bonusPoints: uc.challenge.bonusPoints,
     },
   }))
+
+  // --- Quests Widget Data ---
+  const activeUserQuests = await prisma.userQuest.findMany({
+    where: {
+      userId,
+      completedAt: null,
+      quest: { isActive: true },
+    },
+    include: {
+      quest: {
+        include: {
+          steps: {
+            include: { task: { select: { title: true, emoji: true } } },
+            orderBy: { stepOrder: 'asc' },
+          },
+        },
+      },
+    },
+    orderBy: { startedAt: 'desc' },
+  })
+  const questsForWidget = activeUserQuests.map((uq) => {
+    const currentStep = uq.quest.steps.find((s) => s.stepOrder === uq.currentStepOrder)
+    return {
+      id: uq.id,
+      title: uq.quest.title,
+      titleDe: uq.quest.titleDe,
+      emoji: uq.quest.emoji,
+      currentStepOrder: uq.currentStepOrder,
+      totalSteps: uq.quest.steps.length,
+      currentStepTaskName: currentStep
+        ? `${currentStep.task.emoji} ${currentStep.task.title}`
+        : '',
+    }
+  })
 
   // --- Today Section Data ---
   const todayStart = new Date(now)
@@ -291,6 +326,7 @@ export default async function DashboardPage() {
       />
 
       <ChallengesWidget challenges={challengesForWidget} />
+      <QuestsWidget quests={questsForWidget} />
 
       {partner && partnerLevel && (
         <Link href={`/profile/${partner.id}`}>

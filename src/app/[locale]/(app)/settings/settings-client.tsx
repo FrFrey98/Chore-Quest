@@ -12,6 +12,7 @@ import { TasksTab } from './tabs/tasks-tab'
 import { StoreTab } from './tabs/store-tab'
 import { NotificationsTab } from './tabs/notifications-tab'
 import { BackupTab } from './tabs/backup-tab'
+import { QuestsTab } from './tabs/quests-tab'
 
 type Category = { id: string; name: string; emoji: string; taskCount: number }
 type Achievement = {
@@ -20,13 +21,15 @@ type Achievement = {
 }
 type StoreItem = { id: string; title: string; emoji: string; pointCost: number; type: string; isActive: boolean }
 type Task = { id: string; title: string; emoji: string; points: number; status: string; category: { id: string; name: string; emoji: string } }
+type QuestStepData = { id: string; stepOrder: number; description: string; descriptionDe: string; task: { id: string; title: string; emoji: string } }
+type QuestData = { id: string; title: string; titleDe: string; description: string; descriptionDe: string; emoji: string; bonusPoints: number; isActive: boolean; steps: QuestStepData[] }
 
-const TAB_KEYS = ['users', 'streak', 'level', 'bonus', 'categories', 'achievements', 'tasks', 'store', 'notifications', 'backup'] as const
+const TAB_KEYS = ['users', 'streak', 'level', 'bonus', 'categories', 'achievements', 'tasks', 'store', 'quests', 'notifications', 'backup'] as const
 
 type TabKey = (typeof TAB_KEYS)[number]
 
 export function SettingsClient({
-  config, users, categories, achievements, storeItems, tasks, userId, notificationsEnabled, vapidPublicKey,
+  config, users, categories, achievements, storeItems, tasks, quests, userId, notificationsEnabled, vapidPublicKey,
 }: {
   config: GameConfig
   users: { id: string; name: string; role: string; createdAt: string; vacationStart: string | null; vacationEnd: string | null }[]
@@ -34,6 +37,7 @@ export function SettingsClient({
   achievements: Achievement[]
   storeItems: StoreItem[]
   tasks: Task[]
+  quests: QuestData[]
   userId: string
   notificationsEnabled: boolean
   vapidPublicKey: string | null
@@ -69,6 +73,7 @@ export function SettingsClient({
       {tab === 'achievements' && <AchievementsTab achievements={achievements} categories={categories} />}
       {tab === 'tasks' && <TasksTab tasks={tasks} categories={categories} users={users.map((u) => ({ id: u.id, name: u.name }))} userId={userId} />}
       {tab === 'store' && <StoreTab storeItems={storeItems} />}
+      {tab === 'quests' && <QuestsTab quests={quests} tasks={tasks.map((t) => ({ id: t.id, title: t.title, emoji: t.emoji }))} />}
       {tab === 'notifications' && <NotificationsTab userId={userId} notificationsEnabled={notificationsEnabled} vapidPublicKey={vapidPublicKey} />}
       {tab === 'backup' && <BackupTab />}
     </div>
