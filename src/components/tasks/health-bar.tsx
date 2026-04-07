@@ -6,18 +6,20 @@ import { calculateHealth, getHealthColor, shouldPulse } from '@/lib/health'
 interface HealthBarProps {
   nextDueAt: string | null
   decayHours: number
+  vacationStart?: string | null
+  vacationEnd?: string | null
 }
 
-export function HealthBar({ nextDueAt, decayHours }: HealthBarProps) {
-  const [health, setHealth] = useState(() => calculateHealth(nextDueAt, decayHours))
+export function HealthBar({ nextDueAt, decayHours, vacationStart, vacationEnd }: HealthBarProps) {
+  const [health, setHealth] = useState(() => calculateHealth(nextDueAt, decayHours, new Date(), vacationStart, vacationEnd))
 
   useEffect(() => {
     if (!nextDueAt) return
-    const update = () => setHealth(calculateHealth(nextDueAt, decayHours))
+    const update = () => setHealth(calculateHealth(nextDueAt, decayHours, new Date(), vacationStart, vacationEnd))
     update()
     const interval = setInterval(update, 60000)
     return () => clearInterval(interval)
-  }, [nextDueAt, decayHours])
+  }, [nextDueAt, decayHours, vacationStart, vacationEnd])
 
   if (!nextDueAt || health >= 1) return null
 

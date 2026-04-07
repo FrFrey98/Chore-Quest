@@ -42,11 +42,20 @@ export default async function DashboardPage() {
       },
     }),
   ])
-  const [streakState, restoreInfo] = await Promise.all([
+  const [streakState, restoreInfo, userRecord] = await Promise.all([
     getOrCreateStreakState(userId),
     isRestoreAvailable(userId, { basePrice: config.restoreBasePrice, perDayPrice: config.restorePerDayPrice }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { vacationStart: true, vacationEnd: true },
+    }),
   ])
-  const effectiveStreak = getEffectiveStreak(streakState)
+  const vacationStart = userRecord?.vacationStart?.toISOString() ?? null
+  const vacationEnd = userRecord?.vacationEnd?.toISOString() ?? null
+  const effectiveStreak = getEffectiveStreak(streakState, {
+    vacationStart: userRecord?.vacationStart,
+    vacationEnd: userRecord?.vacationEnd,
+  })
   const streakTier = getStreakTier(effectiveStreak, config.streakTiers)
 
   const levelInfo = getLevel(stats.totalPointsEarned, config.levelDefinitions)
@@ -259,6 +268,8 @@ export default async function DashboardPage() {
         partnerId={partner?.id}
         partnerName={partner?.name ?? t('partner')}
         decayHoursByInterval={config.decayHoursByInterval}
+        vacationStart={vacationStart}
+        vacationEnd={vacationEnd}
       />
 
       <WeekChart

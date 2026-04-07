@@ -13,12 +13,16 @@ export function TaskCategoryGroup({
   partnerId,
   partnerName,
   decayHoursByInterval,
+  vacationStart,
+  vacationEnd,
 }: {
   category: Category
   onComplete: (id: string) => Promise<void>
   partnerId?: string
   partnerName?: string
   decayHoursByInterval?: Record<string, number>
+  vacationStart?: string | null
+  vacationEnd?: string | null
 }) {
   if (category.tasks.length === 0) return null
   return (
@@ -28,7 +32,7 @@ export function TaskCategoryGroup({
       </h2>
       <div className="space-y-2">
         {category.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onComplete={onComplete} partnerId={partnerId} partnerName={partnerName} decayHoursByInterval={decayHoursByInterval} />
+          <TaskCard key={task.id} task={task} onComplete={onComplete} partnerId={partnerId} partnerName={partnerName} decayHoursByInterval={decayHoursByInterval} vacationStart={vacationStart} vacationEnd={vacationEnd} />
         ))}
       </div>
     </div>

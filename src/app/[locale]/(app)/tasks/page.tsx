@@ -17,10 +17,16 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   const calMonth = resolvedParams.month ? parseInt(resolvedParams.month) : now.getUTCMonth() + 1
 
   const userId = session.user?.id
-  const [users, config] = await Promise.all([
+  const [users, config, userRecord] = await Promise.all([
     prisma.user.findMany({ select: { id: true, name: true } }),
     loadGameConfig(),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { vacationStart: true, vacationEnd: true },
+    }),
   ])
+  const vacationStart = userRecord?.vacationStart?.toISOString() ?? null
+  const vacationEnd = userRecord?.vacationEnd?.toISOString() ?? null
   const partner = users.find((u) => u.id !== userId)
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } })
 
@@ -121,6 +127,8 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
       today={now.toISOString().slice(0, 10)}
       availableTasks={availableTasks}
       decayHoursByInterval={config.decayHoursByInterval}
+      vacationStart={vacationStart}
+      vacationEnd={vacationEnd}
     />
   )
 }

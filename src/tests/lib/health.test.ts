@@ -39,6 +39,52 @@ describe('calculateHealth', () => {
     const dueDate = new Date(now.getTime() - 24 * 3600000)
     expect(calculateHealth(dueDate.toISOString(), 48, now)).toBeCloseTo(0.5)
   })
+
+  it('pauses decay during vacation (full overlap)', () => {
+    const now = new Date()
+    const dueDate = new Date(now.getTime() - 48 * 3600000) // 48h ago
+    // Without vacation: fully decayed
+    expect(calculateHealth(dueDate, 48, now)).toBe(0)
+    // With vacation covering the entire period: no decay
+    const vStart = new Date(dueDate.getTime())
+    const vEnd = new Date(now.getTime())
+    expect(calculateHealth(dueDate, 48, now, vStart, vEnd)).toBe(1)
+  })
+
+  it('pauses decay during vacation (partial overlap)', () => {
+    const now = new Date()
+    const dueDate = new Date(now.getTime() - 48 * 3600000) // 48h ago
+    // Vacation covers 24h of the 48h period
+    const vStart = new Date(dueDate.getTime())
+    const vEnd = new Date(dueDate.getTime() + 24 * 3600000)
+    // Effective elapsed = 48 - 24 = 24h, health = 1 - 24/48 = 0.5
+    expect(calculateHealth(dueDate, 48, now, vStart, vEnd)).toBeCloseTo(0.5)
+  })
+
+  it('ignores vacation that does not overlap with decay window', () => {
+    const now = new Date()
+    const dueDate = new Date(now.getTime() - 24 * 3600000)
+    // Vacation was a week ago
+    const vStart = new Date(now.getTime() - 14 * 24 * 3600000)
+    const vEnd = new Date(now.getTime() - 7 * 24 * 3600000)
+    expect(calculateHealth(dueDate, 48, now, vStart, vEnd)).toBeCloseTo(0.5)
+  })
+
+  it('handles ongoing vacation (no vacationEnd)', () => {
+    const now = new Date()
+    const dueDate = new Date(now.getTime() - 24 * 3600000) // 24h ago
+    // Vacation started at due date, still ongoing
+    const vStart = new Date(dueDate.getTime())
+    expect(calculateHealth(dueDate, 48, now, vStart, null)).toBe(1)
+  })
+
+  it('accepts string vacation dates', () => {
+    const now = new Date()
+    const dueDate = new Date(now.getTime() - 48 * 3600000)
+    const vStart = new Date(dueDate.getTime()).toISOString()
+    const vEnd = new Date(now.getTime()).toISOString()
+    expect(calculateHealth(dueDate, 48, now, vStart, vEnd)).toBe(1)
+  })
 })
 
 describe('getDecayHours', () => {
