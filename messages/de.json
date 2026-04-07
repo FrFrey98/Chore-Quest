@@ -628,5 +628,11 @@
     "label": "Sprache",
     "en": "English",
     "de": "Deutsch"
+  },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "label": "Design"
   }
 }

@@ -3,10 +3,12 @@
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { Sun, Moon, Monitor } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const t = useTranslations('theme')
 
   useEffect(() => setMounted(true), [])
   if (!mounted) return null
@@ -28,7 +30,7 @@ export function ThemeToggle() {
               ? 'bg-accent text-accent-foreground'
               : 'text-muted-foreground hover:text-foreground'
           }`}
-          aria-label={value}
+          aria-label={t(value)}
         >
           <Icon size={14} />
         </button>
