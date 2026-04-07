@@ -30,6 +30,7 @@ type TabKey = (typeof TAB_KEYS)[number]
 
 export function SettingsClient({
   config, users, categories, achievements, storeItems, tasks, quests, userId, notificationsEnabled, vapidPublicKey,
+  telegramConfigured, telegramChatId, ntfyConfigured, ntfyEnabled, ntfyTopicUrl,
 }: {
   config: GameConfig
   users: { id: string; name: string; role: string; createdAt: string; vacationStart: string | null; vacationEnd: string | null }[]
@@ -41,6 +42,11 @@ export function SettingsClient({
   userId: string
   notificationsEnabled: boolean
   vapidPublicKey: string | null
+  telegramConfigured: boolean
+  telegramChatId: string | null
+  ntfyConfigured: boolean
+  ntfyEnabled: boolean
+  ntfyTopicUrl: string | null
 }) {
   const t = useTranslations('settings')
   const [tab, setTab] = useState<TabKey>('users')
@@ -74,7 +80,7 @@ export function SettingsClient({
       {tab === 'tasks' && <TasksTab tasks={tasks} categories={categories} users={users.map((u) => ({ id: u.id, name: u.name }))} userId={userId} />}
       {tab === 'store' && <StoreTab storeItems={storeItems} />}
       {tab === 'quests' && <QuestsTab quests={quests} tasks={tasks.map((t) => ({ id: t.id, title: t.title, emoji: t.emoji }))} />}
-      {tab === 'notifications' && <NotificationsTab userId={userId} notificationsEnabled={notificationsEnabled} vapidPublicKey={vapidPublicKey} />}
+      {tab === 'notifications' && <NotificationsTab userId={userId} notificationsEnabled={notificationsEnabled} vapidPublicKey={vapidPublicKey} telegramConfigured={telegramConfigured} telegramChatId={telegramChatId} ntfyConfigured={ntfyConfigured} ntfyEnabled={ntfyEnabled} ntfyTopicUrl={ntfyTopicUrl} />}
       {tab === 'backup' && <BackupTab />}
     </div>
   )

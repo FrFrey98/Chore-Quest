@@ -513,7 +513,20 @@
       "notConfigured": "Push ist serverseitig nicht konfiguriert (VAPID-Keys fehlen).",
       "permissionNeeded": "Browser-Berechtigung für Benachrichtigungen benötigt",
       "enabled": "Benachrichtigungen aktiviert",
-      "disabled": "Benachrichtigungen deaktiviert"
+      "disabled": "Benachrichtigungen deaktiviert",
+      "telegramHeading": "Telegram",
+      "telegramDescription": "Benachrichtigungen über Telegram-Bot empfangen.",
+      "telegramConnect": "Telegram verbinden",
+      "telegramConnected": "Verbunden",
+      "telegramDisconnect": "Trennen",
+      "telegramLinkInstructions": "Sende diesen Befehl an den Bot:",
+      "telegramLinkCode": "/link {code}",
+      "telegramNotConfigured": "Telegram-Bot ist serverseitig nicht konfiguriert.",
+      "ntfyHeading": "ntfy",
+      "ntfyDescription": "Benachrichtigungen über ntfy Push-Service empfangen.",
+      "ntfyEnable": "ntfy-Benachrichtigungen aktivieren",
+      "ntfyTopic": "Deine Topic-URL:",
+      "ntfyNotConfigured": "ntfy ist serverseitig nicht konfiguriert."
     },
     "backup": {
       "description": "Exportiere alle Daten als JSON-Datei oder stelle sie aus einem Backup wieder her.",
