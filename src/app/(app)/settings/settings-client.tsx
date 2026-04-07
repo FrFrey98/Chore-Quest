@@ -10,6 +10,7 @@ import { AchievementsTab } from './tabs/achievements-tab'
 import { TasksTab } from './tabs/tasks-tab'
 import { StoreTab } from './tabs/store-tab'
 import { NotificationsTab } from './tabs/notifications-tab'
+import { BackupTab } from './tabs/backup-tab'
 
 type Category = { id: string; name: string; emoji: string; taskCount: number }
 type Achievement = {
@@ -29,6 +30,7 @@ const TABS = [
   { key: 'tasks', label: 'Tasks' },
   { key: 'store', label: 'Store' },
   { key: 'notifications', label: 'Benachrichtigungen' },
+  { key: 'backup', label: 'Backup' },
 ] as const
 
 type TabKey = (typeof TABS)[number]['key']
@@ -77,6 +79,7 @@ export function SettingsClient({
       {tab === 'tasks' && <TasksTab tasks={tasks} categories={categories} users={users.map((u) => ({ id: u.id, name: u.name }))} userId={userId} />}
       {tab === 'store' && <StoreTab storeItems={storeItems} />}
       {tab === 'notifications' && <NotificationsTab userId={userId} notificationsEnabled={notificationsEnabled} vapidPublicKey={vapidPublicKey} />}
+      {tab === 'backup' && <BackupTab />}
     </div>
   )
 }
