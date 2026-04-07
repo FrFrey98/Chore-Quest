@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { Shield } from 'lucide-react'
 import { hasPermission } from '@/lib/permissions'
 
 export function ApprovalBanner() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const t = useTranslations('nav')
   const [count, setCount] = useState(0)
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export function ApprovalBanner() {
       className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 px-4 py-2 rounded-lg text-sm font-medium mb-4 hover:bg-indigo-100 transition-colors"
     >
       <Shield size={16} />
-      <span>{count} {count === 1 ? 'Freigabe' : 'Freigaben'} offen</span>
+      <span>{t('approvalCount', { count })}</span>
     </Link>
   )
 }

@@ -37,13 +37,13 @@ describe('groupFeedByDay', () => {
     ] as any[]
     const groups = groupFeedByDay(entries, now)
     expect(groups).toHaveLength(4)
-    expect(groups[0].label).toBe('Heute')
+    expect(groups[0].label).toBe('feed.today')
     expect(groups[0].entries).toHaveLength(1)
-    expect(groups[1].label).toBe('Gestern')
+    expect(groups[1].label).toBe('feed.yesterday')
     expect(groups[1].entries).toHaveLength(1)
-    expect(groups[2].label).toBe('Diese Woche')
+    expect(groups[2].label).toBe('feed.thisWeek')
     expect(groups[2].entries).toHaveLength(1)
-    expect(groups[3].label).toBe('Letzte Woche')
+    expect(groups[3].label).toBe('feed.lastWeek')
     expect(groups[3].entries).toHaveLength(1)
   })
 
@@ -53,7 +53,7 @@ describe('groupFeedByDay', () => {
     ] as any[]
     const groups = groupFeedByDay(entries, now)
     expect(groups).toHaveLength(1)
-    expect(groups[0].label).toBe('Heute')
+    expect(groups[0].label).toBe('feed.today')
   })
 
   it('returns empty array for no entries', () => {

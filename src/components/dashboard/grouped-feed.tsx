@@ -38,7 +38,7 @@ export function GroupedFeed({ groups, currentUserId }: { groups: FeedGroup[]; cu
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {}
     for (const g of groups) {
-      init[g.label] = g.label !== 'Heute' && g.label !== 'Gestern'
+      init[g.label] = g.label !== 'feed.today' && g.label !== 'feed.yesterday'
     }
     return init
   })

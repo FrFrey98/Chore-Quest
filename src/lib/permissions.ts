@@ -14,7 +14,7 @@ export type Permission =
 
 export interface NavItem {
   href: string
-  label: string
+  labelKey: string
   icon: string
   minPermission?: Permission
   minRole?: Role[]
@@ -35,11 +35,11 @@ const PERMISSION_MAP: Record<Role, Set<Permission>> = {
 }
 
 const ALL_NAV_ITEMS: NavItem[] = [
-  { href: '/', label: 'Home', icon: 'Home' },
-  { href: '/tasks', label: 'Aufgaben', icon: 'CheckSquare' },
-  { href: '/store', label: 'Store', icon: 'ShoppingBag' },
-  { href: '/achievements', label: 'Erfolge', icon: 'Trophy' },
-  { href: '/profile', label: 'Profil', icon: 'User' },
+  { href: '/', labelKey: 'home', icon: 'Home' },
+  { href: '/tasks', labelKey: 'tasks', icon: 'CheckSquare' },
+  { href: '/store', labelKey: 'store', icon: 'ShoppingBag' },
+  { href: '/achievements', labelKey: 'achievements', icon: 'Trophy' },
+  { href: '/profile', labelKey: 'profile', icon: 'User' },
 ]
 
 export function hasPermission(role: Role, permission: Permission): boolean {
@@ -51,7 +51,7 @@ export function requirePermission(
   permission: Permission,
 ): { error: string; status: number } | null {
   if (!role || !hasPermission(role, permission)) {
-    return { error: 'Keine Berechtigung', status: 403 }
+    return { error: 'No permission', status: 403 }
   }
   return null
 }
@@ -61,7 +61,7 @@ export function requireRole(
   ...allowed: Role[]
 ): { error: string; status: number } | null {
   if (!role || !allowed.includes(role)) {
-    return { error: 'Keine Berechtigung', status: 403 }
+    return { error: 'No permission', status: 403 }
   }
   return null
 }

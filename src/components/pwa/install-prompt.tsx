@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Download, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -10,6 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function InstallPrompt() {
   const { data: session } = useSession()
+  const t = useTranslations('pwa')
   const [show, setShow] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
   const [dismissed, setDismissed] = useState(true)
@@ -75,10 +77,10 @@ export function InstallPrompt() {
     <div className="mx-4 mt-3 bg-indigo-600 text-white rounded-xl p-4 flex items-start gap-3 shadow-lg">
       <Download size={24} className="shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-bold">Chore-Quest als App installieren?</div>
+        <div className="text-sm font-bold">{t('installPrompt')}</div>
         {isIOS ? (
           <p className="text-xs text-indigo-200 mt-1">
-            Tippe auf <span className="font-semibold">Teilen</span> und dann <span className="font-semibold">Zum Home-Bildschirm</span>
+            {t('iosInstructions', { share: t('share'), addToHome: t('addToHome') })}
           </p>
         ) : (
           <div className="flex gap-2 mt-2">
@@ -86,13 +88,13 @@ export function InstallPrompt() {
               onClick={handleInstall}
               className="bg-white text-indigo-600 text-xs font-bold px-4 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
             >
-              Installieren
+              {t('install')}
             </button>
             <button
               onClick={handleDismiss}
               className="text-indigo-200 text-xs font-medium px-3 py-1.5 hover:text-white transition-colors"
             >
-              Später
+              {t('later')}
             </button>
           </div>
         )}

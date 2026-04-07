@@ -1,8 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { WifiOff } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function OfflineIndicator() {
+  const t = useTranslations('pwa')
   const [isOffline, setIsOffline] = useState(false)
   const [show, setShow] = useState(false)
 
@@ -39,7 +41,7 @@ export function OfflineIndicator() {
       }`}
     >
       <WifiOff size={14} />
-      <span>Offline — Änderungen werden synchronisiert</span>
+      <span>{t('offline')}</span>
     </div>
   )
 }
