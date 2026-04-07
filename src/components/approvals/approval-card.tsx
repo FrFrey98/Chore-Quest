@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 
 export type Approval = {
@@ -15,6 +16,8 @@ export function ApprovalCard({
   approval: Approval
   onAction: (id: string, action: 'approve' | 'reject') => Promise<void>
 }) {
+  const t = useTranslations('approvals.card')
+  const tc = useTranslations('common')
   const [loading, setLoading] = useState<'approve' | 'reject' | null>(null)
   const [done, setDone] = useState(false)
 
@@ -39,17 +42,17 @@ export function ApprovalCard({
         <div className="flex-1">
           <p className="font-medium">{approval.task.title}</p>
           <p className="text-sm text-slate-500">
-            Von {approval.requestedBy.name ?? 'Unbekannt'} ·{' '}
+            {t('from', { name: approval.requestedBy.name ?? tc('unknown') })}{' '}
             {approval.task.isRecurring
-              ? `Wiederkehrend (${approval.task.recurringInterval === 'daily' ? 'täglich'
-                  : approval.task.recurringInterval === 'weekly' ? 'wöchentlich'
-                  : approval.task.recurringInterval === 'monthly' ? 'monatlich'
-                  : 'unbekannt'})`
-              : 'Einmalig'}
+              ? (approval.task.recurringInterval === 'daily' ? t('recurringDaily')
+                  : approval.task.recurringInterval === 'weekly' ? t('recurringWeekly')
+                  : approval.task.recurringInterval === 'monthly' ? t('recurringMonthly')
+                  : t('recurringUnknown'))
+              : t('oneTime')}
           </p>
         </div>
         <span className="text-xs font-medium bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded shrink-0">
-          +{approval.task.points} Pkt
+          +{approval.task.points} {tc('points')}
         </span>
       </div>
       <div className="flex gap-2">
@@ -59,14 +62,14 @@ export function ApprovalCard({
           onClick={() => handle('reject')}
           disabled={loading !== null}
         >
-          {loading === 'reject' ? '…' : '✗ Ablehnen'}
+          {loading === 'reject' ? '…' : t('reject')}
         </Button>
         <Button
           className="flex-1 bg-green-600 hover:bg-green-700"
           onClick={() => handle('approve')}
           disabled={loading !== null}
         >
-          {loading === 'approve' ? '…' : '✓ Genehmigen'}
+          {loading === 'approve' ? '…' : t('approve')}
         </Button>
       </div>
     </div>

@@ -1,4 +1,6 @@
+'use client'
 // src/components/dashboard/week-chart.tsx
+import { useTranslations } from 'next-intl'
 
 type DayData = {
   day: string // 'Mo', 'Di', etc.
@@ -14,12 +16,13 @@ type WeekChartProps = {
 }
 
 export function WeekChart({ days, userName, partnerName }: WeekChartProps) {
+  const t = useTranslations('dashboard')
   const max = Math.max(1, ...days.map((d) => Math.max(d.userCount, d.partnerCount)))
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4">
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Wochenübersicht
+        {t('weekOverview')}
       </h2>
       <div className="flex items-end gap-1.5" style={{ height: '80px' }}>
         {days.map((d, i) => (

@@ -43,7 +43,7 @@ export async function POST(
   if (withUserIds.length > 0) {
     const partners = await prisma.user.findMany({ where: { id: { in: withUserIds } } })
     if (partners.length !== withUserIds.length) {
-      return NextResponse.json({ error: 'Partner nicht gefunden' }, { status: 400 })
+      return NextResponse.json({ error: 'Partner not found' }, { status: 400 })
     }
   }
 
@@ -55,7 +55,7 @@ export async function POST(
     yesterday.setUTCHours(23, 59, 0, 0)
     completedAt = yesterday
   } else if (dateParam && dateParam !== 'today') {
-    return NextResponse.json({ error: 'Ungültiges Datum' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid date' }, { status: 400 })
   }
 
   const task = await prisma.task.findUnique({
@@ -67,7 +67,7 @@ export async function POST(
     },
   })
   if (!task || task.status !== 'active') {
-    return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
+    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
   }
 
   const scheduleOpts = task.scheduleDays
@@ -89,14 +89,14 @@ export async function POST(
       where: { taskId: task.id, userId, completedAt: { gte: checkDayStart, lt: checkDayEnd } },
     })
     if (existingOnDay) {
-      return NextResponse.json({ error: dateParam === 'yesterday' ? 'Aufgabe gestern bereits erledigt' : 'Aufgabe heute bereits erledigt' }, { status: 409 })
+      return NextResponse.json({ error: dateParam === 'yesterday' ? 'Task already completed yesterday' : 'Task already completed today' }, { status: 409 })
     }
   } else if (task.dailyLimit) {
     const dayCount = await prisma.taskCompletion.count({
       where: { taskId: task.id, userId, completedAt: { gte: checkDayStart, lt: checkDayEnd } },
     })
     if (dayCount >= task.dailyLimit) {
-      return NextResponse.json({ error: `Tageslimit erreicht (${task.dailyLimit}x)` }, { status: 409 })
+      return NextResponse.json({ error: `Daily limit reached (${task.dailyLimit}x)` }, { status: 409 })
     }
   }
 

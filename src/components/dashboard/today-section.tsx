@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/toast-provider'
 import { Check, Users, Undo2 } from 'lucide-react'
 
@@ -39,6 +40,8 @@ type TodaySectionProps = {
 export function TodaySection({ completed, due, suggestions, partnerId, partnerName }: TodaySectionProps) {
   const router = useRouter()
   const { toast } = useToast()
+  const t = useTranslations('dashboard')
+  const tc = useTranslations('common')
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set())
   const [sharedTaskId, setSharedTaskId] = useState<string | null>(null)
@@ -55,13 +58,13 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
       })
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error ?? 'Fehler')
+        throw new Error(data.error ?? tc('error'))
       }
       setConfirmUndoId(null)
-      toast('Erledigung rückgängig gemacht', 'info')
+      toast(t('undone'), 'info')
       router.refresh()
     } catch (err: unknown) {
-      toast(err instanceof Error ? err.message : 'Rückgängig fehlgeschlagen', 'error')
+      toast(err instanceof Error ? err.message : t('undoFailed'), 'error')
     } finally {
       setUndoingId(null)
       setConfirmUndoId(null)
@@ -88,12 +91,12 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
           setDoneIds((prev) => new Set(prev).add(task.id))
         }
         setSharedTaskId(null)
-        toast(`"${task.title}" wird synchronisiert`, 'info')
+        toast(t('syncing', { title: task.title }), 'info')
         return
       }
 
       if (!res.ok) {
-        throw new Error(data.error ?? 'Fehler')
+        throw new Error(data.error ?? tc('error'))
       }
 
       if (!task.allowMultiple) {
@@ -101,20 +104,22 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
       }
       setSharedTaskId(null)
 
-      const sharedLabel = isShared ? ' 👫' : ''
-      toast(`+${data.points} Pkt für "${task.title}"${sharedLabel}`, 'success')
+      const toastMsg = isShared
+        ? t('pointsEarnedTogether', { points: data.points, title: task.title })
+        : t('pointsEarned', { points: data.points, title: task.title })
+      toast(toastMsg, 'success')
 
       if (data.newAchievements?.length > 0) {
         data.newAchievements.forEach((a: { emoji: string; title: string }, i: number) => {
           setTimeout(() => {
-            toast(`${a.emoji} Achievement freigeschaltet: ${a.title}`, 'success')
+            toast(t('achievementUnlocked', { emoji: a.emoji, title: a.title }), 'success')
           }, 1500 + i * 1500)
         })
       }
 
       router.refresh()
     } catch (err: unknown) {
-      toast(err instanceof Error ? err.message : 'Fehler beim Erledigen', 'error')
+      toast(err instanceof Error ? err.message : t('completionFailed'), 'error')
     } finally {
       setLoadingId(null)
     }
@@ -123,39 +128,39 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Heute</h2>
+        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">{t('today')}</h2>
         <span className="bg-green-50 text-green-700 text-xs font-semibold rounded-full px-2 py-0.5">
-          {doneCount}/{totalTasks} erledigt
+          {t('doneOfTotal', { done: doneCount, total: totalTasks })}
         </span>
       </div>
       <div className="flex flex-col gap-2">
         {/* Completed tasks */}
-        {completed.map((t) => (
-          <div key={t.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
-            <span className="text-lg">{t.emoji}</span>
-            <span className="flex-1 text-sm text-slate-400 line-through truncate">{t.title}</span>
-            <span className="text-xs text-green-600 font-semibold">✓ +{t.points}</span>
-            {confirmUndoId === t.id ? (
+        {completed.map((task) => (
+          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
+            <span className="text-lg">{task.emoji}</span>
+            <span className="flex-1 text-sm text-slate-400 line-through truncate">{task.title}</span>
+            <span className="text-xs text-green-600 font-semibold">✓ +{task.points}</span>
+            {confirmUndoId === task.id ? (
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => handleUndo(t)}
-                  disabled={undoingId === t.id}
+                  onClick={() => handleUndo(task)}
+                  disabled={undoingId === task.id}
                   className="text-xs text-red-600 font-semibold hover:text-red-700"
                 >
-                  {undoingId === t.id ? '…' : 'Ja'}
+                  {undoingId === task.id ? '…' : tc('yes')}
                 </button>
                 <button
                   onClick={() => setConfirmUndoId(null)}
                   className="text-xs text-slate-400 hover:text-slate-600"
                 >
-                  Nein
+                  {tc('no')}
                 </button>
               </div>
             ) : (
               <button
-                onClick={() => setConfirmUndoId(t.id)}
+                onClick={() => setConfirmUndoId(task.id)}
                 className="text-slate-300 hover:text-slate-500 transition-colors p-1"
-                title="Rückgängig"
+                title={t('undoConfirm')}
               >
                 <Undo2 size={14} />
               </button>
@@ -163,48 +168,48 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
           </div>
         ))}
         {/* Due tasks */}
-        {due.filter((t) => !doneIds.has(t.id)).map((t) => (
-          <div key={t.id} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg border-l-[3px] border-slate-300">
-            <span className="text-lg">{t.emoji}</span>
+        {due.filter((task) => !doneIds.has(task.id)).map((task) => (
+          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg border-l-[3px] border-slate-300">
+            <span className="text-lg">{task.emoji}</span>
             <div className="flex-1 min-w-0">
-              <span className="text-sm text-slate-800 truncate block">{t.title}</span>
-              {t.allowMultiple && t.dailyLimit && (
-                <span className="text-[10px] text-slate-400">{t.todayCount}/{t.dailyLimit} heute</span>
+              <span className="text-sm text-slate-800 truncate block">{task.title}</span>
+              {task.allowMultiple && task.dailyLimit && (
+                <span className="text-[10px] text-slate-400">{task.todayCount}/{task.dailyLimit} {t('today').toLowerCase()}</span>
               )}
             </div>
             {partnerId && (
               <button
-                onClick={() => setSharedTaskId(sharedTaskId === t.id ? null : t.id)}
+                onClick={() => setSharedTaskId(sharedTaskId === task.id ? null : task.id)}
                 className={`p-1.5 rounded-lg transition-colors ${
-                  sharedTaskId === t.id
+                  sharedTaskId === task.id
                     ? 'bg-amber-100 text-amber-700'
                     : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
                 }`}
-                title={`Zusammen mit ${partnerName}`}
+                title={t('togetherWith', { name: partnerName ?? '' })}
               >
                 <Users size={14} />
               </button>
             )}
             <button
-              onClick={() => handleComplete(t)}
-              disabled={loadingId === t.id}
+              onClick={() => handleComplete(task)}
+              disabled={loadingId === task.id}
               className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
             >
-              {loadingId === t.id ? '…' : <><Check size={14} /> {sharedTaskId === t.id ? '👫 Zusammen' : 'Abhaken'}</>}
+              {loadingId === task.id ? '…' : <><Check size={14} /> {sharedTaskId === task.id ? `👫 ${t('together')}` : t('checkOff')}</>}
             </button>
           </div>
         ))}
         {/* Suggested tasks */}
-        {suggestions.map((t) => (
-          <div key={t.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400 opacity-70">
-            <span className="text-lg">{t.emoji}</span>
-            <span className="flex-1 text-sm text-amber-900 truncate">{t.title}</span>
-            <span className="text-[10px] text-amber-600 font-semibold">Vorschlag</span>
+        {suggestions.map((task) => (
+          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400 opacity-70">
+            <span className="text-lg">{task.emoji}</span>
+            <span className="flex-1 text-sm text-amber-900 truncate">{task.title}</span>
+            <span className="text-[10px] text-amber-600 font-semibold">{t('suggestion')}</span>
           </div>
         ))}
         {/* Empty state */}
         {completed.length === 0 && due.length === 0 && suggestions.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-4">Keine Aufgaben für heute</p>
+          <p className="text-sm text-slate-400 text-center py-4">{t('noTasksToday')}</p>
         )}
       </div>
     </div>

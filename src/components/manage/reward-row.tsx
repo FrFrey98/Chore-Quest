@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { EmojiPicker } from '@/components/ui/emoji-picker'
 import { useToast } from '@/components/toast-provider'
@@ -27,6 +28,9 @@ type RewardRowProps = {
 export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: RewardRowProps) {
   const router = useRouter()
   const { toast } = useToast()
+  const t = useTranslations('manage.rewardRow')
+  const tc = useTranslations('common')
+  const tStore = useTranslations('store.createItem')
   const [form, setForm] = useState({
     title: reward.title,
     emoji: reward.emoji,
@@ -47,15 +51,15 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
         body: JSON.stringify(form),
       })
       if (res.ok) {
-        toast('Belohnung gespeichert', 'success')
+        toast(t('saved'), 'success')
         onCancelEdit()
         router.refresh()
       } else {
         const data = await res.json()
-        toast(data.error ?? 'Fehler beim Speichern', 'error')
+        toast(data.error ?? t('saveFailed'), 'error')
       }
     } catch {
-      toast('Netzwerkfehler', 'error')
+      toast(tc('networkError'), 'error')
     } finally {
       setSaving(false)
     }
@@ -66,14 +70,14 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
     try {
       const res = await fetch(`/api/store/${reward.id}`, { method: 'DELETE' })
       if (res.ok) {
-        toast('Belohnung deaktiviert', 'success')
+        toast(t('deactivated'), 'success')
         setConfirmOpen(false)
         router.refresh()
       } else {
-        toast('Fehler beim Deaktivieren', 'error')
+        toast(t('deactivateFailed'), 'error')
       }
     } catch {
-      toast('Netzwerkfehler', 'error')
+      toast(tc('networkError'), 'error')
     } finally {
       setArchiving(false)
     }
@@ -88,13 +92,13 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
         body: JSON.stringify({ isActive: true }),
       })
       if (res.ok) {
-        toast('Belohnung reaktiviert', 'success')
+        toast(t('reactivated'), 'success')
         router.refresh()
       } else {
-        toast('Fehler beim Reaktivieren', 'error')
+        toast(t('reactivateFailed'), 'error')
       }
     } catch {
-      toast('Netzwerkfehler', 'error')
+      toast(tc('networkError'), 'error')
     } finally {
       setSaving(false)
     }
@@ -105,20 +109,20 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
       <div className="bg-white border border-indigo-200 rounded-xl p-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">Emoji</label>
+            <label className="text-xs text-slate-500 mb-1 block">{tStore('emoji')}</label>
             <EmojiPicker value={form.emoji} onChange={(emoji) => setForm({ ...form, emoji })} />
           </div>
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">Preis (Pkt)</label>
+            <label className="text-xs text-slate-500 mb-1 block">{tStore('price')}</label>
             <Input type="number" value={form.pointCost} onChange={(e) => setForm({ ...form, pointCost: Number(e.target.value) })} />
           </div>
         </div>
         <div>
-          <label className="text-xs text-slate-500 mb-1 block">Titel</label>
+          <label className="text-xs text-slate-500 mb-1 block">{tStore('titleLabel')}</label>
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </div>
         <div>
-          <label className="text-xs text-slate-500 mb-1 block">Beschreibung</label>
+          <label className="text-xs text-slate-500 mb-1 block">{tStore('description')}</label>
           <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
         <div className="flex items-center gap-3">
@@ -128,7 +132,7 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
             checked={form.isActive}
             onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
           />
-          <label htmlFor={`active-${reward.id}`} className="text-sm">Aktiv</label>
+          <label htmlFor={`active-${reward.id}`} className="text-sm">{tc('active')}</label>
         </div>
         <div className="flex justify-end gap-2">
           <button
@@ -165,10 +169,10 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
           {truncatedDesc && (
             <span className="text-xs text-slate-400 truncate hidden sm:inline">{truncatedDesc}</span>
           )}
-          <span className="text-xs text-slate-400 shrink-0">{reward.pointCost} Pkt</span>
+          <span className="text-xs text-slate-400 shrink-0">{reward.pointCost} {tc('points')}</span>
           {!reward.isActive && (
             <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0">
-              Inaktiv
+              {tc('inactive')}
             </span>
           )}
         </div>
@@ -203,9 +207,9 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Belohnung deaktivieren"
-        description={`Belohnung "${reward.title}" wirklich deaktivieren?`}
-        confirmLabel="Ja, deaktivieren"
+        title={t('deactivateTitle')}
+        description={t('deactivateDescription', { title: reward.title })}
+        confirmLabel={t('deactivateConfirm')}
         onConfirm={handleDeactivate}
         loading={archiving}
       />

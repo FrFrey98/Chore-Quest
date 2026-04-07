@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 
 export type StoreItem = {
@@ -16,6 +17,8 @@ export function StoreItemCard({
   userBalance: number
   onPurchase: (id: string) => Promise<{ error?: string }>
 }) {
+  const t = useTranslations('store')
+  const tc = useTranslations('common')
   const [loading, setLoading] = useState(false)
   const [purchased, setPurchased] = useState(false)
   const [error, setError] = useState('')
@@ -42,12 +45,12 @@ export function StoreItemCard({
           <p className="text-sm text-slate-500">{item.description}</p>
         </div>
         <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded shrink-0">
-          {item.pointCost} Pkt
+          {item.pointCost} {tc('points')}
         </span>
       </div>
       {error && <p className="text-red-500 text-xs">{error}</p>}
       {purchased ? (
-        <p className="text-green-600 text-sm font-medium">✓ Gekauft!</p>
+        <p className="text-green-600 text-sm font-medium">{t('purchased')}</p>
       ) : (
         <Button
           className="w-full"
@@ -55,7 +58,7 @@ export function StoreItemCard({
           disabled={loading || !canAfford}
           variant={canAfford ? 'default' : 'outline'}
         >
-          {loading ? '…' : canAfford ? 'Kaufen' : 'Nicht genug Punkte'}
+          {loading ? '…' : canAfford ? t('buy') : t('notEnoughPoints')}
         </Button>
       )}
     </div>

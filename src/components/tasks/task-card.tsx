@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/toast-provider'
@@ -21,6 +22,8 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
   const [done, setDone] = useState(false)
   const [shared, setShared] = useState(false)
   const { toast } = useToast()
+  const t = useTranslations('tasks')
+  const tc = useTranslations('common')
 
   async function handleComplete() {
     setLoading(true)
@@ -33,15 +36,17 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
       })
       if (!res.ok) {
         const errData = await res.json()
-        throw new Error(errData.error ?? 'Fehler beim Erledigen')
+        throw new Error(errData.error ?? t('completionFailed'))
       }
       const data = await res.json()
       setDone(true)
       setShared(false)
 
-      const sharedLabel = isShared ? ' 👫' : ''
-      toast(`+${data.points} Pkt für "${task.title}"${sharedLabel}`, 'success', {
-        label: 'Rückgängig',
+      const msg = isShared
+        ? t('pointsEarnedTogether', { points: data.points, title: task.title })
+        : t('pointsEarned', { points: data.points, title: task.title })
+      toast(msg, 'success', {
+        label: t('undo'),
         onClick: async () => {
           const undoRes = await fetch(`/api/tasks/${task.id}/complete/undo`, {
             method: 'POST',
@@ -50,9 +55,9 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
           })
           if (undoRes.ok) {
             setDone(false)
-            toast('Erledigung rückgängig gemacht', 'info')
+            toast(t('undone'), 'info')
           } else {
-            toast('Rückgängig fehlgeschlagen', 'error')
+            toast(t('undoFailed'), 'error')
           }
         },
       })
@@ -60,14 +65,14 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
       if (data.newAchievements && data.newAchievements.length > 0) {
         data.newAchievements.forEach((a: { emoji: string; title: string }, i: number) => {
           setTimeout(() => {
-            toast(`${a.emoji} Achievement freigeschaltet: ${a.title}`, 'success')
+            toast(t('achievementUnlocked', { emoji: a.emoji, title: a.title }), 'success')
           }, 1500 + i * 1500)
         })
       }
 
       onComplete(task.id).catch(() => {})
     } catch (err: any) {
-      toast(err.message ?? 'Fehler beim Erledigen', 'error')
+      toast(err.message ?? t('completionFailed'), 'error')
     } finally {
       setLoading(false)
     }
@@ -82,14 +87,14 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
         <p className="font-medium text-slate-800 truncate">{task.title}</p>
         {task.isRecurring && (
           <p className="text-xs text-slate-400">
-            🔄 {task.recurringInterval === 'daily' ? 'Täglich'
-              : task.recurringInterval === 'weekly' ? 'Wöchentlich'
-              : 'Monatlich'}
+            {task.recurringInterval === 'daily' ? t('recurring.daily')
+              : task.recurringInterval === 'weekly' ? t('recurring.weekly')
+              : t('recurring.monthly')}
           </p>
         )}
       </div>
       <Badge variant="secondary" className="text-indigo-700 bg-indigo-50 shrink-0">
-        +{task.points} Pkt
+        +{task.points} {tc('points')}
       </Badge>
       {partnerId && (
         <button
@@ -97,13 +102,13 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
           className={`p-1.5 rounded-lg transition-colors ${
             shared ? 'bg-amber-100 text-amber-700' : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
           }`}
-          title={`Zusammen mit ${partnerName}`}
+          title={t('togetherWith', { name: partnerName ?? '' })}
         >
           <Users size={16} />
         </button>
       )}
       <Button size="sm" onClick={handleComplete} disabled={loading} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-1">
-        {loading ? '…' : <><Check size={16} /> {shared ? '👫 Zusammen' : 'Abhaken'}</>}
+        {loading ? '…' : <><Check size={16} /> {shared ? `👫 ${t('together')}` : t('checkOff')}</>}
       </Button>
     </div>
   )

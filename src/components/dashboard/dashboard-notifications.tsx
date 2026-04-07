@@ -1,9 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/toast-provider'
 
 export function DashboardNotifications() {
   const { toast } = useToast()
+  const t = useTranslations('dashboard')
   const [checked, setChecked] = useState(false)
 
   useEffect(() => {
@@ -16,7 +18,7 @@ export function DashboardNotifications() {
         if (notifications.length === 0) return
 
         for (const n of notifications) {
-          toast(`${n.itemEmoji} ${n.userName} hat "${n.itemTitle}" eingelöst`, 'info')
+          toast(t('redeemed', { emoji: n.itemEmoji, name: n.userName, title: n.itemTitle }), 'info')
         }
 
         fetch('/api/notifications/redeemed', {
@@ -26,7 +28,7 @@ export function DashboardNotifications() {
         }).catch(() => {})
       })
       .catch(() => {})
-  }, [checked, toast])
+  }, [checked, toast, t])
 
   return null
 }

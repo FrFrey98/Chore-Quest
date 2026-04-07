@@ -15,9 +15,11 @@ type ActivityChartProps = {
   comparisonData?: ComparisonDataPoint[]
   userName?: string
   partnerName?: string
+  tasksLabel?: string
+  pointsLabel?: string
 }
 
-export function ActivityChart({ mode, metric, personalData, comparisonData, userName, partnerName }: ActivityChartProps) {
+export function ActivityChart({ mode, metric, personalData, comparisonData, userName, partnerName, tasksLabel = 'Tasks', pointsLabel = 'Points' }: ActivityChartProps) {
   if (mode === 'personal' && personalData) {
     const dataKey = metric === 'count' ? 'count' : 'points'
     return (
@@ -28,7 +30,7 @@ export function ActivityChart({ mode, metric, personalData, comparisonData, user
           <YAxis tick={{ fontSize: 10 }} />
           <Tooltip
             labelFormatter={(v) => String(v)}
-            formatter={(value) => [value, metric === 'count' ? 'Aufgaben' : 'Punkte']}
+            formatter={(value) => [value, metric === 'count' ? tasksLabel : pointsLabel]}
           />
           <Line type="monotone" dataKey={dataKey} stroke="#818cf8" strokeWidth={2} dot={{ r: 3, fill: '#818cf8' }} />
         </LineChart>

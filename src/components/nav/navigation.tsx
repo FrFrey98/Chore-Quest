@@ -3,7 +3,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, CheckSquare, ShoppingBag, Trophy, User, type LucideIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { getVisibleNavItems } from '@/lib/permissions'
+import { LocaleSwitcher } from '@/components/locale-switcher'
 
 function isActive(pathname: string, href: string): boolean {
   if (href === '/') return pathname === '/'
@@ -21,14 +23,15 @@ const ICON_MAP: Record<string, LucideIcon> = {
 export function Navigation() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const t = useTranslations('nav')
   const role = session?.user?.role ?? 'child'
   const navItems = getVisibleNavItems(role)
 
   return (
     <>
       {/* Mobile bottom bar */}
-      <nav aria-label="Hauptnavigation" className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex md:hidden z-50">
-        {navItems.map(({ href, icon, label }) => {
+      <nav aria-label={t('mainNav')} className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex md:hidden z-50">
+        {navItems.map(({ href, icon, labelKey }) => {
           const Icon = ICON_MAP[icon] ?? Home
           return (
             <Link
@@ -40,16 +43,16 @@ export function Navigation() {
               }`}
             >
               <Icon size={20} />
-              <span>{label}</span>
+              <span>{t(labelKey)}</span>
             </Link>
           )
         })}
       </nav>
 
       {/* Desktop sidebar */}
-      <nav aria-label="Seitenleiste" className="hidden md:flex flex-col w-56 min-h-screen bg-white border-r border-slate-200 p-4 gap-1">
-        <div className="text-lg font-bold mb-6 px-3">🏠 Chore-Quest</div>
-        {navItems.map(({ href, icon, label }) => {
+      <nav aria-label={t('sidebar')} className="hidden md:flex flex-col w-56 min-h-screen bg-white border-r border-slate-200 p-4 gap-1">
+        <div className="text-lg font-bold mb-6 px-3">{t('brand')}</div>
+        {navItems.map(({ href, icon, labelKey }) => {
           const Icon = ICON_MAP[icon] ?? Home
           return (
             <Link
@@ -63,10 +66,13 @@ export function Navigation() {
               }`}
             >
               <Icon size={18} />
-              {label}
+              {t(labelKey)}
             </Link>
           )
         })}
+        <div className="mt-auto pt-4 px-3">
+          <LocaleSwitcher />
+        </div>
       </nav>
     </>
   )

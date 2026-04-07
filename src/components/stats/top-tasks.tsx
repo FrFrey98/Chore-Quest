@@ -2,9 +2,10 @@ type TopTasksProps = {
   tasks: { taskId: string; title: string; emoji: string; count: number }[]
   barColor?: string
   label?: string
+  emptyLabel?: string
 }
 
-export function TopTasks({ tasks, barColor = 'bg-indigo-400', label }: TopTasksProps) {
+export function TopTasks({ tasks, barColor = 'bg-indigo-400', label, emptyLabel = 'No tasks in period' }: TopTasksProps) {
   const max = Math.max(1, ...tasks.map((t) => t.count))
 
   return (
@@ -25,7 +26,7 @@ export function TopTasks({ tasks, barColor = 'bg-indigo-400', label }: TopTasksP
           </div>
         ))}
         {tasks.length === 0 && (
-          <p className="text-xs text-slate-400">Keine Aufgaben im Zeitraum</p>
+          <p className="text-xs text-slate-400">{emptyLabel}</p>
         )}
       </div>
     </div>

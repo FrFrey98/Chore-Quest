@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   // Check duplicate name (case-insensitive, SQLite-safe)
   const existing = await prisma.user.findMany({ select: { name: true } })
   if (existing.some(u => u.name.toLowerCase() === name.toLowerCase())) {
-    return NextResponse.json({ error: 'Dieser Name ist bereits vergeben' }, { status: 409 })
+    return NextResponse.json({ error: 'This name is already taken' }, { status: 409 })
   }
 
   const hashed = await bcrypt.hash(pin, 10)

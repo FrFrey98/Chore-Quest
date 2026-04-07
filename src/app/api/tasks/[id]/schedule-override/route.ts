@@ -15,10 +15,10 @@ export async function POST(
   const { date, type } = body
 
   if (!date || typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return NextResponse.json({ error: 'Ungültiges Datum' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid date' }, { status: 400 })
   }
   if (type !== 'add' && type !== 'skip') {
-    return NextResponse.json({ error: 'Typ muss "add" oder "skip" sein' }, { status: 400 })
+    return NextResponse.json({ error: 'Type must be "add" or "skip"' }, { status: 400 })
   }
 
   // Date must be in the future (not today, not past)
@@ -26,15 +26,15 @@ export async function POST(
   todayStart.setUTCHours(0, 0, 0, 0)
   const overrideDate = new Date(date + 'T00:00:00.000Z')
   if (overrideDate <= todayStart) {
-    return NextResponse.json({ error: 'Datum muss in der Zukunft liegen' }, { status: 400 })
+    return NextResponse.json({ error: 'Date must be in the future' }, { status: 400 })
   }
 
   const task = await prisma.task.findUnique({ where: { id } })
   if (!task || task.status !== 'active') {
-    return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
+    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
   }
   if (!task.isRecurring) {
-    return NextResponse.json({ error: 'Nur für wiederkehrende Aufgaben' }, { status: 400 })
+    return NextResponse.json({ error: 'Only for recurring tasks' }, { status: 400 })
   }
 
   const override = await prisma.taskScheduleOverride.upsert({
@@ -58,7 +58,7 @@ export async function DELETE(
   const { date } = body
 
   if (!date || typeof date !== 'string') {
-    return NextResponse.json({ error: 'Datum erforderlich' }, { status: 400 })
+    return NextResponse.json({ error: 'Date required' }, { status: 400 })
   }
 
   try {
@@ -68,7 +68,7 @@ export async function DELETE(
   } catch (error: unknown) {
     const prismaError = error as { code?: string }
     if (prismaError?.code === 'P2025') {
-      return NextResponse.json({ error: 'Override nicht gefunden' }, { status: 404 })
+      return NextResponse.json({ error: 'Override not found' }, { status: 404 })
     }
     throw error
   }

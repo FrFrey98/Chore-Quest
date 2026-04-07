@@ -46,10 +46,10 @@ export function groupFeedByDay(entries: FeedEntry[], now: Date = new Date()): Fe
   const { start: lastWeekStart } = getWeekBounds(lastWeekEnd)
 
   const buckets: { label: string; entries: FeedEntry[] }[] = [
-    { label: 'Heute', entries: [] },
-    { label: 'Gestern', entries: [] },
-    { label: 'Diese Woche', entries: [] },
-    { label: 'Letzte Woche', entries: [] },
+    { label: 'feed.today', entries: [] },
+    { label: 'feed.yesterday', entries: [] },
+    { label: 'feed.thisWeek', entries: [] },
+    { label: 'feed.lastWeek', entries: [] },
   ]
 
   for (const entry of entries) {

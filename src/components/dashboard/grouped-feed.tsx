@@ -1,9 +1,11 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import type { FeedGroup, FeedEntry } from '@/lib/dashboard'
 
 function FeedRow({ entry, currentUserId }: { entry: FeedEntry; currentUserId: string }) {
+  const t = useTranslations('dashboard')
   const isMe = entry.user.id === currentUserId
   const nameColor = isMe ? 'text-indigo-600' : 'text-pink-600'
   const emoji = entry.type === 'redemption' ? (entry.item?.emoji ?? '🎁') : (entry.task?.emoji ?? '✅')
@@ -25,7 +27,7 @@ function FeedRow({ entry, currentUserId }: { entry: FeedEntry; currentUserId: st
       <span className="text-slate-600 truncate flex-1">{title}</span>
       {isShared && <span className="text-xs">👫</span>}
       {entry.type === 'redemption' ? (
-        <span className="text-xs font-semibold text-amber-600 whitespace-nowrap">Belohnung</span>
+        <span className="text-xs font-semibold text-amber-600 whitespace-nowrap">{t('feed.reward')}</span>
       ) : (
         <span className={`text-xs font-semibold whitespace-nowrap ${nameColor}`}>+{entry.points}</span>
       )}
@@ -34,11 +36,12 @@ function FeedRow({ entry, currentUserId }: { entry: FeedEntry; currentUserId: st
 }
 
 export function GroupedFeed({ groups, currentUserId }: { groups: FeedGroup[]; currentUserId: string }) {
-  // "Heute" and "Gestern" start expanded, rest collapsed
+  const t = useTranslations('dashboard')
+  // "Today" and "Yesterday" start expanded, rest collapsed
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {}
     for (const g of groups) {
-      init[g.label] = g.label !== 'Heute' && g.label !== 'Gestern'
+      init[g.label] = g.label !== 'feed.today' && g.label !== 'feed.yesterday'
     }
     return init
   })
@@ -51,9 +54,9 @@ export function GroupedFeed({ groups, currentUserId }: { groups: FeedGroup[]; cu
     return (
       <div className="text-center py-16">
         <p className="text-4xl mb-3">🚀</p>
-        <p className="text-lg font-semibold text-slate-700">Noch keine Aktivitäten</p>
+        <p className="text-lg font-semibold text-slate-700">{t('feed.empty')}</p>
         <p className="text-sm text-slate-400 mt-1">
-          Erledige deine erste Aufgabe und starte das Spiel!
+          {t('feed.emptySubtitle')}
         </p>
       </div>
     )
@@ -62,7 +65,7 @@ export function GroupedFeed({ groups, currentUserId }: { groups: FeedGroup[]; cu
   return (
     <div className="mb-4">
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Aktivitäten
+        {t('feed.heading')}
       </h2>
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         {groups.map((group) => (
@@ -72,10 +75,10 @@ export function GroupedFeed({ groups, currentUserId }: { groups: FeedGroup[]; cu
               className="w-full flex items-center gap-2 px-3 py-2 bg-slate-50 border-b border-slate-200 text-left hover:bg-slate-100 transition-colors"
             >
               {collapsed[group.label] ? <ChevronRight size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
-              <span className="text-xs font-semibold text-slate-600 flex-1">{group.label}</span>
+              <span className="text-xs font-semibold text-slate-600 flex-1">{t(group.label)}</span>
               {collapsed[group.label] && (
                 <span className="text-[10px] text-slate-400">
-                  {group.totalTasks} Aufgaben · {group.totalPoints} Pkt
+                  {t('feed.tasksSummary', { tasks: group.totalTasks, points: group.totalPoints })}
                 </span>
               )}
             </button>

@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 export const createCategorySchema = z.object({
-  name: z.string().min(1, 'Name ist erforderlich').trim(),
-  emoji: z.string().min(1, 'Emoji ist erforderlich'),
+  name: z.string().min(1, 'Name is required').trim(),
+  emoji: z.string().min(1, 'Emoji is required'),
 })
 
 export const updateCategorySchema = createCategorySchema.partial()
