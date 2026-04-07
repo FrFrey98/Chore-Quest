@@ -54,8 +54,6 @@ export default async function UserProfilePage({ params }: { params: { userId: st
       }}
       achievementsSummary={achievementsSummary}
       isOwnProfile={false}
-      notificationsEnabled={false}
-      vapidPublicKey={null}
     />
   )
 }

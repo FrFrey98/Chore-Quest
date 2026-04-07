@@ -27,30 +27,18 @@ describe('hasPermission', () => {
 })
 
 describe('getVisibleNavItems', () => {
-  it('child does not see approvals, manage, or settings', () => {
-    const items = getVisibleNavItems('child')
-    const hrefs = items.map((i) => i.href)
-    expect(hrefs).toContain('/')
-    expect(hrefs).toContain('/tasks')
-    expect(hrefs).toContain('/store')
-    expect(hrefs).not.toContain('/approvals')
-    expect(hrefs).not.toContain('/manage')
-    expect(hrefs).not.toContain('/settings')
-  })
-
-  it('member sees approvals and manage but not settings', () => {
-    const items = getVisibleNavItems('member')
-    const hrefs = items.map((i) => i.href)
-    expect(hrefs).toContain('/approvals')
-    expect(hrefs).toContain('/manage')
-    expect(hrefs).not.toContain('/settings')
-  })
-
-  it('admin sees everything', () => {
-    const items = getVisibleNavItems('admin')
-    const hrefs = items.map((i) => i.href)
-    expect(hrefs).toContain('/settings')
-    expect(hrefs).toContain('/approvals')
-    expect(hrefs).toContain('/manage')
+  it('all roles see the same nav items', () => {
+    for (const role of ['admin', 'member', 'child'] as const) {
+      const items = getVisibleNavItems(role)
+      const hrefs = items.map((i) => i.href)
+      expect(hrefs).toContain('/')
+      expect(hrefs).toContain('/tasks')
+      expect(hrefs).toContain('/store')
+      expect(hrefs).toContain('/achievements')
+      expect(hrefs).toContain('/profile')
+      expect(hrefs).not.toContain('/approvals')
+      expect(hrefs).not.toContain('/manage')
+      expect(hrefs).not.toContain('/settings')
+    }
   })
 })

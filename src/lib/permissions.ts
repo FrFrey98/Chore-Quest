@@ -37,11 +37,8 @@ const PERMISSION_MAP: Record<Role, Set<Permission>> = {
 const ALL_NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Home', icon: 'Home' },
   { href: '/tasks', label: 'Aufgaben', icon: 'CheckSquare' },
-  { href: '/approvals', label: 'Freigaben', icon: 'ClipboardCheck', minPermission: 'approveTasks' },
   { href: '/store', label: 'Store', icon: 'ShoppingBag' },
   { href: '/achievements', label: 'Erfolge', icon: 'Trophy' },
-  { href: '/manage', label: 'Verwalten', icon: 'ListTodo', minPermission: 'createTasks' },
-  { href: '/settings', label: 'Einstellungen', icon: 'Settings', minRole: ['admin'] },
   { href: '/profile', label: 'Profil', icon: 'User' },
 ]
 
