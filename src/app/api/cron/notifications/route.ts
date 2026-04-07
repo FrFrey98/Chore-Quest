@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { isPushConfigured, sendPush, buildNotificationPayload, isTaskDueForNotification } from '@/lib/push'
+import { isTaskDueForNotification } from '@/lib/push'
+import { dispatchNotification } from '@/lib/notifications/dispatcher'
 
 export async function GET(req: NextRequest) {
   // Authenticate via cron secret
@@ -8,10 +9,6 @@ export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('x-cron-secret')
   if (!cronSecret || authHeader !== cronSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  if (!isPushConfigured()) {
-    return NextResponse.json({ skipped: true, reason: 'VAPID not configured' })
   }
 
   const now = new Date()
@@ -62,43 +59,34 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ sent: 0 })
   }
 
-  // Get all push subscriptions for users with notifications enabled
-  const subscriptions = await prisma.pushSubscription.findMany({
+  // Get all users who have any notification channel enabled
+  const users = await prisma.user.findMany({
     where: {
-      user: { notificationsEnabled: true },
+      OR: [
+        { notificationsEnabled: true },
+        { telegramChatId: { not: null } },
+        { ntfyEnabled: true },
+      ],
     },
-    select: {
-      id: true,
-      endpoint: true,
-      p256dh: true,
-      auth: true,
-    },
+    select: { id: true },
   })
 
-  if (subscriptions.length === 0) {
+  if (users.length === 0) {
     return NextResponse.json({ sent: 0 })
   }
 
   let sentCount = 0
-  const expiredSubscriptionIds: string[] = []
 
   for (const task of uncompletedTasks) {
-    const payload = buildNotificationPayload(task)
+    const payload = {
+      title: 'Chore-Quest',
+      body: `${task.emoji} ${task.title}`,
+      url: '/tasks',
+    }
 
-    for (const sub of subscriptions) {
-      try {
-        const success = await sendPush(
-          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          payload,
-        )
-        if (success) {
-          sentCount++
-        } else {
-          expiredSubscriptionIds.push(sub.id)
-        }
-      } catch {
-        // Transient push failure — skip this subscription, continue with others
-      }
+    for (const user of users) {
+      const result = await dispatchNotification(user.id, payload)
+      sentCount += result.sent.length
     }
 
     // Mark task as notified
@@ -108,12 +96,5 @@ export async function GET(req: NextRequest) {
     })
   }
 
-  // Clean up expired subscriptions
-  if (expiredSubscriptionIds.length > 0) {
-    await prisma.pushSubscription.deleteMany({
-      where: { id: { in: expiredSubscriptionIds } },
-    })
-  }
-
-  return NextResponse.json({ sent: sentCount, expired: expiredSubscriptionIds.length })
+  return NextResponse.json({ sent: sentCount })
 }
