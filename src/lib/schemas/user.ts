@@ -4,11 +4,11 @@ export const createUserSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, 'Name muss mindestens 2 Zeichen haben')
-    .max(50, 'Name darf maximal 50 Zeichen haben'),
-  pin: z.string().regex(/^\d{4,8}$/, 'PIN muss 4-8 Ziffern haben'),
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must be at most 50 characters'),
+  pin: z.string().regex(/^\d{4,8}$/, 'PIN must be 4-8 digits'),
   role: z
-    .enum(['admin', 'member', 'child'], { message: 'Ungültige Rolle' })
+    .enum(['admin', 'member', 'child'], { message: 'Invalid role' })
     .default('member'),
 })
 

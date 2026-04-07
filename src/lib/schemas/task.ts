@@ -3,17 +3,17 @@ import { z } from 'zod'
 const scheduleDaysPattern = /^[0-6](,[0-6])*$/
 
 export const createTaskSchema = z.object({
-  title: z.string().min(1, 'Titel ist erforderlich').trim(),
-  emoji: z.string().min(1, 'Emoji ist erforderlich'),
-  points: z.coerce.number().int('Punkte müssen ganzzahlig sein').positive('Punkte müssen positiv sein'),
-  categoryId: z.string().min(1, 'Kategorie ist erforderlich'),
+  title: z.string().min(1, 'Title is required').trim(),
+  emoji: z.string().min(1, 'Emoji is required'),
+  points: z.coerce.number().int('Points must be an integer').positive('Points must be positive'),
+  categoryId: z.string().min(1, 'Category is required'),
   isRecurring: z.coerce.boolean().default(false),
   recurringInterval: z.string().nullable().default(null),
   allowMultiple: z.coerce.boolean().default(false),
   dailyLimit: z.coerce.number().int().positive().nullable().default(null),
   scheduleDays: z
     .string()
-    .regex(scheduleDaysPattern, 'Ungültige Wochentage')
+    .regex(scheduleDaysPattern, 'Invalid weekdays')
     .nullable()
     .default(null),
   scheduleTime: z.string().nullable().default(null),

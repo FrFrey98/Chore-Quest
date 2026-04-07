@@ -9,16 +9,16 @@ const VALID_CONDITION_TYPES = [
 ] as const
 
 export const createAchievementSchema = z.object({
-  title: z.string().min(1, 'Titel ist erforderlich').trim(),
-  description: z.string().min(1, 'Beschreibung ist erforderlich').trim(),
-  emoji: z.string().min(1, 'Emoji ist erforderlich'),
+  title: z.string().min(1, 'Title is required').trim(),
+  description: z.string().min(1, 'Description is required').trim(),
+  emoji: z.string().min(1, 'Emoji is required'),
   conditionType: z.enum(VALID_CONDITION_TYPES, {
-    message: 'Ungültiger Bedingungstyp',
+    message: 'Invalid condition type',
   }),
   conditionValue: z
     .number()
     .int()
-    .min(0, 'conditionValue muss eine nicht-negative Zahl sein'),
+    .min(0, 'conditionValue must be a non-negative number'),
   conditionMeta: z.string().nullable().default(null),
   sortOrder: z.number().int().default(0),
 })

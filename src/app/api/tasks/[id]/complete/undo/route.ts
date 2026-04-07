@@ -16,12 +16,12 @@ export async function POST(
   try {
     body = await req.json()
   } catch {
-    return NextResponse.json({ error: 'Ungültiger Request-Body' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
   const { completionId } = body
 
   if (!completionId || typeof completionId !== 'string') {
-    return NextResponse.json({ error: 'completionId erforderlich' }, { status: 400 })
+    return NextResponse.json({ error: 'completionId is required' }, { status: 400 })
   }
 
   const completion = await prisma.taskCompletion.findUnique({
@@ -29,11 +29,11 @@ export async function POST(
   })
 
   if (!completion) {
-    return NextResponse.json({ error: 'Erledigung nicht gefunden' }, { status: 404 })
+    return NextResponse.json({ error: 'Completion not found' }, { status: 404 })
   }
 
   if (completion.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Nicht berechtigt' }, { status: 403 })
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
   }
 
   // Can only be undone until end of next calendar day (UTC)
@@ -42,7 +42,7 @@ export async function POST(
   const deadline = new Date(completionDay)
   deadline.setUTCDate(deadline.getUTCDate() + 2) // midnight after next day
   if (new Date() >= deadline) {
-    return NextResponse.json({ error: 'Zeitfenster abgelaufen' }, { status: 410 })
+    return NextResponse.json({ error: 'Time window expired' }, { status: 410 })
   }
 
   await prisma.$transaction(async (tx) => {

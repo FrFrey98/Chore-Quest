@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: 'Ungültige Anfrage' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
   const { users } = body
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   // Validate array
   if (!Array.isArray(users) || users.length < 2) {
     return NextResponse.json(
-      { error: 'Mindestens 2 Benutzer erforderlich' },
+      { error: 'At least 2 users required' },
       { status: 400 }
     )
   }
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   const hasAdmin = users.some((u) => u.role === 'admin')
   if (!hasAdmin) {
     return NextResponse.json(
-      { error: 'Mindestens ein Admin ist erforderlich' },
+      { error: 'At least one admin is required' },
       { status: 400 }
     )
   }
@@ -47,25 +47,25 @@ export async function POST(request: Request) {
 
     if (name.length < 2 || name.length > 50) {
       return NextResponse.json(
-        { error: `Benutzer ${i + 1}: Name muss zwischen 2 und 50 Zeichen lang sein` },
+        { error: `User ${i + 1}: Name must be between 2 and 50 characters` },
         { status: 400 }
       )
     }
 
     if (typeof user.pin !== 'string') {
-      return NextResponse.json({ error: `PIN für "${name}" ist ungültig` }, { status: 400 })
+      return NextResponse.json({ error: `PIN for "${name}" is invalid` }, { status: 400 })
     }
 
     if (!pinRegex.test(user.pin)) {
       return NextResponse.json(
-        { error: `Benutzer ${i + 1}: PIN muss 4-8 Ziffern lang sein` },
+        { error: `User ${i + 1}: PIN must be 4-8 digits` },
         { status: 400 }
       )
     }
 
     if (!validRoles.includes(user.role)) {
       return NextResponse.json(
-        { error: `Benutzer ${i + 1}: Ungültige Rolle` },
+        { error: `User ${i + 1}: Invalid role` },
         { status: 400 }
       )
     }
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const uniqueNames = new Set(trimmedNames)
   if (uniqueNames.size !== trimmedNames.length) {
     return NextResponse.json(
-      { error: 'Alle Namen müssen eindeutig sein' },
+      { error: 'All names must be unique' },
       { status: 400 }
     )
   }
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof Error && error.message === 'SETUP_ALREADY_DONE') {
       return NextResponse.json(
-        { error: 'Setup wurde bereits durchgeführt' },
+        { error: 'Setup has already been completed' },
         { status: 409 }
       )
     }

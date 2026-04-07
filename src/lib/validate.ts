@@ -15,7 +15,7 @@ export async function parseBody<T>(
   } catch {
     return {
       success: false,
-      response: NextResponse.json({ error: 'Ungültiges JSON' }, { status: 400 }),
+      response: NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }),
     }
   }
 

@@ -14,7 +14,7 @@ export async function POST(
 
   const item = await prisma.storeItem.findUnique({ where: { id } })
   if (!item || !item.isActive) {
-    return NextResponse.json({ error: 'Artikel nicht gefunden' }, { status: 404 })
+    return NextResponse.json({ error: 'Item not found' }, { status: 404 })
   }
 
   try {
@@ -43,8 +43,8 @@ export async function POST(
     return NextResponse.json(purchase, { status: 201 })
   } catch (e) {
     if (e instanceof Error && e.message === 'INSUFFICIENT_POINTS') {
-      return NextResponse.json({ error: 'Nicht genug Punkte' }, { status: 402 })
+      return NextResponse.json({ error: 'Not enough points' }, { status: 402 })
     }
-    return NextResponse.json({ error: 'Fehler beim Kauf' }, { status: 500 })
+    return NextResponse.json({ error: 'Purchase failed' }, { status: 500 })
   }
 }

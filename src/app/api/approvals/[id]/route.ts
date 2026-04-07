@@ -17,17 +17,17 @@ export async function POST(
 
   const { action } = await req.json()
   if (action !== 'approve' && action !== 'reject') {
-    return NextResponse.json({ error: 'Ungültige Aktion' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   }
 
   const approval = await prisma.taskApproval.findUnique({ where: { id: id } })
   if (!approval || approval.status !== 'pending') {
-    return NextResponse.json({ error: 'Genehmigung nicht gefunden' }, { status: 404 })
+    return NextResponse.json({ error: 'Approval not found' }, { status: 404 })
   }
 
   // User cannot approve their own task
   if (approval.requestedById === session.user.id) {
-    return NextResponse.json({ error: 'Eigene Aufgaben können nicht genehmigt werden' }, { status: 403 })
+    return NextResponse.json({ error: 'Cannot approve your own tasks' }, { status: 403 })
   }
 
   await prisma.$transaction(async (tx) => {

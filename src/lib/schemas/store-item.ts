@@ -1,13 +1,13 @@
 import { z } from 'zod'
 
 export const createStoreItemSchema = z.object({
-  title: z.string().min(1, 'Titel ist erforderlich').trim(),
-  emoji: z.string().min(1, 'Emoji ist erforderlich'),
+  title: z.string().min(1, 'Title is required').trim(),
+  emoji: z.string().min(1, 'Emoji is required'),
   description: z.string().default(''),
   pointCost: z.coerce
     .number()
-    .int('Kosten müssen ganzzahlig sein')
-    .positive('Kosten müssen positiv sein'),
+    .int('Cost must be an integer')
+    .positive('Cost must be positive'),
   isActive: z.boolean().default(true),
 })
 

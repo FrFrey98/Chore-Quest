@@ -16,16 +16,16 @@ export async function POST(
   })
 
   if (!purchase) {
-    return NextResponse.json({ error: 'Kauf nicht gefunden' }, { status: 404 })
+    return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })
   }
 
   // Only the buyer themselves can redeem
   if (purchase.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Nur der Käufer kann seine eigene Belohnung einlösen' }, { status: 403 })
+    return NextResponse.json({ error: 'Only the buyer can redeem their own reward' }, { status: 403 })
   }
 
   if (purchase.redeemedAt) {
-    return NextResponse.json({ error: 'Bereits eingelöst' }, { status: 409 })
+    return NextResponse.json({ error: 'Already redeemed' }, { status: 409 })
   }
 
   const updated = await prisma.purchase.update({
