@@ -7,8 +7,8 @@ test('store page loads and shows items from seed', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Store' })).toBeVisible({ timeout: 10000 })
 
   // Section heading for rewards
-  await expect(page.getByText('Belohnungen')).toBeVisible()
+  await expect(page.getByText('Rewards')).toBeVisible()
 
-  // At least one seed store item should be visible
+  // At least one seed store item should be visible (seed data title)
   await expect(page.getByText('Pizza-Abend aussuchen')).toBeVisible()
 })

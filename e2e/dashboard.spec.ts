@@ -14,8 +14,8 @@ test('can navigate to tasks page', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByText('Dashboard')).toBeVisible({ timeout: 10000 })
 
-  // Click tasks link in navigation (nav bar has "Aufgaben" label)
-  await page.getByRole('link', { name: /Aufgaben/i }).first().click()
+  // Click tasks link in navigation
+  await page.getByRole('link', { name: /Tasks/i }).first().click()
 
   // Tasks page should load
   await expect(page).toHaveURL(/\/tasks/)

@@ -7,10 +7,10 @@ setup('authenticate as Alice', async ({ page }) => {
   await page.getByRole('button', { name: /Alice/ }).click()
 
   // Enter PIN
-  await page.getByPlaceholder('PIN eingeben').fill('1234')
+  await page.getByPlaceholder('Enter PIN').fill('1234')
 
   // Click login button
-  await page.getByRole('button', { name: 'Einloggen' }).click()
+  await page.getByRole('button', { name: 'Log in' }).click()
 
   // Wait for redirect to dashboard
   await expect(page.getByText('Dashboard')).toBeVisible({ timeout: 10000 })

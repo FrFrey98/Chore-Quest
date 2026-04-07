@@ -13,10 +13,10 @@ test('successful login with correct PIN', async ({ page }) => {
   await page.getByRole('button', { name: /Alice/ }).click()
 
   // PIN input appears
-  await page.getByPlaceholder('PIN eingeben').fill('1234')
+  await page.getByPlaceholder('Enter PIN').fill('1234')
 
   // Click login
-  await page.getByRole('button', { name: 'Einloggen' }).click()
+  await page.getByRole('button', { name: 'Log in' }).click()
 
   // Should redirect to dashboard
   await expect(page.getByText('Dashboard')).toBeVisible({ timeout: 10000 })
@@ -29,11 +29,11 @@ test('shows error with wrong PIN', async ({ page }) => {
   await page.getByRole('button', { name: /Alice/ }).click()
 
   // Enter wrong PIN
-  await page.getByPlaceholder('PIN eingeben').fill('9999')
+  await page.getByPlaceholder('Enter PIN').fill('9999')
 
   // Click login
-  await page.getByRole('button', { name: 'Einloggen' }).click()
+  await page.getByRole('button', { name: 'Log in' }).click()
 
-  // Should show German error message
-  await expect(page.getByText('Falscher PIN')).toBeVisible({ timeout: 5000 })
+  // Should show error message
+  await expect(page.getByText('Wrong PIN')).toBeVisible({ timeout: 5000 })
 })
