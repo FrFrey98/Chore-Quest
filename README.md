@@ -6,7 +6,7 @@ A gamified household task manager — earn points, unlock achievements, and keep
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-blue.svg)](https://github.com/FrFrey98/chore-quest/pkgs/container/chore-quest)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](tsconfig.json)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 
 ## Screenshots
 
@@ -45,8 +45,8 @@ Screenshots will be added soon. To see the app in action, follow the [Quick Star
 
 | Technology | Purpose |
 |---|---|
-| [Next.js 14](https://nextjs.org/) | Full-stack React framework (App Router) |
-| [React 18](https://react.dev/) | UI library |
+| [Next.js 15](https://nextjs.org/) | Full-stack React framework (App Router) |
+| [React 19](https://react.dev/) | UI library |
 | [TypeScript](https://www.typescriptlang.org/) | Type-safe JavaScript (strict mode) |
 | [Prisma](https://www.prisma.io/) + SQLite | Database ORM and storage |
 | [NextAuth.js](https://next-auth.js.org/) | Authentication (credentials provider) |
