@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/permissions'
 import bcrypt from 'bcryptjs'
+import { parseBody } from '@/lib/validate'
+import { createUserSchema } from '@/lib/schemas/user'
 
 export async function GET(_req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -22,28 +24,13 @@ export async function POST(req: NextRequest) {
   const permError = requirePermission(session.user.role, 'manageUsers')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  const body = await req.json()
-  const { name, pin, role } = body as { name?: string; pin?: string; role?: string }
-
-  // Validate name
-  const trimmedName = typeof name === 'string' ? name.trim() : ''
-  if (trimmedName.length < 2 || trimmedName.length > 50) {
-    return NextResponse.json({ error: 'Name muss zwischen 2 und 50 Zeichen lang sein' }, { status: 400 })
-  }
-
-  // Validate PIN
-  if (!pin || typeof pin !== 'string' || !/^\d{4,8}$/.test(pin)) {
-    return NextResponse.json({ error: 'PIN muss 4–8 Ziffern haben' }, { status: 400 })
-  }
-
-  // Validate role
-  if (!role || !['admin', 'member', 'child'].includes(role)) {
-    return NextResponse.json({ error: 'Ungültige Rolle' }, { status: 400 })
-  }
+  const parsed = await parseBody(req, createUserSchema)
+  if (!parsed.success) return parsed.response
+  const { name, pin, role } = parsed.data
 
   // Check duplicate name (case-insensitive, SQLite-safe)
   const existing = await prisma.user.findMany({ select: { name: true } })
-  if (existing.some(u => u.name.toLowerCase() === trimmedName.toLowerCase())) {
+  if (existing.some(u => u.name.toLowerCase() === name.toLowerCase())) {
     return NextResponse.json({ error: 'Dieser Name ist bereits vergeben' }, { status: 409 })
   }
 
@@ -51,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.$transaction(async (tx) => {
     const created = await tx.user.create({
-      data: { name: trimmedName, pin: hashed, role: role as 'admin' | 'member' | 'child' },
+      data: { name, pin: hashed, role },
       select: { id: true, name: true, role: true },
     })
     await tx.streakState.create({ data: { userId: created.id } })

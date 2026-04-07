@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/permissions'
+import { parseBody } from '@/lib/validate'
+import { updateCategorySchema } from '@/lib/schemas/category'
 
 export async function PATCH(
   req: NextRequest,
@@ -15,21 +17,8 @@ export async function PATCH(
   const permError = requirePermission(session.user.role, 'editSettings')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  let body: unknown
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-  }
-
-  const { name, emoji } = body as { name?: string; emoji?: string }
-
-  if (name !== undefined && (typeof name !== 'string' || name.trim().length === 0)) {
-    return NextResponse.json({ error: 'Name darf nicht leer sein' }, { status: 400 })
-  }
-  if (emoji !== undefined && (typeof emoji !== 'string' || emoji.trim().length === 0)) {
-    return NextResponse.json({ error: 'Emoji darf nicht leer sein' }, { status: 400 })
-  }
+  const parsed = await parseBody(req, updateCategorySchema)
+  if (!parsed.success) return parsed.response
 
   const category = await prisma.category.findUnique({ where: { id: id } })
   if (!category) {
@@ -38,10 +27,7 @@ export async function PATCH(
 
   const updated = await prisma.category.update({
     where: { id: id },
-    data: {
-      ...(name !== undefined ? { name: name.trim() } : {}),
-      ...(emoji !== undefined ? { emoji: emoji.trim() } : {}),
-    },
+    data: parsed.data,
   })
 
   return NextResponse.json(updated)

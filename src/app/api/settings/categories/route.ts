@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/permissions'
+import { parseBody } from '@/lib/validate'
+import { createCategorySchema } from '@/lib/schemas/category'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -30,21 +32,12 @@ export async function POST(req: NextRequest) {
   const permError = requirePermission(session.user.role, 'editSettings')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  let body: unknown
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-  }
-
-  const { name, emoji } = body as { name: string; emoji: string }
-
-  if (!name || typeof name !== 'string' || !emoji || typeof emoji !== 'string') {
-    return NextResponse.json({ error: 'Name und Emoji sind Pflichtfelder (strings)' }, { status: 400 })
-  }
+  const parsed = await parseBody(req, createCategorySchema)
+  if (!parsed.success) return parsed.response
+  const { name, emoji } = parsed.data
 
   const category = await prisma.category.create({
-    data: { name: name.trim(), emoji: emoji.trim() },
+    data: { name, emoji },
   })
 
   return NextResponse.json(category, { status: 201 })

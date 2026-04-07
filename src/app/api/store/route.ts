@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { parseBody } from '@/lib/validate'
+import { createStoreItemSchema } from '@/lib/schemas/store-item'
 
 export async function GET(_req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -18,30 +20,18 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json()
-  const { title, emoji, pointCost, description, isActive } = body
-
-  if (!title || !emoji || !pointCost) {
-    return NextResponse.json({ error: 'Fehlende Felder' }, { status: 400 })
-  }
-
-  if (typeof title !== 'string' || typeof emoji !== 'string') {
-    return NextResponse.json({ error: 'Ungültige Felder' }, { status: 400 })
-  }
-
-  const parsedPointCost = Number(pointCost)
-  if (!Number.isInteger(parsedPointCost) || parsedPointCost <= 0) {
-    return NextResponse.json({ error: 'pointCost muss eine positive ganze Zahl sein' }, { status: 400 })
-  }
+  const parsed = await parseBody(req, createStoreItemSchema)
+  if (!parsed.success) return parsed.response
+  const { title, emoji, description, pointCost, isActive } = parsed.data
 
   const item = await prisma.storeItem.create({
     data: {
       title,
       emoji,
-      pointCost: parsedPointCost,
+      pointCost,
       type: 'real_reward',
-      description: typeof description === 'string' ? description : '',
-      isActive: typeof isActive === 'boolean' ? isActive : true,
+      description,
+      isActive,
     },
   })
   return NextResponse.json(item, { status: 201 })
