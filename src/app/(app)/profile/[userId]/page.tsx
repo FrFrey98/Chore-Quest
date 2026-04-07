@@ -6,13 +6,14 @@ import { ProfileClient } from '../profile-client'
 import { computeProfileStats } from '@/lib/profile-stats'
 import { loadGameConfig } from '@/lib/config'
 
-export default async function UserProfilePage({ params }: { params: { userId: string } }) {
+export default async function UserProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId: userIdParam } = await params
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) redirect('/login')
 
   const config = await loadGameConfig()
 
-  const targetUser = await prisma.user.findUnique({ where: { id: params.userId } })
+  const targetUser = await prisma.user.findUnique({ where: { id: userIdParam } })
   if (!targetUser) redirect('/profile')
 
   const userId = targetUser.id
