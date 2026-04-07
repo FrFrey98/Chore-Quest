@@ -30,11 +30,22 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: '/login' },
   session: { strategy: 'jwt' },
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id
         token.role = (user as unknown as { role: Role }).role
         token.locale = (user as unknown as { locale: string }).locale
+      }
+      // Backfill role/locale for old tokens that don't have them
+      if (token.id && (!token.role || !token.locale)) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true, locale: true },
+        })
+        if (dbUser) {
+          if (!token.role) token.role = dbUser.role
+          if (!token.locale) token.locale = dbUser.locale
+        }
       }
       return token
     },
