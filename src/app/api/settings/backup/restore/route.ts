@@ -25,14 +25,14 @@ export async function POST(req: NextRequest) {
 
   try {
     await createPreRestoreBackup()
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Pre-Restore-Backup fehlgeschlagen' }, { status: 500 })
   }
 
   try {
     await restoreAllData(validation.backup)
-  } catch (err) {
-    return NextResponse.json({ error: 'Restore fehlgeschlagen' }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Restore fehlgeschlagen — Datenbank unverändert' }, { status: 500 })
   }
 
   return NextResponse.json({ success: true })

@@ -11,12 +11,16 @@ export async function GET() {
   const permError = requirePermission(session.user.role, 'editSettings')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  const backup = await exportAllData()
-  const date = new Date().toISOString().split('T')[0]
+  try {
+    const backup = await exportAllData()
+    const date = new Date().toISOString().split('T')[0]
 
-  return NextResponse.json(backup, {
-    headers: {
-      'Content-Disposition': `attachment; filename="haushalt-quest-backup-${date}.json"`,
-    },
-  })
+    return NextResponse.json(backup, {
+      headers: {
+        'Content-Disposition': `attachment; filename="haushalt-quest-backup-${date}.json"`,
+      },
+    })
+  } catch {
+    return NextResponse.json({ error: 'Export fehlgeschlagen' }, { status: 500 })
+  }
 }
