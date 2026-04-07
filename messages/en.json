@@ -648,6 +648,12 @@
     "partnerOnVacation": "{name} is on vacation",
     "partnerOnVacationUntil": "{name} is on vacation until {date}"
   },
+  "templates": {
+    "useTemplate": "Use template",
+    "searchPlaceholder": "Search templates...",
+    "allCategories": "All",
+    "selectTemplate": "Select a template"
+  },
   "theme": {
     "light": "Light",
     "dark": "Dark",

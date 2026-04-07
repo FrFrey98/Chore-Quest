@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { TemplatePicker } from '@/components/tasks/template-picker'
 
 type Category = { id: string; name: string; emoji: string; taskCount: number }
 type Task = { id: string; title: string; emoji: string; points: number; status: string; category: { id: string; name: string; emoji: string } }
@@ -16,7 +17,9 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
   const t = useTranslations('settings.tasks')
   const ti = useTranslations('intervals')
   const tw = useTranslations('weekdays')
+  const tTpl = useTranslations('templates')
   const [error, setError] = useState('')
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false)
   const [form, setForm] = useState({
     title: '', emoji: '🏠', points: 30, categoryId: categories[0]?.id ?? '',
     isRecurring: false, recurringInterval: 'weekly',
@@ -62,7 +65,26 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-xl p-4 shadow-sm space-y-3">
-        <h2 className="font-semibold">{t('newHeading')}</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold">{t('newHeading')}</h2>
+          <Button type="button" variant="outline" size="sm" onClick={() => setTemplatePickerOpen(true)}>
+            {tTpl('useTemplate')}
+          </Button>
+        </div>
+        <TemplatePicker
+          open={templatePickerOpen}
+          onClose={() => setTemplatePickerOpen(false)}
+          onSelect={(tpl) => {
+            setForm((prev) => ({
+              ...prev,
+              title: tpl.title,
+              emoji: tpl.emoji,
+              points: tpl.points,
+              isRecurring: tpl.interval !== 'once',
+              recurringInterval: tpl.interval === 'once' ? 'weekly' : tpl.interval,
+            }))
+          }}
+        />
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label>{t('emoji')}</Label>
