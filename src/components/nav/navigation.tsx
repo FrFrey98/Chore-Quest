@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { getVisibleNavItems } from '@/lib/permissions'
 import { LocaleSwitcher } from '@/components/locale-switcher'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 function isActive(pathname: string, href: string): boolean {
   if (href === '/') return pathname === '/'
@@ -70,8 +71,9 @@ export function Navigation() {
             </Link>
           )
         })}
-        <div className="mt-auto pt-4 px-3">
+        <div className="mt-auto pt-4 px-3 flex items-center gap-2">
           <LocaleSwitcher />
+          <ThemeToggle />
         </div>
       </nav>
     </>
