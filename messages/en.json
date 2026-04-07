@@ -636,6 +636,18 @@
     "en": "English",
     "de": "Deutsch"
   },
+  "vacation": {
+    "label": "Vacation mode",
+    "active": "On vacation",
+    "activeUntil": "On vacation until {date}",
+    "start": "Start vacation",
+    "startWith": "Start vacation",
+    "end": "End vacation",
+    "endDate": "End date (optional)",
+    "indefinite": "No end date",
+    "partnerOnVacation": "{name} is on vacation",
+    "partnerOnVacationUntil": "{name} is on vacation until {date}"
+  },
   "theme": {
     "light": "Light",
     "dark": "Dark",

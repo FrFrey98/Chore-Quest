@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { isOnVacation } from '@/lib/vacation'
 
-type UserItem = { id: string; name: string; role: string; createdAt: string }
+type UserItem = { id: string; name: string; role: string; createdAt: string; vacationStart: string | null; vacationEnd: string | null }
 
 const ROLE_BADGE_CLASS: Record<string, string> = {
   admin: 'bg-indigo-100 text-indigo-700',
@@ -24,6 +25,8 @@ export function UsersTab({
   const t = useTranslations('settings.users')
   const tr = useTranslations('roles')
   const tc = useTranslations('common')
+  const tv = useTranslations('vacation')
+  const locale = useLocale()
 
   // Add member form state
   const [showAdd, setShowAdd] = useState(false)
@@ -160,6 +163,21 @@ export function UsersTab({
     }
   }
 
+  async function toggleVacation(uid: string, currentlyOnVacation: boolean) {
+    setUserLoading(`vac-${uid}`, true)
+    if (currentlyOnVacation) {
+      await fetch(`/api/users/${uid}/vacation`, { method: 'DELETE' })
+    } else {
+      await fetch(`/api/users/${uid}/vacation`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endDate: null }),
+      })
+    }
+    setUserLoading(`vac-${uid}`, false)
+    router.refresh()
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -288,6 +306,39 @@ export function UsersTab({
                 </Button>
               </div>
               {msg[`pin-${u.id}`] && <p className="text-xs text-muted-foreground mt-1">{msg[`pin-${u.id}`]}</p>}
+            </div>
+
+            {/* Vacation toggle */}
+            <div>
+              <label className="text-xs text-muted-foreground">{tv('label')}</label>
+              <div className="flex items-center gap-2 mt-1">
+                {isOnVacation(u.vacationStart, u.vacationEnd) ? (
+                  <>
+                    <span className="text-sm text-amber-600 dark:text-amber-400">
+                      🏖️ {u.vacationEnd
+                        ? tv('activeUntil', { date: new Date(u.vacationEnd).toLocaleDateString(locale) })
+                        : tv('active')}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => toggleVacation(u.id, true)}
+                      disabled={loading[`vac-${u.id}`]}
+                    >
+                      {tv('end')}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toggleVacation(u.id, false)}
+                    disabled={loading[`vac-${u.id}`]}
+                  >
+                    {tv('start')}
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Delete — hidden for own account */}

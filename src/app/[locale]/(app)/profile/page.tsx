@@ -48,6 +48,11 @@ export default async function ProfilePage() {
     })),
   }
 
+  const userRecord = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { vacationStart: true, vacationEnd: true },
+  })
+
   const t = await getTranslations('profile')
   const userName = session.user.name ?? t('heading')
 
@@ -66,6 +71,8 @@ export default async function ProfilePage() {
       }}
       achievementsSummary={achievementsSummary}
       isOwnProfile={true}
+      vacationStart={userRecord?.vacationStart?.toISOString() ?? null}
+      vacationEnd={userRecord?.vacationEnd?.toISOString() ?? null}
     />
   )
 }

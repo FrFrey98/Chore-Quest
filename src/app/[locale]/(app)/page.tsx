@@ -8,6 +8,7 @@ import { getTotalEarned, getLevel, getCurrentPoints } from '@/lib/points'
 import { computeStats } from '@/lib/achievements'
 import { getOrCreateStreakState, getStreakTier, getEffectiveStreak, isRestoreAvailable } from '@/lib/streak'
 import { getWeekBounds, groupFeedByDay } from '@/lib/dashboard'
+import { isOnVacation } from '@/lib/vacation'
 import type { FeedEntry } from '@/lib/dashboard'
 import { StatPills } from '@/components/dashboard/stat-pills'
 import { TodaySection } from '@/components/dashboard/today-section'
@@ -25,6 +26,7 @@ export default async function DashboardPage() {
   const t = await getTranslations('dashboard')
   const tc = await getTranslations('common')
   const tw = await getTranslations('weekdays')
+  const tv = await getTranslations('vacation')
 
   const now = new Date()
 
@@ -64,6 +66,8 @@ export default async function DashboardPage() {
   const partner = users.find((u) => u.id !== userId)
   const partnerLevel = partner ? getLevel(getTotalEarned(partner.completions), config.levelDefinitions) : null
   const partnerAchievementCount = partner ? partner.userAchievements.length : 0
+  const userOnVacation = isOnVacation(userRecord?.vacationStart, userRecord?.vacationEnd)
+  const partnerOnVacation = partner ? isOnVacation(partner.vacationStart, partner.vacationEnd) : false
 
   // --- Today Section Data ---
   const todayStart = new Date(now)
@@ -235,6 +239,17 @@ export default async function DashboardPage() {
       <YesterdayBanner count={yesterdayUncompletedCount} />
       <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
 
+      {userOnVacation && (
+        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center gap-2">
+          <span>🏖️</span>
+          <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+            {vacationEnd
+              ? tv('activeUntil', { date: new Date(vacationEnd).toLocaleDateString() })
+              : tv('active')}
+          </span>
+        </div>
+      )}
+
       <StatPills
         streakDays={effectiveStreak}
         streakBonusPercent={streakTier.percent}
@@ -255,6 +270,13 @@ export default async function DashboardPage() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-foreground truncate">{partner.name ?? tc('unknown')}</p>
               <p className="text-xs text-muted-foreground">{partnerLevel.title} · {partnerAchievementCount} {t('achievements')}</p>
+              {partnerOnVacation && (
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  🏖️ {partner.vacationEnd
+                    ? tv('partnerOnVacationUntil', { name: partner.name ?? tc('unknown'), date: new Date(partner.vacationEnd).toLocaleDateString() })
+                    : tv('partnerOnVacation', { name: partner.name ?? tc('unknown') })}
+                </p>
+              )}
             </div>
             <span className="text-muted-foreground text-sm">›</span>
           </div>
