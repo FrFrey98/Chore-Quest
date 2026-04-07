@@ -20,9 +20,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'DATABASE_URL=file:./test.db npm run dev -- --port 3001',
+    command: 'DATABASE_URL=file:./test.db NEXTAUTH_URL=http://localhost:3001 npm run dev -- --port 3001',
     port: 3001,
     reuseExistingServer: !process.env.CI,
-    timeout: 30000,
+    timeout: 60000,
   },
 })
