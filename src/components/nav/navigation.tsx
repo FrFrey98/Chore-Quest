@@ -5,6 +5,7 @@ import { Home, CheckSquare, ShoppingBag, Trophy, User, type LucideIcon } from 'l
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { getVisibleNavItems } from '@/lib/permissions'
+import { LocaleSwitcher } from '@/components/locale-switcher'
 
 function isActive(pathname: string, href: string): boolean {
   if (href === '/') return pathname === '/'
@@ -69,6 +70,9 @@ export function Navigation() {
             </Link>
           )
         })}
+        <div className="mt-auto pt-4 px-3">
+          <LocaleSwitcher />
+        </div>
       </nav>
     </>
   )

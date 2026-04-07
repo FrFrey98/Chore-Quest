@@ -35,6 +35,20 @@ export default async function middleware(req: NextRequest) {
     const loginUrl = new URL('/login', req.url)
     return NextResponse.redirect(loginUrl)
   }
+
+  // Sync locale from user profile to cookie
+  if (token.locale && typeof token.locale === 'string') {
+    const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value
+    if (cookieLocale !== token.locale) {
+      const response = intlMiddleware(req)
+      response.cookies.set('NEXT_LOCALE', token.locale, {
+        path: '/',
+        maxAge: 31536000,
+      })
+      return response
+    }
+  }
+
   return intlMiddleware(req)
 }
 

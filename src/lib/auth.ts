@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
         const valid = await bcrypt.compare(credentials.pin, user.pin)
         if (!valid) return null
 
-        return { id: user.id, name: user.name, role: user.role }
+        return { id: user.id, name: user.name, role: user.role, locale: user.locale }
       },
     }),
   ],
@@ -31,12 +31,17 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   callbacks: {
     jwt({ token, user }) {
-      if (user) { token.id = user.id; token.role = (user as unknown as { role: Role }).role }
+      if (user) {
+        token.id = user.id
+        token.role = (user as unknown as { role: Role }).role
+        token.locale = (user as unknown as { locale: string }).locale
+      }
       return token
     },
     session({ session, token }) {
       session.user.id = token.id
       session.user.role = token.role
+      session.user.locale = token.locale
       return session
     },
   },
