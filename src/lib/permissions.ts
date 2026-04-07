@@ -1,4 +1,4 @@
-import type { Role } from '@/generated/prisma'
+import type { Role } from '@/generated/prisma/enums'
 
 export type Permission =
   | 'manageUsers'
