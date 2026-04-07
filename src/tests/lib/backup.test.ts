@@ -27,6 +27,8 @@ vi.mock('@/lib/prisma', () => {
       appConfig: makeModel(),
       taskScheduleOverride: makeModel(),
       pushSubscription: makeModel(),
+      $queryRaw: vi.fn().mockResolvedValue([]),
+      $executeRaw: vi.fn().mockResolvedValue(0),
       $transaction: vi.fn().mockImplementation(async (fn: (tx: unknown) => Promise<void>) => {
         const { prisma } = await import('@/lib/prisma')
         return fn(prisma)
@@ -111,6 +113,7 @@ describe('restoreAllData', () => {
         categories: [], tasks: [], taskCompletions: [], taskApprovals: [],
         storeItems: [], purchases: [], achievements: [], userAchievements: [],
         streakStates: [], appConfigs: [], taskScheduleOverrides: [], pushSubscriptions: [],
+        taskAssignments: [],
       },
     }
 

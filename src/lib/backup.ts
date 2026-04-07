@@ -23,6 +23,7 @@ export type BackupData = {
     appConfigs: unknown[]
     taskScheduleOverrides: unknown[]
     pushSubscriptions: unknown[]
+    taskAssignments: unknown[]
   }
 }
 
@@ -30,6 +31,7 @@ const EXPECTED_TABLES = [
   'users', 'categories', 'tasks', 'taskCompletions', 'taskApprovals',
   'storeItems', 'purchases', 'achievements', 'userAchievements',
   'streakStates', 'appConfigs', 'taskScheduleOverrides', 'pushSubscriptions',
+  'taskAssignments',
 ] as const
 
 export async function exportAllData(): Promise<BackupData> {
@@ -53,6 +55,8 @@ export async function exportAllData(): Promise<BackupData> {
     prisma.pushSubscription.findMany(),
   ])
 
+  const taskAssignments = await prisma.$queryRaw`SELECT * FROM "_TaskAssignments"` as unknown[]
+
   return {
     meta: {
       version: BACKUP_VERSION,
@@ -63,6 +67,7 @@ export async function exportAllData(): Promise<BackupData> {
       users, categories, tasks, taskCompletions, taskApprovals,
       storeItems, purchases, achievements, userAchievements,
       streakStates, appConfigs, taskScheduleOverrides, pushSubscriptions,
+      taskAssignments,
     },
   }
 }
@@ -77,6 +82,7 @@ export async function restoreAllData(backup: BackupData): Promise<void> {
     await tx.taskApproval.deleteMany()
     await tx.purchase.deleteMany()
     await tx.streakState.deleteMany()
+    await tx.$executeRaw`DELETE FROM "_TaskAssignments"`
     await tx.task.deleteMany()
     await tx.storeItem.deleteMany()
     await tx.achievement.deleteMany()
@@ -91,6 +97,11 @@ export async function restoreAllData(backup: BackupData): Promise<void> {
     if (backup.data.achievements.length) await tx.achievement.createMany({ data: backup.data.achievements as any })
     if (backup.data.storeItems.length) await tx.storeItem.createMany({ data: backup.data.storeItems as any })
     if (backup.data.tasks.length) await tx.task.createMany({ data: backup.data.tasks as any })
+    if (backup.data.taskAssignments.length) {
+      for (const row of backup.data.taskAssignments as { A: string; B: string }[]) {
+        await tx.$executeRaw`INSERT INTO "_TaskAssignments" ("A", "B") VALUES (${row.A}, ${row.B})`
+      }
+    }
     if (backup.data.taskCompletions.length) await tx.taskCompletion.createMany({ data: backup.data.taskCompletions as any })
     if (backup.data.taskApprovals.length) await tx.taskApproval.createMany({ data: backup.data.taskApprovals as any })
     if (backup.data.purchases.length) await tx.purchase.createMany({ data: backup.data.purchases as any })
@@ -98,7 +109,7 @@ export async function restoreAllData(backup: BackupData): Promise<void> {
     if (backup.data.userAchievements.length) await tx.userAchievement.createMany({ data: backup.data.userAchievements as any })
     if (backup.data.taskScheduleOverrides.length) await tx.taskScheduleOverride.createMany({ data: backup.data.taskScheduleOverrides as any })
     if (backup.data.pushSubscriptions.length) await tx.pushSubscription.createMany({ data: backup.data.pushSubscriptions as any })
-  })
+  }, { timeout: 30000 })
 }
 
 export function validateBackup(data: unknown): { valid: true; backup: BackupData } | { valid: false; error: string } {
