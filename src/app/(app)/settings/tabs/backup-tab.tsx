@@ -38,7 +38,13 @@ export function BackupTab() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    if (file.size > 10 * 1024 * 1024) {
+      toast('Datei zu groß (max 10 MB)', 'error')
+      return
+    }
+
     const reader = new FileReader()
+    reader.onerror = () => toast('Datei konnte nicht gelesen werden', 'error')
     reader.onload = () => {
       try {
         const content = reader.result as string
