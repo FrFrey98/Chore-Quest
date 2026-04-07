@@ -36,6 +36,8 @@ model User {
   pushSubscriptions  PushSubscription[]
   assignedTasks      Task[]           @relation("TaskAssignments")
   userChallenges     UserChallenge[]
+  userQuests         UserQuest[]
+  createdQuests      Quest[]          @relation("QuestCreatedBy")
 }
 
 model Category {
@@ -73,6 +75,7 @@ model Task {
   approval          TaskApproval?
   scheduleOverrides TaskScheduleOverride[]
   assignedUsers     User[]               @relation("TaskAssignments")
+  questSteps        QuestStep[]
 }
 
 model TaskApproval {
@@ -229,4 +232,64 @@ model UserChallenge {
 
   @@unique([userId, challengeId])
   @@index([challengeId])
+}
+
+model Quest {
+  id            String   @id @default(cuid())
+  title         String
+  titleDe       String
+  description   String
+  descriptionDe String
+  emoji         String
+  bonusPoints   Int
+  isActive      Boolean  @default(true)
+  createdById   String
+  createdAt     DateTime @default(now())
+
+  createdBy  User        @relation("QuestCreatedBy", fields: [createdById], references: [id])
+  steps      QuestStep[]
+  userQuests UserQuest[]
+}
+
+model QuestStep {
+  id            String @id @default(cuid())
+  questId       String
+  stepOrder     Int
+  taskId        String
+  description   String
+  descriptionDe String
+
+  quest          Quest           @relation(fields: [questId], references: [id], onDelete: Cascade)
+  task           Task            @relation(fields: [taskId], references: [id])
+  userQuestSteps UserQuestStep[]
+
+  @@index([questId])
+}
+
+model UserQuest {
+  id               String    @id @default(cuid())
+  userId           String
+  questId          String
+  currentStepOrder Int       @default(1)
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest          Quest           @relation(fields: [questId], references: [id], onDelete: Cascade)
+  userQuestSteps UserQuestStep[]
+
+  @@unique([userId, questId])
+  @@index([questId])
+}
+
+model UserQuestStep {
+  id          String    @id @default(cuid())
+  userQuestId String
+  questStepId String
+  completedAt DateTime?
+
+  userQuest UserQuest @relation(fields: [userQuestId], references: [id], onDelete: Cascade)
+  questStep QuestStep @relation(fields: [questStepId], references: [id], onDelete: Cascade)
+
+  @@unique([userQuestId, questStepId])
 }
