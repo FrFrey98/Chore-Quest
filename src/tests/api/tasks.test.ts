@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
-const mockSession = { user: { id: 'seed-user-1', name: 'Alice' } }
+const mockSession = { user: { id: 'seed-user-1', name: 'Alice', role: 'admin' } }
 const mockTask = {
   id: 'task-1',
   title: 'Abwasch',
