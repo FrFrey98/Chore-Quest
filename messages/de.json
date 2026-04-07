@@ -69,6 +69,7 @@
     "store": "Store",
     "achievements": "Erfolge",
     "profile": "Profil",
+    "challenges": "Challenges",
     "mainNav": "Hauptnavigation",
     "sidebar": "Seitenleiste",
     "brand": "🏠 Chore-Quest",
@@ -659,5 +660,17 @@
     "dark": "Dunkel",
     "system": "System",
     "label": "Design"
+  },
+  "challenges": {
+    "heading": "Challenges",
+    "thisWeek": "Diese Woche",
+    "completed": "Geschafft!",
+    "progress": "{current}/{target}",
+    "bonusPoints": "+{points} Pkt Bonus",
+    "noChallenges": "Keine Challenges diese Woche",
+    "noChallengesSubtitle": "Challenges werden jeden Montag automatisch generiert.",
+    "history": "Verlauf",
+    "weekOf": "Woche vom {date}",
+    "dashboardHeading": "Wöchentliche Challenges"
   }
 }

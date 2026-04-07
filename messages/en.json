@@ -69,6 +69,7 @@
     "store": "Store",
     "achievements": "Achievements",
     "profile": "Profile",
+    "challenges": "Challenges",
     "mainNav": "Main navigation",
     "sidebar": "Sidebar",
     "brand": "🏠 Chore-Quest",
@@ -659,5 +660,17 @@
     "dark": "Dark",
     "system": "System",
     "label": "Theme"
+  },
+  "challenges": {
+    "heading": "Challenges",
+    "thisWeek": "This week",
+    "completed": "Completed!",
+    "progress": "{current}/{target}",
+    "bonusPoints": "+{points} Pts bonus",
+    "noChallenges": "No challenges this week",
+    "noChallengesSubtitle": "Challenges are generated automatically every Monday.",
+    "history": "History",
+    "weekOf": "Week of {date}",
+    "dashboardHeading": "Weekly Challenges"
   }
 }

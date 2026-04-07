@@ -39,6 +39,7 @@ const ALL_NAV_ITEMS: NavItem[] = [
   { href: '/tasks', labelKey: 'tasks', icon: 'CheckSquare' },
   { href: '/store', labelKey: 'store', icon: 'ShoppingBag' },
   { href: '/achievements', labelKey: 'achievements', icon: 'Trophy' },
+  { href: '/challenges', labelKey: 'challenges', icon: 'Swords', minPermission: 'completeTasks' },
   { href: '/profile', labelKey: 'profile', icon: 'User' },
 ]
 

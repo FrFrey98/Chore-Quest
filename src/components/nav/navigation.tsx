@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, CheckSquare, ShoppingBag, Trophy, User, type LucideIcon } from 'lucide-react'
+import { Home, CheckSquare, ShoppingBag, Trophy, User, Swords, type LucideIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { getVisibleNavItems } from '@/lib/permissions'
@@ -19,6 +19,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   ShoppingBag,
   Trophy,
   User,
+  Swords,
 }
 
 export function Navigation() {
