@@ -90,9 +90,7 @@ describe('PATCH /api/tasks/[id]', () => {
     expect(data.status).toBe('archived')
   })
 
-  it('ignores invalid status values', async () => {
-    const { prisma } = await import('@/lib/prisma')
-    vi.mocked(prisma.task.update).mockResolvedValueOnce(mockTask as any)
+  it('rejects invalid status values', async () => {
     const { PATCH } = await import('@/app/api/tasks/[id]/route')
     const res = await PATCH(
       new Request('http://localhost/api/tasks/task-1', {
@@ -101,6 +99,6 @@ describe('PATCH /api/tasks/[id]', () => {
       }) as any,
       { params: { id: 'task-1' } }
     )
-    expect(res.status).toBe(200)
+    expect(res.status).toBe(400)
   })
 })

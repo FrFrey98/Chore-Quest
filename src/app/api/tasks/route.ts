@@ -3,13 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/permissions'
-
-const VALID_DAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
-
-function isValidScheduleDays(value: string): boolean {
-  const parts = value.split(',')
-  return parts.length > 0 && parts.every((d) => VALID_DAYS.has(d.trim()))
-}
+import { parseBody } from '@/lib/validate'
+import { createTaskSchema } from '@/lib/schemas/task'
 
 export async function GET(_req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -36,33 +31,21 @@ export async function POST(req: NextRequest) {
   const permError = requirePermission(session.user.role, 'createTasks')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  const body = await req.json()
-  const { title, emoji, points, categoryId, isRecurring, recurringInterval, allowMultiple, dailyLimit, scheduleDays, scheduleTime, assignedUserIds } = body
-
-  if (!title || !emoji || !points || !categoryId) {
-    return NextResponse.json({ error: 'Fehlende Felder' }, { status: 400 })
-  }
-
-  const parsedPoints = Number(points)
-  if (!Number.isInteger(parsedPoints) || parsedPoints <= 0) {
-    return NextResponse.json({ error: 'Punkte müssen eine positive ganze Zahl sein' }, { status: 400 })
-  }
-
-  if (body.scheduleDays && !isValidScheduleDays(body.scheduleDays)) {
-    return NextResponse.json({ error: 'Ungültige Wochentage' }, { status: 400 })
-  }
+  const parsed = await parseBody(req, createTaskSchema)
+  if (!parsed.success) return parsed.response
+  const { title, emoji, points, categoryId, isRecurring, recurringInterval, allowMultiple, dailyLimit, scheduleDays, scheduleTime, assignedUserIds } = parsed.data
 
   const { task } = await prisma.$transaction(async (tx) => {
     const task = await tx.task.create({
       data: {
         title,
         emoji,
-        points: parsedPoints,
+        points,
         categoryId,
-        isRecurring: Boolean(isRecurring),
+        isRecurring,
         recurringInterval: isRecurring ? recurringInterval : null,
-        allowMultiple: Boolean(allowMultiple),
-        dailyLimit: allowMultiple && dailyLimit ? Number(dailyLimit) : null,
+        allowMultiple,
+        dailyLimit: allowMultiple && dailyLimit ? dailyLimit : null,
         scheduleDays: scheduleDays ?? null,
         scheduleTime: scheduleTime ?? null,
         status: 'pending_approval',

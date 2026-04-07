@@ -21,7 +21,7 @@ export async function parseBody<T>(
 
   const result = schema.safeParse(body)
   if (!result.success) {
-    const message = result.error.errors.map((e) => e.message).join(', ')
+    const message = result.error.issues.map((e) => e.message).join(', ')
     return {
       success: false,
       response: NextResponse.json({ error: message }, { status: 400 }),

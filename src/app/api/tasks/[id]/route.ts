@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-
-const VALID_DAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
-
-function isValidScheduleDays(value: string): boolean {
-  const parts = value.split(',')
-  return parts.length > 0 && parts.every((d) => VALID_DAYS.has(d.trim()))
-}
+import { parseBody } from '@/lib/validate'
+import { updateTaskSchema } from '@/lib/schemas/task'
 
 export async function PATCH(
   req: NextRequest,
@@ -18,13 +13,10 @@ export async function PATCH(
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json()
-  const { assignedUserIds, ...updateFields } = body
-  const allowedStatuses = ['active', 'archived']
+  const parsed = await parseBody(req, updateTaskSchema)
+  if (!parsed.success) return parsed.response
 
-  if (body.scheduleDays && !isValidScheduleDays(body.scheduleDays)) {
-    return NextResponse.json({ error: 'Ungültige Wochentage' }, { status: 400 })
-  }
+  const { assignedUserIds, ...updateFields } = parsed.data
 
   try {
     const task = await prisma.task.update({
@@ -32,17 +24,15 @@ export async function PATCH(
       data: {
         title: updateFields.title,
         emoji: updateFields.emoji,
-        points: updateFields.points !== undefined ? Number(updateFields.points) : undefined,
+        points: updateFields.points,
         categoryId: updateFields.categoryId,
         isRecurring: updateFields.isRecurring,
         recurringInterval: updateFields.recurringInterval ?? null,
-        allowMultiple: updateFields.allowMultiple !== undefined ? Boolean(updateFields.allowMultiple) : undefined,
-        dailyLimit: updateFields.allowMultiple === false ? null : (updateFields.dailyLimit !== undefined ? Number(updateFields.dailyLimit) : undefined),
+        allowMultiple: updateFields.allowMultiple,
+        dailyLimit: updateFields.allowMultiple === false ? null : updateFields.dailyLimit,
         scheduleDays: updateFields.scheduleDays !== undefined ? (updateFields.scheduleDays || null) : undefined,
         scheduleTime: updateFields.scheduleTime !== undefined ? (updateFields.scheduleTime || null) : undefined,
-        ...(typeof updateFields.status === 'string' && allowedStatuses.includes(updateFields.status)
-          ? { status: updateFields.status }
-          : {}),
+        ...(updateFields.status !== undefined ? { status: updateFields.status } : {}),
         ...(assignedUserIds !== undefined ? {
           assignedUsers: { set: assignedUserIds.map((id: string) => ({ id })) },
         } : {}),
