@@ -146,7 +146,7 @@
       "tasksSummary": "{tasks} tasks · {points} Pts",
       "reward": "Reward",
       "completed": "completed",
-      "verb": "",
+      "verb": "has",
       "today": "Today",
       "yesterday": "Yesterday",
       "thisWeek": "This week",
@@ -549,7 +549,9 @@
     "scoreboard": {
       "tasks": "Tasks",
       "points": "Points"
-    }
+    },
+    "noTasksInPeriod": "No tasks in period",
+    "allTasks": "All tasks"
   },
   "pwa": {
     "installPrompt": "Install Chore-Quest as an app?",

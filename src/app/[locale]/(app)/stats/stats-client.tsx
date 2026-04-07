@@ -219,6 +219,8 @@ export function StatsClient({ completions, users, currentUserId, categories, all
               mode="personal"
               metric={metric}
               personalData={useWeeks ? myWeekData.map((w) => ({ date: w.week, count: w.count, points: w.points })) : myDayData}
+              tasksLabel={t('metricsToggle.tasks')}
+              pointsLabel={t('metricsToggle.points')}
             />
           </div>
 
@@ -233,7 +235,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
             </div>
             <div className="bg-white border border-slate-200 rounded-xl p-4">
               <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('topTasks')}</h2>
-              <TopTasks tasks={myTopTasks} />
+              <TopTasks tasks={myTopTasks} emptyLabel={t('noTasksInPeriod')} />
             </div>
           </div>
 
@@ -253,7 +255,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
             <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold text-slate-700">{t('activityChart')}</h2>
-                <TaskFilter tasks={allTasks} value={filterTaskId} onChange={setFilterTaskId} />
+                <TaskFilter tasks={allTasks} value={filterTaskId} onChange={setFilterTaskId} allLabel={t('allTasks')} />
               </div>
               <div className="flex gap-1">
                 <button
@@ -276,6 +278,8 @@ export function StatsClient({ completions, users, currentUserId, categories, all
               comparisonData={useWeeks ? comparisonWeekData : comparisonDayData}
               userName={me?.name ?? t('me')}
               partnerName={partner?.name ?? t('me')}
+              tasksLabel={t('metricsToggle.tasks')}
+              pointsLabel={t('metricsToggle.points')}
             />
           </div>
 
@@ -305,9 +309,9 @@ export function StatsClient({ completions, users, currentUserId, categories, all
             <div className="bg-white border border-slate-200 rounded-xl p-4">
               <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('topTasks')}</h2>
               <div className="space-y-4">
-                <TopTasks tasks={myTopTasksComparison} barColor="bg-indigo-400" label={t('top5', { name: me?.name ?? t('me') })} />
+                <TopTasks tasks={myTopTasksComparison} barColor="bg-indigo-400" label={t('top5', { name: me?.name ?? t('me') })} emptyLabel={t('noTasksInPeriod')} />
                 {partner && (
-                  <TopTasks tasks={partnerTopTasks} barColor="bg-pink-400" label={t('top5', { name: partner.name })} />
+                  <TopTasks tasks={partnerTopTasks} barColor="bg-pink-400" label={t('top5', { name: partner.name })} emptyLabel={t('noTasksInPeriod')} />
                 )}
               </div>
             </div>

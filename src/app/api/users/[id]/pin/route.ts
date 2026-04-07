@@ -15,7 +15,7 @@ export async function PUT(
   const { pin, currentPin } = await req.json() as { pin?: string; currentPin?: string }
 
   if (!pin || typeof pin !== 'string' || !/^\d{4,8}$/.test(pin)) {
-    return NextResponse.json({ error: 'PIN muss 4–8 Ziffern haben' }, { status: 400 })
+    return NextResponse.json({ error: 'PIN must be 4–8 digits' }, { status: 400 })
   }
 
   const isOwnPin = id === session.user.id
@@ -23,18 +23,18 @@ export async function PUT(
 
   // Must be own PIN or an admin
   if (!isOwnPin && !isAdmin) {
-    return NextResponse.json({ error: 'Keine Berechtigung' }, { status: 403 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
   }
 
   // Non-admin changing their own PIN must provide currentPin
   if (isOwnPin && !isAdmin) {
     if (!currentPin || typeof currentPin !== 'string') {
-      return NextResponse.json({ error: 'Aktueller PIN erforderlich' }, { status: 400 })
+      return NextResponse.json({ error: 'Current PIN required' }, { status: 400 })
     }
     const user = await prisma.user.findUnique({ where: { id } })
-    if (!user) return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
     const valid = await bcrypt.compare(currentPin, user.pin)
-    if (!valid) return NextResponse.json({ error: 'Aktueller PIN ist falsch' }, { status: 403 })
+    if (!valid) return NextResponse.json({ error: 'Current PIN is incorrect' }, { status: 403 })
   }
 
   const hashed = await bcrypt.hash(pin, 10)

@@ -549,7 +549,9 @@
     "scoreboard": {
       "tasks": "Aufgaben",
       "points": "Punkte"
-    }
+    },
+    "noTasksInPeriod": "Keine Aufgaben im Zeitraum",
+    "allTasks": "Alle Aufgaben"
   },
   "pwa": {
     "installPrompt": "Chore-Quest als App installieren?",

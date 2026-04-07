@@ -28,7 +28,7 @@ export function DashboardNotifications() {
         }).catch(() => {})
       })
       .catch(() => {})
-  }, [checked, toast])
+  }, [checked, toast, t])
 
   return null
 }

@@ -16,13 +16,13 @@ export async function PUT(
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
   if (id === session.user.id) {
-    return NextResponse.json({ error: 'Du kannst deine eigene Rolle nicht ändern' }, { status: 400 })
+    return NextResponse.json({ error: 'You cannot change your own role' }, { status: 400 })
   }
 
   const { role } = await req.json()
 
   if (!role || !['admin', 'member', 'child'].includes(role)) {
-    return NextResponse.json({ error: 'Ungültige Rolle' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
   }
 
   try {
@@ -38,8 +38,8 @@ export async function PUT(
     return NextResponse.json({ success: true })
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === 'NOT_FOUND') return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
-      if (error.message === 'LAST_ADMIN') return NextResponse.json({ error: 'Der letzte Admin kann nicht herabgestuft werden' }, { status: 409 })
+      if (error.message === 'NOT_FOUND') return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      if (error.message === 'LAST_ADMIN') return NextResponse.json({ error: 'The last admin cannot be demoted' }, { status: 409 })
     }
     throw error
   }

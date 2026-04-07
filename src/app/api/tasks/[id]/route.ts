@@ -41,7 +41,7 @@ export async function PATCH(
     return NextResponse.json(task)
   } catch (error: any) {
     if (error?.code === 'P2025') {
-      return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 })
     }
     throw error
   }
@@ -62,7 +62,7 @@ export async function DELETE(
     })
   } catch (error: any) {
     if (error?.code === 'P2025') {
-      return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 })
     }
     throw error
   }

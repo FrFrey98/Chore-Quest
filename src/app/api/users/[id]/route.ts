@@ -16,7 +16,7 @@ export async function DELETE(
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
   if (id === session.user.id) {
-    return NextResponse.json({ error: 'Du kannst dein eigenes Konto nicht löschen' }, { status: 400 })
+    return NextResponse.json({ error: 'You cannot delete your own account' }, { status: 400 })
   }
 
   try {
@@ -38,8 +38,8 @@ export async function DELETE(
     })
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === 'NOT_FOUND') return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
-      if (error.message === 'LAST_ADMIN') return NextResponse.json({ error: 'Der letzte Admin kann nicht gelöscht werden' }, { status: 409 })
+      if (error.message === 'NOT_FOUND') return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      if (error.message === 'LAST_ADMIN') return NextResponse.json({ error: 'The last admin cannot be deleted' }, { status: 409 })
     }
     throw error
   }
