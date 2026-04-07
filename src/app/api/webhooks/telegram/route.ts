@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(req: NextRequest) {
+  // Verify webhook secret
+  const secret = req.headers.get('x-telegram-bot-api-secret-token')
+  if (!process.env.TELEGRAM_WEBHOOK_SECRET || secret !== process.env.TELEGRAM_WEBHOOK_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const body = await req.json()
   const message = body?.message
   if (!message?.text || !message?.chat?.id) {
@@ -25,7 +31,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    const userId = configEntry.value
+    const data = JSON.parse(configEntry.value)
+    if (Date.now() > data.expiresAt) {
+      await prisma.appConfig.delete({ where: { key: `telegram_link_${code}` } })
+      await sendTelegramMessage(chatId, 'Link code expired. Please generate a new one.')
+      return NextResponse.json({ ok: true })
+    }
+    const userId = data.userId
 
     // Update user's telegramChatId
     await prisma.user.update({

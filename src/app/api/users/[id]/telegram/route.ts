@@ -19,11 +19,12 @@ export async function POST(
 
   const code = randomBytes(4).toString('hex') // 8-char code
 
-  // Store code -> userId mapping (expires naturally when used)
+  // Store code -> userId mapping with 10-minute expiry
+  const value = JSON.stringify({ userId: id, expiresAt: Date.now() + 600000 })
   await prisma.appConfig.upsert({
     where: { key: `telegram_link_${code}` },
-    update: { value: id },
-    create: { key: `telegram_link_${code}`, value: id },
+    update: { value },
+    create: { key: `telegram_link_${code}`, value },
   })
 
   return NextResponse.json({ code })

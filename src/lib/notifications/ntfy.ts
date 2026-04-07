@@ -1,6 +1,6 @@
 import type { NotificationPayload, NotificationProvider } from './types'
 
-const NTFY_URL = process.env.NTFY_URL
+const NTFY_URL = process.env.NTFY_URL?.replace(/\/$/, '')
 const NTFY_TOPIC_PREFIX = process.env.NTFY_TOPIC_PREFIX || 'chore-quest'
 
 export function getNtfyTopic(userId: string): string {
