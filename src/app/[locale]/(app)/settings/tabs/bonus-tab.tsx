@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { type GameConfig } from '@/lib/config'
 
 type IntervalEntry = { name: string; days: number }
+type DecayEntry = { name: string; hours: number }
 
 export function BonusTab({ config }: { config: GameConfig }) {
   const router = useRouter()
@@ -15,6 +16,10 @@ export function BonusTab({ config }: { config: GameConfig }) {
   const [teamworkPercent, setTeamworkPercent] = useState(config.teamworkBonusPercent)
   const [intervals, setIntervals] = useState<IntervalEntry[]>(
     Object.entries(config.recurringIntervals).map(([name, days]) => ({ name, days }))
+  )
+  const [decayEnabled, setDecayEnabled] = useState(config.pointDecayEnabled)
+  const [decayHours, setDecayHours] = useState<DecayEntry[]>(
+    Object.entries(config.decayHoursByInterval).map(([name, hours]) => ({ name, hours }))
   )
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
@@ -38,6 +43,10 @@ export function BonusTab({ config }: { config: GameConfig }) {
     for (const item of intervals) {
       if (item.name.trim()) intervalsObj[item.name.trim()] = item.days
     }
+    const decayObj: Record<string, number> = {}
+    for (const item of decayHours) {
+      if (item.name.trim()) decayObj[item.name.trim()] = item.hours
+    }
     const res = await fetch('/api/settings/config', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -45,6 +54,8 @@ export function BonusTab({ config }: { config: GameConfig }) {
         entries: [
           { key: 'teamwork_bonus_percent', value: teamworkPercent },
           { key: 'recurring_intervals', value: intervalsObj },
+          { key: 'point_decay_enabled', value: decayEnabled },
+          { key: 'decay_hours_by_interval', value: decayObj },
         ],
       }),
     })
@@ -83,6 +94,44 @@ export function BonusTab({ config }: { config: GameConfig }) {
           ))}
         </div>
         <Button variant="outline" className="w-full mt-2" onClick={addInterval}>{t('addInterval')}</Button>
+      </div>
+
+      <div className="border-t pt-4">
+        <h2 className="font-semibold mb-1">{t('decayHeading')}</h2>
+        <p className="text-sm text-muted-foreground mb-3">{t('decayDescription')}</p>
+        <div className="flex items-center gap-3 mb-3">
+          <input
+            type="checkbox"
+            id="decay-enabled"
+            checked={decayEnabled}
+            onChange={(e) => setDecayEnabled(e.target.checked)}
+          />
+          <label htmlFor="decay-enabled" className="text-sm">{t('decayEnabled')}</label>
+        </div>
+        {decayEnabled && (
+          <>
+            <p className="text-sm text-muted-foreground mb-2">{t('decayHoursDescription')}</p>
+            <div className="space-y-2">
+              {decayHours.map((item, i) => (
+                <div key={i} className="bg-card rounded-lg p-3 shadow-sm flex gap-2 items-center">
+                  <span className="flex-1 text-sm font-medium">{item.name}</span>
+                  <Input
+                    type="number"
+                    className="w-20 text-center"
+                    min={1}
+                    value={item.hours}
+                    onChange={(e) =>
+                      setDecayHours((prev) =>
+                        prev.map((d, j) => (j === i ? { ...d, hours: Number(e.target.value) } : d))
+                      )
+                    }
+                  />
+                  <span className="text-sm text-muted-foreground">h</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="flex items-center justify-between">
