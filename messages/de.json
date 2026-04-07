@@ -353,7 +353,9 @@
       "restoreFailed": "Fehler beim Wiederherstellen",
       "archiveTitle": "Aufgabe archivieren",
       "archiveDescription": "Aufgabe \"{title}\" wirklich archivieren?",
-      "archiveConfirm": "Ja, archivieren"
+      "archiveConfirm": "Ja, archivieren",
+      "decayHours": "Verfallstunden",
+      "decayHoursOverride": "Verfallstunden überschreiben"
     },
     "rewardRow": {
       "saved": "Belohnung gespeichert",
@@ -431,7 +433,12 @@
       "intervalsDescription": "Definiert die verfügbaren Intervalle für wiederkehrende Aufgaben.",
       "intervalNamePlaceholder": "Name (z.B. daily)",
       "daysLabel": "Tage",
-      "addInterval": "+ Intervall hinzufügen"
+      "addInterval": "+ Intervall hinzufügen",
+      "decayHeading": "Punkte-Verfall",
+      "decayDescription": "Wenn aktiviert, geben überfällige Aufgaben weniger Punkte. Je länger überfällig, desto weniger Punkte.",
+      "decayEnabled": "Punkte-Verfall aktivieren",
+      "decayHoursLabel": "Verfallstunden pro Intervall",
+      "decayHoursDescription": "Stunden bis eine Aufgabe nach Fälligkeit 0% Gesundheit erreicht."
     },
     "categories": {
       "description": "Kategorien für die Aufgaben-Gruppierung.",

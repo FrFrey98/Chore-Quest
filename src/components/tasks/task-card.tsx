@@ -5,18 +5,22 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/toast-provider'
 import { Check, Users } from 'lucide-react'
+import { HealthBar } from './health-bar'
+import { getDecayHours } from '@/lib/health'
 
 type Task = {
   id: string; title: string; emoji: string; points: number
   isRecurring: boolean; recurringInterval: string | null
   allowMultiple?: boolean; dailyLimit?: number | null
+  nextDueAt?: string | null; decayHours?: number | null
 }
 
-export function TaskCard({ task, onComplete, partnerId, partnerName }: {
+export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursByInterval }: {
   task: Task
   onComplete: (id: string) => Promise<void>
   partnerId?: string
   partnerName?: string
+  decayHoursByInterval?: Record<string, number>
 }) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -91,6 +95,12 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
               : task.recurringInterval === 'weekly' ? t('recurring.weekly')
               : t('recurring.monthly')}
           </p>
+        )}
+        {task.isRecurring && decayHoursByInterval && (
+          <HealthBar
+            nextDueAt={task.nextDueAt ?? null}
+            decayHours={getDecayHours(task.decayHours, task.recurringInterval, decayHoursByInterval)}
+          />
         )}
       </div>
       <Badge variant="secondary" className="text-indigo-700 bg-indigo-50 shrink-0">

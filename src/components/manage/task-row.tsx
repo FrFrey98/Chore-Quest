@@ -26,6 +26,7 @@ type Task = {
   scheduleDays: string | null
   scheduleTime: string | null
   assignedUserIds?: string[]
+  decayHours?: number | null
 }
 
 type TaskRowProps = {
@@ -64,6 +65,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
     scheduleDays: task.scheduleDays ?? '',
     scheduleTime: task.scheduleTime ?? '',
     assignedUserIds: task.assignedUserIds ?? [],
+    decayHours: task.decayHours ?? null,
   })
   const [saving, setSaving] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -86,6 +88,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
           scheduleDays: form.scheduleDays || null,
           scheduleTime: form.scheduleTime || null,
           assignedUserIds: form.assignedUserIds,
+          decayHours: form.isRecurring && form.decayHours ? form.decayHours : null,
         }),
       })
       if (res.ok) {
@@ -276,6 +279,29 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             </div>
           )}
         </div>
+        {form.isRecurring && (
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id={`decay-override-${task.id}`}
+              checked={form.decayHours !== null}
+              onChange={(e) => setForm({ ...form, decayHours: e.target.checked ? 48 : null })}
+            />
+            <label htmlFor={`decay-override-${task.id}`} className="text-sm">{t('decayHoursOverride')}</label>
+            {form.decayHours !== null && (
+              <div className="flex items-center gap-1">
+                <Input
+                  type="number"
+                  min={1}
+                  className="w-20"
+                  value={form.decayHours}
+                  onChange={(e) => setForm({ ...form, decayHours: Number(e.target.value) })}
+                />
+                <span className="text-xs text-muted-foreground">h</span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="flex items-center gap-3">
           <input
             type="checkbox"

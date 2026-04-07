@@ -353,7 +353,9 @@
       "restoreFailed": "Failed to restore",
       "archiveTitle": "Archive task",
       "archiveDescription": "Really archive task \"{title}\"?",
-      "archiveConfirm": "Yes, archive"
+      "archiveConfirm": "Yes, archive",
+      "decayHours": "Decay hours",
+      "decayHoursOverride": "Override decay hours"
     },
     "rewardRow": {
       "saved": "Reward saved",
@@ -431,7 +433,12 @@
       "intervalsDescription": "Defines the available intervals for recurring tasks.",
       "intervalNamePlaceholder": "Name (e.g. daily)",
       "daysLabel": "Days",
-      "addInterval": "+ Add interval"
+      "addInterval": "+ Add interval",
+      "decayHeading": "Point Decay",
+      "decayDescription": "When enabled, overdue tasks give fewer points. The longer overdue, the fewer points.",
+      "decayEnabled": "Enable point decay",
+      "decayHoursLabel": "Decay hours by interval",
+      "decayHoursDescription": "Hours until a task reaches 0% health after becoming due."
     },
     "categories": {
       "description": "Categories for task grouping.",

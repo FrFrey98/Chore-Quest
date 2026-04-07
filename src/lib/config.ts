@@ -32,6 +32,13 @@ export const DEFAULT_RECURRING_INTERVALS: Record<string, number> = {
   monthly: 30,
 }
 
+export const DEFAULT_POINT_DECAY_ENABLED = false
+export const DEFAULT_DECAY_HOURS_BY_INTERVAL: Record<string, number> = {
+  daily: 48,
+  weekly: 168,
+  monthly: 336,
+}
+
 // --- Config CRUD ---
 
 export async function getConfig<T>(key: string, defaultValue: T): Promise<T> {
@@ -61,11 +68,13 @@ export type GameConfig = {
   restorePerDayPrice: number
   levelDefinitions: LevelDef[]
   recurringIntervals: Record<string, number>
+  pointDecayEnabled: boolean
+  decayHoursByInterval: Record<string, number>
 }
 
 export async function loadGameConfig(): Promise<GameConfig> {
   try {
-    const [streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals] =
+    const [streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals, pointDecayEnabled, decayHoursByInterval] =
       await Promise.all([
         getConfig('streak_tiers', DEFAULT_STREAK_TIERS),
         getConfig('teamwork_bonus_percent', DEFAULT_TEAMWORK_BONUS_PERCENT),
@@ -73,8 +82,10 @@ export async function loadGameConfig(): Promise<GameConfig> {
         getConfig('restore_per_day_price', DEFAULT_RESTORE_PER_DAY_PRICE),
         getConfig('level_definitions', DEFAULT_LEVEL_DEFINITIONS),
         getConfig('recurring_intervals', DEFAULT_RECURRING_INTERVALS),
+        getConfig('point_decay_enabled', DEFAULT_POINT_DECAY_ENABLED),
+        getConfig('decay_hours_by_interval', DEFAULT_DECAY_HOURS_BY_INTERVAL),
       ])
-    return { streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals }
+    return { streakTiers, teamworkBonusPercent, restoreBasePrice, restorePerDayPrice, levelDefinitions, recurringIntervals, pointDecayEnabled, decayHoursByInterval }
   } catch {
     return {
       streakTiers: DEFAULT_STREAK_TIERS,
@@ -83,6 +94,8 @@ export async function loadGameConfig(): Promise<GameConfig> {
       restorePerDayPrice: DEFAULT_RESTORE_PER_DAY_PRICE,
       levelDefinitions: DEFAULT_LEVEL_DEFINITIONS,
       recurringIntervals: DEFAULT_RECURRING_INTERVALS,
+      pointDecayEnabled: DEFAULT_POINT_DECAY_ENABLED,
+      decayHoursByInterval: DEFAULT_DECAY_HOURS_BY_INTERVAL,
     }
   }
 }

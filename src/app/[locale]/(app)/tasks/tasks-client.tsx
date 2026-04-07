@@ -11,6 +11,7 @@ import type { CalendarDay } from '@/lib/calendar'
 type Task = {
   id: string; title: string; emoji: string; points: number
   isRecurring: boolean; recurringInterval: string | null
+  nextDueAt?: string | null; decayHours?: number | null
 }
 type Category = { id: string; name: string; emoji: string; tasks: Task[] }
 type SimpleCategory = { id: string; name: string; emoji: string }
@@ -30,9 +31,10 @@ type TasksClientProps = {
   calMonth: number
   today: string
   availableTasks: { id: string; emoji: string; title: string }[]
+  decayHoursByInterval?: Record<string, number>
 }
 
-export function TasksClient({ grouped, categories, users, userRole, partnerId, partnerName, view, calendarDays, calYear, calMonth, today, availableTasks }: TasksClientProps) {
+export function TasksClient({ grouped, categories, users, userRole, partnerId, partnerName, view, calendarDays, calYear, calMonth, today, availableTasks, decayHoursByInterval }: TasksClientProps) {
   const router = useRouter()
   const t = useTranslations('tasks')
 
@@ -94,7 +96,7 @@ export function TasksClient({ grouped, categories, users, userRole, partnerId, p
             </div>
           )}
           {grouped.map((cat) => (
-            <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} partnerId={partnerId} partnerName={partnerName} />
+            <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} partnerId={partnerId} partnerName={partnerName} decayHoursByInterval={decayHoursByInterval} />
           ))}
           <div className="flex justify-end mt-4">
             <Link href="/manage?tab=tasks" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">

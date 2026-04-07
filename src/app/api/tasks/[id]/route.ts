@@ -32,6 +32,7 @@ export async function PATCH(
         dailyLimit: updateFields.allowMultiple === false ? null : updateFields.dailyLimit,
         scheduleDays: updateFields.scheduleDays !== undefined ? (updateFields.scheduleDays || null) : undefined,
         scheduleTime: updateFields.scheduleTime !== undefined ? (updateFields.scheduleTime || null) : undefined,
+        ...(updateFields.decayHours !== undefined ? { decayHours: updateFields.decayHours } : {}),
         ...(updateFields.status !== undefined ? { status: updateFields.status } : {}),
         ...(assignedUserIds !== undefined ? {
           assignedUsers: { set: assignedUserIds.map((id: string) => ({ id })) },

@@ -1,0 +1,54 @@
+/**
+ * Calculate the health percentage of a recurring task.
+ * Returns 1.0 if not yet due, 0.0 if fully decayed.
+ */
+export function calculateHealth(
+  nextDueAt: Date | string | null,
+  decayHours: number,
+  now: Date = new Date()
+): number {
+  if (!nextDueAt || decayHours <= 0) return 1
+  const dueDate = typeof nextDueAt === 'string' ? new Date(nextDueAt) : nextDueAt
+  const hoursSinceDue = (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60)
+  if (hoursSinceDue <= 0) return 1
+  return Math.max(0, 1 - hoursSinceDue / decayHours)
+}
+
+/**
+ * Get the effective decay hours for a task.
+ */
+export function getDecayHours(
+  taskDecayHours: number | null | undefined,
+  recurringInterval: string | null | undefined,
+  decayHoursByInterval: Record<string, number>
+): number {
+  if (taskDecayHours && taskDecayHours > 0) return taskDecayHours
+  if (recurringInterval && decayHoursByInterval[recurringInterval]) {
+    return decayHoursByInterval[recurringInterval]
+  }
+  return 48
+}
+
+/**
+ * Apply point decay to base points. Returns at least 1 point.
+ */
+export function applyPointDecay(basePoints: number, healthPercent: number): number {
+  return Math.max(1, Math.floor(basePoints * Math.max(0.01, healthPercent)))
+}
+
+/**
+ * Get the color class for a health percentage.
+ */
+export function getHealthColor(health: number): string {
+  if (health > 0.5) return 'bg-green-500'
+  if (health > 0.25) return 'bg-yellow-500'
+  if (health > 0) return 'bg-red-500'
+  return 'bg-red-600'
+}
+
+/**
+ * Check if the health bar should pulse (critically low).
+ */
+export function shouldPulse(health: number): boolean {
+  return health > 0 && health <= 0.1
+}

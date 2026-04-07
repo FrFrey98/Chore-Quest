@@ -3,6 +3,7 @@ import { TaskCard } from './task-card'
 type Task = {
   id: string; title: string; emoji: string; points: number
   isRecurring: boolean; recurringInterval: string | null
+  nextDueAt?: string | null; decayHours?: number | null
 }
 type Category = { id: string; name: string; emoji: string; tasks: Task[] }
 
@@ -11,11 +12,13 @@ export function TaskCategoryGroup({
   onComplete,
   partnerId,
   partnerName,
+  decayHoursByInterval,
 }: {
   category: Category
   onComplete: (id: string) => Promise<void>
   partnerId?: string
   partnerName?: string
+  decayHoursByInterval?: Record<string, number>
 }) {
   if (category.tasks.length === 0) return null
   return (
@@ -25,7 +28,7 @@ export function TaskCategoryGroup({
       </h2>
       <div className="space-y-2">
         {category.tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onComplete={onComplete} partnerId={partnerId} partnerName={partnerName} />
+          <TaskCard key={task.id} task={task} onComplete={onComplete} partnerId={partnerId} partnerName={partnerName} decayHoursByInterval={decayHoursByInterval} />
         ))}
       </div>
     </div>

@@ -18,6 +18,7 @@ export const createTaskSchema = z.object({
     .default(null),
   scheduleTime: z.string().nullable().default(null),
   assignedUserIds: z.array(z.string()).default([]),
+  decayHours: z.coerce.number().int().positive().nullable().optional(),
 })
 
 export const updateTaskSchema = createTaskSchema
