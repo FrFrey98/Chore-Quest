@@ -5,23 +5,35 @@ const mockUsers = [
 ]
 const mockCategories = [{ id: 'c1', name: 'Küche', emoji: '🍳' }]
 
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
-    user: { findMany: vi.fn().mockResolvedValue(mockUsers) },
-    category: { findMany: vi.fn().mockResolvedValue(mockCategories) },
-    task: { findMany: vi.fn().mockResolvedValue([]) },
-    taskCompletion: { findMany: vi.fn().mockResolvedValue([]) },
-    taskApproval: { findMany: vi.fn().mockResolvedValue([]) },
-    storeItem: { findMany: vi.fn().mockResolvedValue([]) },
-    purchase: { findMany: vi.fn().mockResolvedValue([]) },
-    achievement: { findMany: vi.fn().mockResolvedValue([]) },
-    userAchievement: { findMany: vi.fn().mockResolvedValue([]) },
-    streakState: { findMany: vi.fn().mockResolvedValue([]) },
-    appConfig: { findMany: vi.fn().mockResolvedValue([]) },
-    taskScheduleOverride: { findMany: vi.fn().mockResolvedValue([]) },
-    pushSubscription: { findMany: vi.fn().mockResolvedValue([]) },
-  },
-}))
+vi.mock('@/lib/prisma', () => {
+  const makeModel = (data: unknown[] = []) => ({
+    findMany: vi.fn().mockResolvedValue(data),
+    deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+    createMany: vi.fn().mockResolvedValue({ count: 0 }),
+  })
+
+  return {
+    prisma: {
+      user: makeModel(mockUsers),
+      category: makeModel(mockCategories),
+      task: makeModel(),
+      taskCompletion: makeModel(),
+      taskApproval: makeModel(),
+      storeItem: makeModel(),
+      purchase: makeModel(),
+      achievement: makeModel(),
+      userAchievement: makeModel(),
+      streakState: makeModel(),
+      appConfig: makeModel(),
+      taskScheduleOverride: makeModel(),
+      pushSubscription: makeModel(),
+      $transaction: vi.fn().mockImplementation(async (fn: (tx: unknown) => Promise<void>) => {
+        const { prisma } = await import('@/lib/prisma')
+        return fn(prisma)
+      }),
+    },
+  }
+})
 
 describe('exportAllData', () => {
   it('returns structured backup with meta and all tables', async () => {
@@ -84,5 +96,28 @@ describe('validateBackup', () => {
     })
     expect(result.valid).toBe(false)
     if (!result.valid) expect(result.error).toContain('fehlt')
+  })
+})
+
+describe('restoreAllData', () => {
+  it('calls deleteMany and createMany in transaction', async () => {
+    const { restoreAllData } = await import('@/lib/backup')
+    const { prisma } = await import('@/lib/prisma')
+
+    const backup = {
+      meta: { version: 1, exportedAt: '2026-04-07T00:00:00Z', appVersion: '1.0.0' },
+      data: {
+        users: [{ id: 'u1', name: 'Alice', pin: '$2a$10$hash', role: 'admin', createdAt: '2026-01-01T00:00:00Z', notificationsEnabled: false, installPromptDismissed: false }],
+        categories: [], tasks: [], taskCompletions: [], taskApprovals: [],
+        storeItems: [], purchases: [], achievements: [], userAchievements: [],
+        streakStates: [], appConfigs: [], taskScheduleOverrides: [], pushSubscriptions: [],
+      },
+    }
+
+    await restoreAllData(backup as any)
+
+    expect(prisma.$transaction).toHaveBeenCalled()
+    expect(prisma.user.deleteMany).toHaveBeenCalled()
+    expect(prisma.user.createMany).toHaveBeenCalledWith({ data: backup.data.users })
   })
 })

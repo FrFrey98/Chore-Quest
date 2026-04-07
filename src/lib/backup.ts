@@ -67,6 +67,40 @@ export async function exportAllData(): Promise<BackupData> {
   }
 }
 
+export async function restoreAllData(backup: BackupData): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    // Delete in reverse dependency order
+    await tx.pushSubscription.deleteMany()
+    await tx.userAchievement.deleteMany()
+    await tx.taskScheduleOverride.deleteMany()
+    await tx.taskCompletion.deleteMany()
+    await tx.taskApproval.deleteMany()
+    await tx.purchase.deleteMany()
+    await tx.streakState.deleteMany()
+    await tx.task.deleteMany()
+    await tx.storeItem.deleteMany()
+    await tx.achievement.deleteMany()
+    await tx.category.deleteMany()
+    await tx.appConfig.deleteMany()
+    await tx.user.deleteMany()
+
+    // Insert in dependency order
+    if (backup.data.users.length) await tx.user.createMany({ data: backup.data.users as any })
+    if (backup.data.categories.length) await tx.category.createMany({ data: backup.data.categories as any })
+    if (backup.data.appConfigs.length) await tx.appConfig.createMany({ data: backup.data.appConfigs as any })
+    if (backup.data.achievements.length) await tx.achievement.createMany({ data: backup.data.achievements as any })
+    if (backup.data.storeItems.length) await tx.storeItem.createMany({ data: backup.data.storeItems as any })
+    if (backup.data.tasks.length) await tx.task.createMany({ data: backup.data.tasks as any })
+    if (backup.data.taskCompletions.length) await tx.taskCompletion.createMany({ data: backup.data.taskCompletions as any })
+    if (backup.data.taskApprovals.length) await tx.taskApproval.createMany({ data: backup.data.taskApprovals as any })
+    if (backup.data.purchases.length) await tx.purchase.createMany({ data: backup.data.purchases as any })
+    if (backup.data.streakStates.length) await tx.streakState.createMany({ data: backup.data.streakStates as any })
+    if (backup.data.userAchievements.length) await tx.userAchievement.createMany({ data: backup.data.userAchievements as any })
+    if (backup.data.taskScheduleOverrides.length) await tx.taskScheduleOverride.createMany({ data: backup.data.taskScheduleOverrides as any })
+    if (backup.data.pushSubscriptions.length) await tx.pushSubscription.createMany({ data: backup.data.pushSubscriptions as any })
+  })
+}
+
 export function validateBackup(data: unknown): { valid: true; backup: BackupData } | { valid: false; error: string } {
   if (!data || typeof data !== 'object') {
     return { valid: false, error: 'Ungültiges JSON-Format' }
