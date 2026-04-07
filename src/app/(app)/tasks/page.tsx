@@ -5,14 +5,15 @@ import { prisma } from '@/lib/prisma'
 import { getTasksForMonth } from '@/lib/calendar'
 import { TasksClient } from './tasks-client'
 
-export default async function TasksPage({ searchParams }: { searchParams: { view?: string; year?: string; month?: string } }) {
+export default async function TasksPage({ searchParams }: { searchParams: Promise<{ view?: string; year?: string; month?: string }> }) {
+  const resolvedParams = await searchParams
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
 
   const now = new Date()
-  const view = searchParams.view ?? 'list'
-  const calYear = searchParams.year ? parseInt(searchParams.year) : now.getUTCFullYear()
-  const calMonth = searchParams.month ? parseInt(searchParams.month) : now.getUTCMonth() + 1
+  const view = resolvedParams.view ?? 'list'
+  const calYear = resolvedParams.year ? parseInt(resolvedParams.year) : now.getUTCFullYear()
+  const calMonth = resolvedParams.month ? parseInt(resolvedParams.month) : now.getUTCMonth() + 1
 
   const userId = session.user?.id
   const users = await prisma.user.findMany({ select: { id: true, name: true } })

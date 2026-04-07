@@ -4,7 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { StatsClient } from './stats-client'
 
-export default async function StatsPage({ searchParams }: { searchParams: { tab?: string; from?: string; to?: string } }) {
+export default async function StatsPage({ searchParams }: { searchParams: Promise<{ tab?: string; from?: string; to?: string }> }) {
+  const resolvedParams = await searchParams
   const session = await getServerSession(authOptions)
   const userId = session!.user.id
 
@@ -12,8 +13,8 @@ export default async function StatsPage({ searchParams }: { searchParams: { tab?
   const defaultFrom = new Date(now)
   defaultFrom.setUTCDate(defaultFrom.getUTCDate() - 30)
 
-  const from = searchParams.from ?? defaultFrom.toISOString().slice(0, 10)
-  const to = searchParams.to ?? now.toISOString().slice(0, 10)
+  const from = resolvedParams.from ?? defaultFrom.toISOString().slice(0, 10)
+  const to = resolvedParams.to ?? now.toISOString().slice(0, 10)
 
   const fromDate = new Date(from + 'T00:00:00Z')
   const toDate = new Date(to + 'T23:59:59.999Z')

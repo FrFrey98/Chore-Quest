@@ -5,7 +5,8 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ManageClient } from './manage-client'
 
-export default async function ManagePage({ searchParams }: { searchParams: { tab?: string } }) {
+export default async function ManagePage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab } = await searchParams
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
 
@@ -60,7 +61,7 @@ export default async function ManagePage({ searchParams }: { searchParams: { tab
         categories={categories}
         rewards={serializedRewards}
         users={users}
-        initialTab={searchParams.tab ?? 'tasks'}
+        initialTab={tab ?? 'tasks'}
       />
     </Suspense>
   )
