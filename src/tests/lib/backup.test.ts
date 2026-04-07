@@ -154,6 +154,7 @@ describe('createPreRestoreBackup', () => {
   })
 
   it('cleans up old backups keeping max 5', async () => {
+    // readdir returns 7 files: 6 existing + the one just written by the function
     mockReaddir.mockResolvedValueOnce([
       'pre-restore-2026-01-01.json',
       'pre-restore-2026-01-02.json',
@@ -161,12 +162,16 @@ describe('createPreRestoreBackup', () => {
       'pre-restore-2026-01-04.json',
       'pre-restore-2026-01-05.json',
       'pre-restore-2026-01-06.json',
+      'pre-restore-2026-01-07.json',
     ])
+    mockUnlink.mockClear()
 
     const { createPreRestoreBackup } = await import('@/lib/backup')
     await createPreRestoreBackup()
 
-    expect(mockUnlink).toHaveBeenCalledTimes(1)
+    // 7 files → delete 2 oldest to reach MAX_PRE_RESTORE_BACKUPS (5)
+    expect(mockUnlink).toHaveBeenCalledTimes(2)
     expect(mockUnlink).toHaveBeenCalledWith(expect.stringContaining('pre-restore-2026-01-01.json'))
+    expect(mockUnlink).toHaveBeenCalledWith(expect.stringContaining('pre-restore-2026-01-02.json'))
   })
 })

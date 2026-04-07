@@ -128,13 +128,17 @@ export async function createPreRestoreBackup(): Promise<string> {
   await writeFile(filepath, JSON.stringify(backup, null, 2), 'utf-8')
 
   // Clean up old backups, keep only MAX_PRE_RESTORE_BACKUPS
-  const files = (await readdir(BACKUP_DIR))
-    .filter((f) => f.startsWith('pre-restore-') && f.endsWith('.json'))
-    .sort()
+  try {
+    const files = (await readdir(BACKUP_DIR))
+      .filter((f) => f.startsWith('pre-restore-') && f.endsWith('.json'))
+      .sort()
 
-  while (files.length > MAX_PRE_RESTORE_BACKUPS) {
-    const oldest = files.shift()!
-    await unlink(join(BACKUP_DIR, oldest))
+    while (files.length > MAX_PRE_RESTORE_BACKUPS) {
+      const oldest = files.shift()!
+      await unlink(join(BACKUP_DIR, oldest))
+    }
+  } catch {
+    // cleanup failure is non-critical
   }
 
   return filepath
