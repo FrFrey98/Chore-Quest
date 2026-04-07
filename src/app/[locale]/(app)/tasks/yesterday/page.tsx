@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations, getLocale } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { YesterdaySection } from '@/components/tasks/yesterday-section'
@@ -10,6 +11,10 @@ export default async function YesterdayPage() {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
   const userId = session.user.id
+
+  const t = await getTranslations('tasks.yesterday')
+  const tc = await getTranslations('dashboard')
+  const locale = await getLocale()
 
   const now = new Date()
   const yesterdayStart = new Date(now)
@@ -77,7 +82,7 @@ export default async function YesterdayPage() {
 
   // Format yesterday date for display
   const yesterdayDate = new Date(yesterdayStart)
-  const dateLabel = yesterdayDate.toLocaleDateString('de-DE', {
+  const dateLabel = yesterdayDate.toLocaleDateString(locale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -85,14 +90,14 @@ export default async function YesterdayPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1">Gestern</h1>
+      <h1 className="text-xl font-bold mb-1">{t('heading')}</h1>
       <p className="text-sm text-slate-500 mb-4">{dateLabel}</p>
 
       <YesterdaySection
         completed={completed}
         due={dueTasks}
         partnerId={partner?.id}
-        partnerName={partner?.name ?? 'Partner'}
+        partnerName={partner?.name ?? tc('partner')}
       />
     </div>
   )

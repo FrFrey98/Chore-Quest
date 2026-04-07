@@ -183,6 +183,8 @@
         "open": "Open",
         "missed": "Missed"
       },
+      "cancel": "Cancel",
+      "syncing": "\"{title}\" is syncing",
       "taskChecked": "Task checked off",
       "taskAdded": "Task added",
       "skipRemoved": "Skip removed",
@@ -194,6 +196,17 @@
       "monthly": "🔄 Monthly"
     },
     "undo": "Undo",
+    "undone": "Completion undone",
+    "undoFailed": "Undo failed",
+    "checkOff": "Check off",
+    "together": "Together",
+    "togetherWith": "Together with {name}",
+    "pointsEarned": "+{points} Pts for \"{title}\"",
+    "pointsEarnedTogether": "+{points} Pts for \"{title}\" 👫",
+    "achievementUnlocked": "{emoji} Achievement unlocked: {title}",
+    "completionFailed": "Failed to complete",
+    "task": "Task",
+    "skip": "Skip",
     "createDialog": {
       "title": "Suggest a new task",
       "emoji": "Emoji",

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/toast-provider'
 import { Check, Users, Undo2 } from 'lucide-react'
 
@@ -31,6 +32,9 @@ type YesterdaySectionProps = {
 export function YesterdaySection({ completed, due, partnerId, partnerName }: YesterdaySectionProps) {
   const router = useRouter()
   const { toast } = useToast()
+  const t = useTranslations('tasks')
+  const ty = useTranslations('tasks.yesterday')
+  const tc = useTranslations('common')
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set())
   const [sharedTaskId, setSharedTaskId] = useState<string | null>(null)
@@ -51,27 +55,26 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       })
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error ?? 'Fehler')
+        throw new Error(data.error ?? tc('error'))
       }
       const data = await res.json()
 
       setDoneIds((prev) => new Set(prev).add(task.id))
       setSharedTaskId(null)
 
-      const sharedLabel = isShared ? ' 👫' : ''
-      toast(`+${data.points} Pkt für "${task.title}"${sharedLabel} (Gestern)`, 'success')
+      toast(ty('pointsEarned', { points: data.points, title: task.title }), 'success')
 
       if (data.newAchievements?.length > 0) {
         data.newAchievements.forEach((a: { emoji: string; title: string }, i: number) => {
           setTimeout(() => {
-            toast(`${a.emoji} Achievement freigeschaltet: ${a.title}`, 'success')
+            toast(t('achievementUnlocked', { emoji: a.emoji, title: a.title }), 'success')
           }, 1500 + i * 1500)
         })
       }
 
       router.refresh()
     } catch (err: unknown) {
-      toast(err instanceof Error ? err.message : 'Fehler beim Nachtragen', 'error')
+      toast(err instanceof Error ? err.message : ty('catchUpFailed'), 'error')
     } finally {
       setLoadingId(null)
     }
@@ -87,19 +90,19 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       })
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error ?? 'Fehler')
+        throw new Error(data.error ?? tc('error'))
       }
-      toast('Erledigung rückgängig gemacht', 'info')
+      toast(t('undone'), 'info')
       router.refresh()
     } catch (err: unknown) {
-      toast(err instanceof Error ? err.message : 'Rückgängig fehlgeschlagen', 'error')
+      toast(err instanceof Error ? err.message : t('undoFailed'), 'error')
     } finally {
       setUndoingId(null)
       setConfirmUndoId(null)
     }
   }
 
-  const pendingDue = due.filter((t) => !doneIds.has(t.id))
+  const pendingDue = due.filter((d) => !doneIds.has(d.id))
   const hasContent = completed.length > 0 || due.length > 0
 
   return (
@@ -107,34 +110,34 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       {/* Completed yesterday */}
       {completed.length > 0 && (
         <div className="bg-white border border-slate-200 rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Erledigt</h2>
+          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">{ty('completed')}</h2>
           <div className="flex flex-col gap-2">
-            {completed.map((t) => (
-              <div key={t.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
-                <span className="text-lg">{t.emoji}</span>
-                <span className="flex-1 text-sm text-slate-400 line-through truncate">{t.title}</span>
-                <span className="text-xs text-green-600 font-semibold">✓ +{t.points}</span>
-                {confirmUndoId === t.id ? (
+            {completed.map((c) => (
+              <div key={c.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
+                <span className="text-lg">{c.emoji}</span>
+                <span className="flex-1 text-sm text-slate-400 line-through truncate">{c.title}</span>
+                <span className="text-xs text-green-600 font-semibold">✓ +{c.points}</span>
+                {confirmUndoId === c.id ? (
                   <div className="flex items-center gap-1">
                     <button
-                      onClick={() => handleUndo(t)}
-                      disabled={undoingId === t.id}
+                      onClick={() => handleUndo(c)}
+                      disabled={undoingId === c.id}
                       className="text-xs text-red-600 font-semibold hover:text-red-700"
                     >
-                      {undoingId === t.id ? '…' : 'Ja'}
+                      {undoingId === c.id ? '…' : tc('yes')}
                     </button>
                     <button
                       onClick={() => setConfirmUndoId(null)}
                       className="text-xs text-slate-400 hover:text-slate-600"
                     >
-                      Nein
+                      {tc('no')}
                     </button>
                   </div>
                 ) : (
                   <button
-                    onClick={() => setConfirmUndoId(t.id)}
+                    onClick={() => setConfirmUndoId(c.id)}
                     className="text-slate-300 hover:text-slate-500 transition-colors p-1"
-                    title="Rückgängig"
+                    title={t('undo')}
                   >
                     <Undo2 size={14} />
                   </button>
@@ -148,33 +151,33 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       {/* Due yesterday — backfill */}
       {pendingDue.length > 0 && (
         <div className="bg-white border border-slate-200 rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Nachtragen</h2>
+          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">{ty('catchUp')}</h2>
           <div className="flex flex-col gap-2">
-            {pendingDue.map((t) => (
-              <div key={t.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400">
-                <span className="text-lg">{t.emoji}</span>
+            {pendingDue.map((task) => (
+              <div key={task.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400">
+                <span className="text-lg">{task.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-slate-800 truncate block">{t.title}</span>
+                  <span className="text-sm text-slate-800 truncate block">{task.title}</span>
                 </div>
                 {partnerId && (
                   <button
-                    onClick={() => setSharedTaskId(sharedTaskId === t.id ? null : t.id)}
+                    onClick={() => setSharedTaskId(sharedTaskId === task.id ? null : task.id)}
                     className={`p-1.5 rounded-lg transition-colors ${
-                      sharedTaskId === t.id
+                      sharedTaskId === task.id
                         ? 'bg-amber-100 text-amber-700'
                         : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
                     }`}
-                    title={`Zusammen mit ${partnerName}`}
+                    title={t('togetherWith', { name: partnerName ?? '' })}
                   >
                     <Users size={14} />
                   </button>
                 )}
                 <button
-                  onClick={() => handleComplete(t)}
-                  disabled={loadingId === t.id}
+                  onClick={() => handleComplete(task)}
+                  disabled={loadingId === task.id}
                   className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
                 >
-                  {loadingId === t.id ? '…' : <><Check size={14} /> {sharedTaskId === t.id ? '👫 Zusammen' : 'Nachtragen'}</>}
+                  {loadingId === task.id ? '…' : <><Check size={14} /> {sharedTaskId === task.id ? `👫 ${t('together')}` : ty('catchUpAction')}</>}
                 </button>
               </div>
             ))}
@@ -185,7 +188,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       {/* Empty state */}
       {!hasContent && (
         <div className="bg-white border border-slate-200 rounded-xl p-8 text-center">
-          <p className="text-sm text-slate-400">Keine Aufgaben von gestern</p>
+          <p className="text-sm text-slate-400">{ty('noTasks')}</p>
         </div>
       )}
     </div>
