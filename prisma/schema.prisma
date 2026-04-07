@@ -22,6 +22,8 @@ model User {
   createdAt   DateTime @default(now())
   notificationsEnabled     Boolean @default(false)
   installPromptDismissed   Boolean @default(false)
+  telegramChatId   String?
+  ntfyEnabled      Boolean  @default(false)
   vacationStart DateTime?
   vacationEnd   DateTime?
 

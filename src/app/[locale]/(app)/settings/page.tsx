@@ -5,6 +5,7 @@ import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
 import { getVapidPublicKey } from '@/lib/push'
+import { getNtfyTopic } from '@/lib/notifications/ntfy'
 import { SettingsClient } from './settings-client'
 
 export default async function SettingsPage() {
@@ -31,7 +32,7 @@ export default async function SettingsPage() {
     }),
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { notificationsEnabled: true, installPromptDismissed: true },
+      select: { notificationsEnabled: true, installPromptDismissed: true, telegramChatId: true, ntfyEnabled: true },
     }),
     prisma.quest.findMany({
       include: {
@@ -56,6 +57,11 @@ export default async function SettingsPage() {
       userId={session.user.id}
       notificationsEnabled={currentUser?.notificationsEnabled ?? false}
       vapidPublicKey={getVapidPublicKey()}
+      telegramConfigured={!!process.env.TELEGRAM_BOT_TOKEN}
+      telegramChatId={currentUser?.telegramChatId ?? null}
+      ntfyConfigured={!!process.env.NTFY_URL}
+      ntfyEnabled={currentUser?.ntfyEnabled ?? false}
+      ntfyTopicUrl={process.env.NTFY_URL ? `${process.env.NTFY_URL.replace(/\/$/, '')}/${getNtfyTopic(session.user.id)}` : null}
     />
   )
 }
