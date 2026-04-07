@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
@@ -47,7 +48,8 @@ export default async function ProfilePage() {
     })),
   }
 
-  const userName = session.user.name ?? 'Profil'
+  const t = await getTranslations('profile')
+  const userName = session.user.name ?? t('heading')
 
   return (
     <ProfileClient

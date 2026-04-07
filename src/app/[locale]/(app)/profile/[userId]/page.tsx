@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ProfileClient } from '../profile-client'
@@ -38,7 +39,8 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
     })),
   }
 
-  const userName = targetUser.name ?? 'Profil'
+  const t = await getTranslations('profile')
+  const userName = targetUser.name ?? t('heading')
 
   return (
     <ProfileClient

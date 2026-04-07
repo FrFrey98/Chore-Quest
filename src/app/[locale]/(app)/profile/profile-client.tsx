@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
 import { Heatmap } from '@/components/stats/heatmap'
 
 type Purchase = {
@@ -40,6 +41,11 @@ export function ProfileClient({
   achievementsSummary: AchievementsSummary
   isOwnProfile: boolean
 }) {
+  const t = useTranslations('profile')
+  const tc = useTranslations('common')
+  const ta = useTranslations('achievements')
+  const locale = useLocale()
+
   return (
     <div className="space-y-6">
       {/* Header card */}
@@ -51,11 +57,11 @@ export function ProfileClient({
           <div>
             <h1 className="text-lg font-bold text-slate-900">{userName}</h1>
             <p className="text-sm text-slate-500">
-              Level {personal.level.level} · {personal.level.title}
+              {t('levelSubtitle', { level: personal.level.level, title: personal.level.title })}
             </p>
           </div>
           <div className="ml-auto text-right">
-            <p className="text-xs text-slate-400">Punkte</p>
+            <p className="text-xs text-slate-400">{tc('pointsFull')}</p>
             <p className="font-bold text-indigo-700">{personal.totalPointsEarned.toLocaleString()}</p>
           </div>
           {isOwnProfile && (
@@ -70,13 +76,12 @@ export function ProfileClient({
         <div className="flex items-center gap-4 mb-3">
           <div className="flex items-center gap-1 text-sm text-slate-600">
             <span>🔥</span>
-            <span className="font-semibold">{personal.streak}</span>
-            <span className="text-slate-400">Tage</span>
+            <span className="font-semibold">{t('stats.streakValue', { days: personal.streak })}</span>
           </div>
           <div className="flex items-center gap-1 text-sm text-slate-600">
             <span>✓</span>
             <span className="font-semibold">{personal.totalCompletions}</span>
-            <span className="text-slate-400">Aufgaben</span>
+            <span className="text-slate-400">{t('stats.tasks')}</span>
           </div>
         </div>
 
@@ -87,7 +92,7 @@ export function ProfileClient({
               <span
                 key={a.id}
                 className={`text-lg ${a.unlocked ? '' : 'opacity-25 grayscale'}`}
-                title={a.unlocked ? 'Freigeschaltet' : 'Noch gesperrt'}
+                title={a.unlocked ? ta('unlocked') : ta('locked')}
               >
                 {a.emoji}
               </span>
@@ -104,14 +109,14 @@ export function ProfileClient({
 
       {/* Stats section */}
       <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Statistiken</h2>
+        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">{t('stats.heading')}</h2>
 
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: 'Aufgaben', value: personal.totalCompletions },
-            { label: 'Punkte verdient', value: personal.totalPointsEarned.toLocaleString() },
-            { label: '🔥 Streak', value: `${personal.streak} Tage` },
-            { label: 'Level', value: `${personal.level.level} · ${personal.level.title}` },
+            { label: t('stats.tasks'), value: personal.totalCompletions },
+            { label: t('stats.pointsEarned'), value: personal.totalPointsEarned.toLocaleString() },
+            { label: t('stats.streak'), value: t('stats.streakValue', { days: personal.streak }) },
+            { label: t('stats.level'), value: t('stats.levelValue', { level: personal.level.level, title: personal.level.title }) },
           ].map(({ label, value }) => (
             <div key={label} className="bg-white rounded-xl p-4 shadow-sm">
               <p className="text-xs text-slate-500 mb-1">{label}</p>
@@ -122,18 +127,18 @@ export function ProfileClient({
 
         <div className="bg-white rounded-xl p-4 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            Aktivitäts-Heatmap
+            {t('heatmap')}
           </p>
           <Heatmap data={personal.heatmap} />
         </div>
 
         <div className="bg-white rounded-xl p-4 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            Top Aufgaben
+            {t('topTasks')}
           </p>
           <div className="space-y-2">
             {personal.topTasks.length === 0 && (
-              <p className="text-slate-400 text-sm">Noch keine Aufgaben erledigt.</p>
+              <p className="text-slate-400 text-sm">{t('noTasks')}</p>
             )}
             {personal.topTasks.map((t) => (
               <div key={t.id} className="flex items-center gap-2">
@@ -148,17 +153,17 @@ export function ProfileClient({
         {isOwnProfile && (
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-              Belohnungs-Historie
+              {t('purchaseHistory')}
             </p>
             {personal.purchases.length === 0 ? (
-              <p className="text-slate-400 text-sm">Noch keine Käufe.</p>
+              <p className="text-slate-400 text-sm">{t('noPurchases')}</p>
             ) : (
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-slate-500 text-xs">
-                    <th className="text-left pb-2">Artikel</th>
-                    <th className="text-right pb-2">Datum</th>
-                    <th className="text-right pb-2">Status</th>
+                    <th className="text-left pb-2">{t('tableHeaders.item')}</th>
+                    <th className="text-right pb-2">{t('tableHeaders.date')}</th>
+                    <th className="text-right pb-2">{t('tableHeaders.status')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -168,13 +173,13 @@ export function ProfileClient({
                         {p.item.emoji} {p.item.title}
                       </td>
                       <td className="py-2 text-right text-slate-500 text-xs">
-                        {new Date(p.purchasedAt).toLocaleDateString('de-DE')}
+                        {new Date(p.purchasedAt).toLocaleDateString(locale)}
                       </td>
                       <td className="py-2 text-right">
                         {p.redeemedAt ? (
-                          <span className="text-green-600 text-xs">Eingelöst</span>
+                          <span className="text-green-600 text-xs">{t('statusRedeemed')}</span>
                         ) : p.item.type === 'real_reward' ? (
-                          <span className="text-amber-500 text-xs">Ausstehend</span>
+                          <span className="text-amber-500 text-xs">{t('statusPending')}</span>
                         ) : (
                           <span className="text-indigo-600 text-xs">✓</span>
                         )}

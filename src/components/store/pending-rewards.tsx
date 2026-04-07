@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/toast-provider'
 
@@ -13,6 +14,8 @@ type PendingPurchase = {
 export function MyRewards({ purchases }: { purchases: PendingPurchase[] }) {
   const router = useRouter()
   const { toast } = useToast()
+  const t = useTranslations('store')
+  const tc = useTranslations('common')
   const [loadingId, setLoadingId] = useState<string | null>(null)
 
   if (purchases.length === 0) return null
@@ -22,14 +25,14 @@ export function MyRewards({ purchases }: { purchases: PendingPurchase[] }) {
     try {
       const res = await fetch(`/api/store/${purchaseId}/redeem`, { method: 'POST' })
       if (res.ok) {
-        toast('Belohnung eingelöst', 'success')
+        toast(t('redeemed'), 'success')
         router.refresh()
       } else {
         const data = await res.json()
-        toast(data.error ?? 'Fehler', 'error')
+        toast(data.error ?? t('redeemFailed'), 'error')
       }
     } catch {
-      toast('Netzwerkfehler', 'error')
+      toast(tc('networkError'), 'error')
     }
     setLoadingId(null)
   }
@@ -37,7 +40,7 @@ export function MyRewards({ purchases }: { purchases: PendingPurchase[] }) {
   return (
     <div className="mb-8">
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        🎯 Meine Belohnungen
+        {t('myRewards')}
       </h2>
       <div className="space-y-2">
         {purchases.map((p) => (
@@ -51,7 +54,7 @@ export function MyRewards({ purchases }: { purchases: PendingPurchase[] }) {
               onClick={() => handleRedeem(p.id)}
               disabled={loadingId === p.id}
             >
-              {loadingId === p.id ? '…' : 'Einlösen'}
+              {loadingId === p.id ? '…' : t('redeem')}
             </Button>
           </div>
         ))}

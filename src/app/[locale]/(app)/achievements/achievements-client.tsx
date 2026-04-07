@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations, useLocale } from 'next-intl'
 
 type Achievement = {
   id: string; title: string; description: string; emoji: string
@@ -11,6 +12,8 @@ export function AchievementsClient({
 }: {
   achievements: Achievement[]; totalUnlocked: number; total: number
 }) {
+  const t = useTranslations('achievements')
+  const locale = useLocale()
   const unlocked = achievements.filter((a) => a.unlocked)
   const locked = achievements.filter((a) => !a.unlocked)
   const nextGoals = locked
@@ -21,13 +24,13 @@ export function AchievementsClient({
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold">Erfolge</h1>
-        <span className="text-sm text-indigo-600 font-semibold">{totalUnlocked}/{total} freigeschaltet</span>
+        <h1 className="text-xl font-bold">{t('heading')}</h1>
+        <span className="text-sm text-indigo-600 font-semibold">{t('unlockedCount', { unlocked: totalUnlocked, total })}</span>
       </div>
 
       {/* Trophy Shelf */}
       <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-        Deine Vitrine
+        {t('showcase')}
       </h2>
       <div className="grid grid-cols-4 gap-2 mb-8">
         {unlocked.map((a) => (
@@ -37,7 +40,7 @@ export function AchievementsClient({
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 text-center shadow-lg">
               <p className="font-semibold">{a.title}</p>
               <p className="text-slate-300 mt-0.5">{a.description}</p>
-              <p className="text-slate-400 mt-1">{a.progress}/{a.progressMax} · {a.unlockedAt ? `Seit ${new Date(a.unlockedAt).toLocaleDateString('de-DE')}` : ''}</p>
+              <p className="text-slate-400 mt-1">{a.progress}/{a.progressMax} · {a.unlockedAt ? t('since', { date: new Date(a.unlockedAt).toLocaleDateString(locale) }) : ''}</p>
               <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
             </div>
           </div>
@@ -62,7 +65,7 @@ export function AchievementsClient({
       {nextGoals.length > 0 && (
         <>
           <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            Nächste Ziele
+            {t('nextGoals')}
           </h2>
           <div className="space-y-3">
             {nextGoals.map((a) => (
@@ -79,7 +82,7 @@ export function AchievementsClient({
                   </div>
                   <p className="text-[10px] text-indigo-600 mt-1">
                     {a.progress}/{a.progressMax}
-                    {a.percent >= 0.7 && ' — fast geschafft!'}
+                    {a.percent >= 0.7 && ` — ${t('almostDone')}`}
                   </p>
                 </div>
               </div>

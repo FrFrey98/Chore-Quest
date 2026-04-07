@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 type StreakClientProps = {
@@ -30,6 +31,8 @@ export function StreakClient({
   heatmap,
 }: StreakClientProps) {
   const router = useRouter()
+  const t = useTranslations('streak')
+  const tc = useTranslations('common')
   const [restoring, setRestoring] = useState(false)
   const [restoreError, setRestoreError] = useState<string | null>(null)
 
@@ -40,12 +43,12 @@ export function StreakClient({
       const res = await fetch('/api/streak/restore', { method: 'POST' })
       if (!res.ok) {
         const data = await res.json()
-        setRestoreError(data.error ?? 'Fehler bei der Wiederherstellung')
+        setRestoreError(data.error ?? t('inDanger.failed'))
         return
       }
       router.refresh()
     } catch {
-      setRestoreError('Netzwerkfehler')
+      setRestoreError(tc('networkError'))
     } finally {
       setRestoring(false)
     }
@@ -77,17 +80,17 @@ export function StreakClient({
     <div className="space-y-6">
       {/* Back link */}
       <Link href="/" className="text-sm text-indigo-500 hover:text-indigo-700">
-        ← Dashboard
+        {t('backToDashboard')}
       </Link>
 
       {/* Header */}
       <div className="bg-white border border-slate-200 rounded-xl p-6 text-center">
         <span className="text-5xl">🔥</span>
-        <p className="text-4xl font-bold text-slate-800 mt-2">{currentStreak} Tage</p>
+        <p className="text-4xl font-bold text-slate-800 mt-2">{t('counter', { days: currentStreak })}</p>
         {tierPercent > 0 ? (
-          <p className="text-indigo-600 font-medium mt-1">{tierName} · +{tierPercent}% Bonus</p>
+          <p className="text-indigo-600 font-medium mt-1">{tierName} · {t('nextTierBonus', { percent: tierPercent })}</p>
         ) : (
-          <p className="text-slate-500 mt-1">Noch kein Bonus aktiv</p>
+          <p className="text-slate-500 mt-1">{t('noBonusActive')}</p>
         )}
       </div>
 
@@ -95,12 +98,10 @@ export function StreakClient({
       {restore.available && (
         <div className="bg-amber-50 border border-amber-300 rounded-xl p-4">
           <p className="text-sm font-semibold text-amber-800 mb-1">
-            Deine Streak ist in Gefahr!
+            {t('inDanger.heading')}
           </p>
           <p className="text-xs text-amber-600 mb-3">
-            Du hast gestern keine Aufgabe erledigt. Stelle deine {currentStreak}-Tage-Streak
-            für {restore.price} Punkte wieder her. Du musst danach heute noch eine Aufgabe
-            erledigen, um die Streak fortzuführen.
+            {t('inDanger.body', { days: currentStreak, price: restore.price })}
           </p>
           <div className="flex items-center gap-3">
             <button
@@ -108,14 +109,14 @@ export function StreakClient({
               disabled={restoring || balance < restore.price}
               className="bg-amber-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {restoring ? 'Wird wiederhergestellt...' : `Wiederherstellen (${restore.price} Pkt)`}
+              {restoring ? t('inDanger.restoring') : t('inDanger.restoreButton', { price: restore.price })}
             </button>
             <span className="text-xs text-amber-600">
-              Guthaben: {balance} Punkte
+              {t('inDanger.balance', { balance })}
             </span>
           </div>
           {balance < restore.price && (
-            <p className="text-xs text-red-600 mt-2">Nicht genug Punkte!</p>
+            <p className="text-xs text-red-600 mt-2">{t('inDanger.notEnough')}</p>
           )}
           {restoreError && (
             <p className="text-xs text-red-600 mt-2">{restoreError}</p>
@@ -127,47 +128,47 @@ export function StreakClient({
       {nextTier && (
         <div className="bg-white border border-slate-200 rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold text-slate-800">Nächste Stufe</span>
-            <span className="text-xs text-indigo-600 font-medium">{nextTier.name} (+{nextTier.percent}%)</span>
+            <span className="text-sm font-semibold text-slate-800">{t('nextTier')}</span>
+            <span className="text-xs text-indigo-600 font-medium">{nextTier.name} ({t('nextTierBonus', { percent: nextTier.percent })})</span>
           </div>
           <div className="bg-slate-200 rounded-full h-2.5 overflow-hidden">
             <div
               className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-full rounded-full transition-all"
               style={{
                 width: `${Math.round(
-                  ((currentStreak - (tiers.find((t) => t.percent < nextTier.percent && t.minDays <= currentStreak)?.minDays ?? 0)) /
-                    (nextTier.daysNeeded + currentStreak - (tiers.find((t) => t.percent < nextTier.percent && t.minDays <= currentStreak)?.minDays ?? 0))) *
+                  ((currentStreak - (tiers.find((ti) => ti.percent < nextTier.percent && ti.minDays <= currentStreak)?.minDays ?? 0)) /
+                    (nextTier.daysNeeded + currentStreak - (tiers.find((ti) => ti.percent < nextTier.percent && ti.minDays <= currentStreak)?.minDays ?? 0))) *
                     100
                 )}%`,
               }}
             />
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Noch {nextTier.daysNeeded} {nextTier.daysNeeded === 1 ? 'Tag' : 'Tage'}
+            {t('daysRemaining', { count: nextTier.daysNeeded })}
           </p>
         </div>
       )}
 
       {/* Bonus Tiers Table */}
       <div className="bg-white border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Bonus-Stufen</h2>
+        <h2 className="text-sm font-semibold text-slate-800 mb-3">{t('tiers.heading')}</h2>
         <div className="space-y-2">
-          {tiers.map((t) => {
-            const isActive = t.name === tierName
+          {tiers.map((tier) => {
+            const isActive = tier.name === tierName
             return (
               <div
-                key={t.minDays}
+                key={tier.minDays}
                 className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm ${
                   isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-slate-600'
                 }`}
               >
                 <span>
-                  {isActive && '► '}{t.name}
+                  {isActive && '► '}{tier.name}
                 </span>
                 <span className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400">ab {t.minDays} Tage</span>
+                  <span className="text-xs text-slate-400">{t('tiers.fromDays', { days: tier.minDays })}</span>
                   <span className={`font-medium ${isActive ? 'text-indigo-600' : ''}`}>
-                    +{t.percent}%
+                    +{tier.percent}%
                   </span>
                 </span>
               </div>
@@ -178,22 +179,22 @@ export function StreakClient({
 
       {/* Streak History */}
       <div className="bg-white border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Streak-Historie</h2>
+        <h2 className="text-sm font-semibold text-slate-800 mb-3">{t('history.heading')}</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-slate-800">{bestStreak}</p>
-            <p className="text-xs text-slate-500">Beste Streak</p>
+            <p className="text-xs text-slate-500">{t('history.best')}</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-slate-800">{restoreCount}</p>
-            <p className="text-xs text-slate-500">Wiederherstellungen</p>
+            <p className="text-xs text-slate-500">{t('history.restoreCount')}</p>
           </div>
         </div>
       </div>
 
       {/* Heatmap */}
       <div className="bg-white border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Aktivität (12 Wochen)</h2>
+        <h2 className="text-sm font-semibold text-slate-800 mb-3">{t('history.activityHeading')}</h2>
         <div className="flex gap-1 justify-center">
           {weeks.map((week, wi) => (
             <div key={wi} className="flex flex-col gap-1">
@@ -201,7 +202,7 @@ export function StreakClient({
                 <div
                   key={day.date}
                   className={`w-3 h-3 rounded-sm ${heatColor(day.value)}`}
-                  title={`${day.date}: ${day.value} Punkte`}
+                  title={t('history.tooltip', { date: day.date, value: day.value })}
                 />
               ))}
             </div>
@@ -211,13 +212,9 @@ export function StreakClient({
 
       {/* Explanation */}
       <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-700 mb-2">So funktioniert die Streak</h2>
+        <h2 className="text-sm font-semibold text-slate-700 mb-2">{t('howItWorks.heading')}</h2>
         <p className="text-xs text-slate-600 leading-relaxed">
-          Erledige jeden Tag mindestens eine Aufgabe, um deine Streak zu halten.
-          Bei aktiver Streak erhältst du Bonus-Punkte auf jede erledigte Aufgabe.
-          Je länger deine Streak, desto höher der Bonus! Falls du einen Tag verpasst,
-          kannst du deine Streak am Folgetag gegen Punkte wiederherstellen — aber du musst
-          danach trotzdem noch eine Aufgabe am selben Tag erledigen.
+          {t('howItWorks.body')}
         </p>
       </div>
     </div>
