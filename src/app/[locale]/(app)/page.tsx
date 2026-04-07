@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
@@ -15,12 +16,15 @@ import { GroupedFeed } from '@/components/dashboard/grouped-feed'
 import { DashboardNotifications } from '@/components/dashboard/dashboard-notifications'
 import { YesterdayBanner } from '@/components/dashboard/yesterday-banner'
 
-const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
+const WEEKDAY_KEYS = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'] as const
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   const userId = session!.user.id
   const config = await loadGameConfig()
+  const t = await getTranslations('dashboard')
+  const tc = await getTranslations('common')
+  const tw = await getTranslations('weekdays')
 
   const now = new Date()
 
@@ -165,6 +169,7 @@ export default async function DashboardPage() {
     }),
   ])
 
+  const DAY_LABELS = WEEKDAY_KEYS.map((k) => tw(k))
   const weekDays = DAY_LABELS.map((day, i) => {
     const dayDate = new Date(weekStart)
     dayDate.setUTCDate(dayDate.getUTCDate() + i)
@@ -186,16 +191,16 @@ export default async function DashboardPage() {
     ...completions.map((c) => ({
       id: c.id,
       type: 'completion' as const,
-      user: { id: c.user.id, name: c.user.name ?? 'Unbekannt' },
+      user: { id: c.user.id, name: c.user.name ?? tc('unknown') },
       task: c.task,
       points: c.points,
       at: c.completedAt.toISOString(),
-      withUser: c.withUser ? { id: c.withUser.id, name: c.withUser.name ?? 'Unbekannt' } : null,
+      withUser: c.withUser ? { id: c.withUser.id, name: c.withUser.name ?? tc('unknown') } : null,
     })),
     ...recentRedemptions.map((p) => ({
       id: p.id,
       type: 'redemption' as const,
-      user: { id: p.user.id, name: p.user.name ?? 'Unbekannt' },
+      user: { id: p.user.id, name: p.user.name ?? tc('unknown') },
       item: p.item,
       points: 0,
       at: p.redeemedAt!.toISOString(),
@@ -218,7 +223,7 @@ export default async function DashboardPage() {
     <div>
       <DashboardNotifications />
       <YesterdayBanner count={yesterdayUncompletedCount} />
-      <h1 className="text-xl font-bold mb-4">Dashboard</h1>
+      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
 
       <StatPills
         streakDays={effectiveStreak}
@@ -238,8 +243,8 @@ export default async function DashboardPage() {
           <div className="mb-4 p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer">
             <div className="text-2xl">👫</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">{partner.name ?? 'Unbekannt'}</p>
-              <p className="text-xs text-slate-500">{partnerLevel.title} · {partnerAchievementCount} Erfolge</p>
+              <p className="text-sm font-semibold text-slate-800 truncate">{partner.name ?? tc('unknown')}</p>
+              <p className="text-xs text-slate-500">{partnerLevel.title} · {partnerAchievementCount} {t('achievements')}</p>
             </div>
             <span className="text-slate-400 text-sm">›</span>
           </div>
@@ -251,18 +256,18 @@ export default async function DashboardPage() {
         due={dueTasks}
         suggestions={suggestions}
         partnerId={partner?.id}
-        partnerName={partner?.name ?? 'Partner'}
+        partnerName={partner?.name ?? t('partner')}
       />
 
       <WeekChart
         days={weekDays}
-        userName={me.name ?? 'Ich'}
-        partnerName={partner?.name ?? 'Partner'}
+        userName={me.name ?? t('me')}
+        partnerName={partner?.name ?? t('partner')}
       />
 
       <div className="flex justify-end -mt-2 mb-4">
         <Link href="/stats" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
-          Alle Statistiken →
+          {t('allStats')}
         </Link>
       </div>
 

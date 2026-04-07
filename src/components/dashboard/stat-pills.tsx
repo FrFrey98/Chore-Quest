@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { type LevelDef } from '@/lib/config'
 
 type StatPillsProps = {
@@ -26,6 +28,8 @@ export function StatPills({
   balance,
   levelDefinitions,
 }: StatPillsProps) {
+  const t = useTranslations('dashboard')
+  const tc = useTranslations('common')
   const currentLevel = levelDefinitions.find((l) => l.level === level) ?? levelDefinitions[0]
   const nextLevel = levelDefinitions.find((l) => l.level === level + 1)
   const progressPercent = nextLevel
@@ -41,10 +45,10 @@ export function StatPills({
             <span className="text-2xl">⚠️</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-amber-800">
-                Deine {streakDays}-Tage-Streak ist in Gefahr!
+                {t('streakInDanger', { days: streakDays })}
               </p>
               <p className="text-xs text-amber-600">
-                Für {restorePrice} Punkte wiederherstellen
+                {t('restoreFor', { points: restorePrice })}
               </p>
             </div>
             <span className="text-amber-400 text-sm">›</span>
@@ -61,7 +65,7 @@ export function StatPills({
             {streakBonusPercent > 0 ? (
               <span className="text-[10px] text-indigo-600 font-medium">+{streakBonusPercent}%</span>
             ) : (
-              <span className="text-[10px] text-slate-500">Streak</span>
+              <span className="text-[10px] text-slate-500">{t('streak')}</span>
             )}
           </div>
         </Link>
@@ -79,7 +83,7 @@ export function StatPills({
             />
           </div>
           <p className="text-[10px] text-slate-400 mt-1">
-            {nextLevel ? `${pointsToNext} Pkt bis ${nextLevel.title}` : 'Max Level erreicht!'}
+            {nextLevel ? t('ptsToNext', { points: pointsToNext, title: nextLevel.title }) : t('maxLevel')}
           </p>
         </div>
 
@@ -87,7 +91,7 @@ export function StatPills({
         <div className="bg-white border border-slate-200 rounded-xl p-3 text-center flex flex-col items-center justify-center">
           <span className="text-2xl">💰</span>
           <span className="text-2xl font-bold text-slate-800">{balance.toLocaleString()}</span>
-          <span className="text-[10px] text-slate-500">Punkte</span>
+          <span className="text-[10px] text-slate-500">{tc('pointsFull')}</span>
         </div>
       </div>
     </div>

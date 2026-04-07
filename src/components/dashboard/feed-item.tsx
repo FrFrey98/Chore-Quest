@@ -1,3 +1,6 @@
+'use client'
+import { useTranslations, useLocale } from 'next-intl'
+
 type FeedEntry = {
   id: string
   type: 'completion'
@@ -8,8 +11,11 @@ type FeedEntry = {
 }
 
 export function FeedItem({ entry, currentUserId }: { entry: FeedEntry; currentUserId: string }) {
+  const t = useTranslations('dashboard')
+  const tc = useTranslations('common')
+  const locale = useLocale()
   const isMe = entry.user.id === currentUserId
-  const time = new Date(entry.at).toLocaleString('de-DE', {
+  const time = new Date(entry.at).toLocaleString(locale, {
     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   })
 
@@ -19,14 +25,14 @@ export function FeedItem({ entry, currentUserId }: { entry: FeedEntry; currentUs
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-800 truncate">
           <span className={isMe ? 'text-indigo-600' : 'text-pink-600'}>{entry.user.name}</span>
-          {' '}hat{' '}
+          {t('feed.verb') ? ` ${t('feed.verb')} ` : ' '}
           <span className="font-semibold">&ldquo;{entry.task.title}&rdquo;</span>
-          {' '}erledigt
+          {' '}{t('feed.completed')}
         </p>
         <p className="text-xs text-slate-500">{time}</p>
       </div>
       <span className={`text-sm font-bold whitespace-nowrap ${isMe ? 'text-indigo-600' : 'text-pink-600'}`}>
-        +{entry.points} Pkt
+        +{entry.points} {tc('points')}
       </span>
     </div>
   )
