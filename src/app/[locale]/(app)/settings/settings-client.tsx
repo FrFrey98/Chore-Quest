@@ -29,7 +29,7 @@ export function SettingsClient({
   config, users, categories, achievements, storeItems, tasks, userId, notificationsEnabled, vapidPublicKey,
 }: {
   config: GameConfig
-  users: { id: string; name: string; role: string; createdAt: string }[]
+  users: { id: string; name: string; role: string; createdAt: string; vacationStart: string | null; vacationEnd: string | null }[]
   categories: Category[]
   achievements: Achievement[]
   storeItems: StoreItem[]

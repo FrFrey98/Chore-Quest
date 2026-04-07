@@ -41,9 +41,11 @@ type TodaySectionProps = {
   partnerId?: string
   partnerName?: string
   decayHoursByInterval?: Record<string, number>
+  vacationStart?: string | null
+  vacationEnd?: string | null
 }
 
-export function TodaySection({ completed, due, suggestions, partnerId, partnerName, decayHoursByInterval }: TodaySectionProps) {
+export function TodaySection({ completed, due, suggestions, partnerId, partnerName, decayHoursByInterval, vacationStart, vacationEnd }: TodaySectionProps) {
   const router = useRouter()
   const { toast } = useToast()
   const t = useTranslations('dashboard')
@@ -186,6 +188,8 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
                 <HealthBar
                   nextDueAt={task.nextDueAt ?? null}
                   decayHours={getDecayHours(task.decayHours, task.recurringInterval, decayHoursByInterval)}
+                  vacationStart={vacationStart}
+                  vacationEnd={vacationEnd}
                 />
               )}
             </div>

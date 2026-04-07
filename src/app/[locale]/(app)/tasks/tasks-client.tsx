@@ -32,9 +32,11 @@ type TasksClientProps = {
   today: string
   availableTasks: { id: string; emoji: string; title: string }[]
   decayHoursByInterval?: Record<string, number>
+  vacationStart?: string | null
+  vacationEnd?: string | null
 }
 
-export function TasksClient({ grouped, categories, users, userRole, partnerId, partnerName, view, calendarDays, calYear, calMonth, today, availableTasks, decayHoursByInterval }: TasksClientProps) {
+export function TasksClient({ grouped, categories, users, userRole, partnerId, partnerName, view, calendarDays, calYear, calMonth, today, availableTasks, decayHoursByInterval, vacationStart, vacationEnd }: TasksClientProps) {
   const router = useRouter()
   const t = useTranslations('tasks')
 
@@ -96,7 +98,7 @@ export function TasksClient({ grouped, categories, users, userRole, partnerId, p
             </div>
           )}
           {grouped.map((cat) => (
-            <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} partnerId={partnerId} partnerName={partnerName} decayHoursByInterval={decayHoursByInterval} />
+            <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} partnerId={partnerId} partnerName={partnerName} decayHoursByInterval={decayHoursByInterval} vacationStart={vacationStart} vacationEnd={vacationEnd} />
           ))}
           <div className="flex justify-end mt-4">
             <Link href="/manage?tab=tasks" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">

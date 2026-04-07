@@ -15,7 +15,7 @@ export default async function SettingsPage() {
   const [config, users, categories, achievements, storeItems, tasks, currentUser] = await Promise.all([
     loadGameConfig(),
     prisma.user.findMany({
-      select: { id: true, name: true, role: true, createdAt: true },
+      select: { id: true, name: true, role: true, createdAt: true, vacationStart: true, vacationEnd: true },
       orderBy: { createdAt: 'asc' },
     }),
     prisma.category.findMany({
@@ -38,7 +38,7 @@ export default async function SettingsPage() {
   return (
     <SettingsClient
       config={config}
-      users={users.map((u) => ({ ...u, createdAt: u.createdAt.toISOString() }))}
+      users={users.map((u) => ({ ...u, createdAt: u.createdAt.toISOString(), vacationStart: u.vacationStart?.toISOString() ?? null, vacationEnd: u.vacationEnd?.toISOString() ?? null }))}
       categories={categories.map((c) => ({ id: c.id, name: c.name, emoji: c.emoji, taskCount: c._count.tasks }))}
       achievements={achievements}
       storeItems={storeItems}

@@ -15,12 +15,14 @@ type Task = {
   nextDueAt?: string | null; decayHours?: number | null
 }
 
-export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursByInterval }: {
+export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursByInterval, vacationStart, vacationEnd }: {
   task: Task
   onComplete: (id: string) => Promise<void>
   partnerId?: string
   partnerName?: string
   decayHoursByInterval?: Record<string, number>
+  vacationStart?: string | null
+  vacationEnd?: string | null
 }) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -100,6 +102,8 @@ export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursB
           <HealthBar
             nextDueAt={task.nextDueAt ?? null}
             decayHours={getDecayHours(task.decayHours, task.recurringInterval, decayHoursByInterval)}
+            vacationStart={vacationStart}
+            vacationEnd={vacationEnd}
           />
         )}
       </div>

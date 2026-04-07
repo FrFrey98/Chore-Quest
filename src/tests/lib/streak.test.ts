@@ -7,6 +7,7 @@ import {
   getEffectiveStreak,
   recalculateStreakFromDates,
   toDateKey,
+  effectiveGapDays,
 } from '@/lib/streak'
 import { DEFAULT_STREAK_TIERS } from '@/lib/config'
 
@@ -247,6 +248,51 @@ describe('recalculateStreakFromDates', () => {
   })
 })
 
+describe('effectiveGapDays', () => {
+  it('returns raw gap when no vacation', () => {
+    expect(effectiveGapDays('2026-04-01', '2026-04-05')).toBe(4)
+  })
+
+  it('returns raw gap when gap <= 1', () => {
+    expect(effectiveGapDays('2026-04-04', '2026-04-05')).toBe(1)
+  })
+
+  it('subtracts vacation days from gap', () => {
+    // 4-day gap, 2 vacation days in between
+    const vacation = {
+      vacationStart: new Date('2026-04-02T00:00:00Z'),
+      vacationEnd: new Date('2026-04-03T23:59:59Z'),
+    }
+    expect(effectiveGapDays('2026-04-01', '2026-04-05', vacation)).toBe(2)
+  })
+
+  it('subtracts all vacation days, reducing effective gap to 1', () => {
+    // 3-day gap, 2 vacation days covering the middle
+    const vacation = {
+      vacationStart: new Date('2026-04-02T00:00:00Z'),
+      vacationEnd: new Date('2026-04-03T23:59:59Z'),
+    }
+    expect(effectiveGapDays('2026-04-01', '2026-04-04', vacation)).toBe(1)
+  })
+
+  it('ignores vacation outside the gap', () => {
+    const vacation = {
+      vacationStart: new Date('2026-03-01T00:00:00Z'),
+      vacationEnd: new Date('2026-03-05T23:59:59Z'),
+    }
+    expect(effectiveGapDays('2026-04-01', '2026-04-05', vacation)).toBe(4)
+  })
+
+  it('handles ongoing vacation (no end date)', () => {
+    const vacation = {
+      vacationStart: new Date('2026-04-02T00:00:00Z'),
+      vacationEnd: null,
+    }
+    // Gap is 4 days, vacation covers days 2, 3, 4 (3 days in gap)
+    expect(effectiveGapDays('2026-04-01', '2026-04-05', vacation)).toBe(1)
+  })
+})
+
 describe('getEffectiveStreak', () => {
   it('returns 0 when lastActiveAt is null', () => {
     expect(getEffectiveStreak({ currentStreak: 0, lastActiveAt: null })).toBe(0)
@@ -276,5 +322,24 @@ describe('getEffectiveStreak', () => {
     const weekAgo = new Date()
     weekAgo.setUTCDate(weekAgo.getUTCDate() - 7)
     expect(getEffectiveStreak({ currentStreak: 5, lastActiveAt: weekAgo })).toBe(0)
+  })
+
+  it('preserves streak when gap is covered by vacation', () => {
+    const fiveDaysAgo = new Date()
+    fiveDaysAgo.setUTCDate(fiveDaysAgo.getUTCDate() - 5)
+    // Use start-of-day for vacation boundaries to ensure proper coverage
+    const fourDaysAgo = new Date()
+    fourDaysAgo.setUTCDate(fourDaysAgo.getUTCDate() - 4)
+    fourDaysAgo.setUTCHours(0, 0, 0, 0)
+    const yesterday = new Date()
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1)
+    yesterday.setUTCHours(23, 59, 59, 999)
+    // Without vacation: streak broken (gap of 5)
+    expect(getEffectiveStreak({ currentStreak: 10, lastActiveAt: fiveDaysAgo })).toBe(0)
+    // With vacation covering days in between: streak preserved
+    expect(getEffectiveStreak(
+      { currentStreak: 10, lastActiveAt: fiveDaysAgo },
+      { vacationStart: fourDaysAgo, vacationEnd: yesterday }
+    )).toBe(10)
   })
 })

@@ -120,13 +120,23 @@ export async function POST(
     }
   }
 
+  // Fetch user's vacation dates for streak and health calculations
+  const userRecord = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { vacationStart: true, vacationEnd: true },
+  })
+  const vacation = {
+    vacationStart: userRecord?.vacationStart ?? null,
+    vacationEnd: userRecord?.vacationEnd ?? null,
+  }
+
   // Apply point decay if enabled for recurring tasks
   let effectiveBasePoints = task.points
   let health: number | undefined
 
   if (config.pointDecayEnabled && task.isRecurring && task.nextDueAt) {
     const decayHrs = getDecayHours(task.decayHours, task.recurringInterval, config.decayHoursByInterval)
-    health = calculateHealth(task.nextDueAt, decayHrs)
+    health = calculateHealth(task.nextDueAt, decayHrs, new Date(), vacation.vacationStart, vacation.vacationEnd)
     effectiveBasePoints = applyPointDecay(task.points, health)
   }
 
@@ -135,9 +145,9 @@ export async function POST(
   if (dateParam === 'yesterday') {
     // For backfills: read current streak without mutating, recalculateStreak handles state after completion
     const state = await getOrCreateStreakState(userId)
-    currentStreak = getEffectiveStreak(state)
+    currentStreak = getEffectiveStreak(state, vacation)
   } else {
-    const result = await updateStreakOnCompletion(userId, config.streakTiers)
+    const result = await updateStreakOnCompletion(userId, config.streakTiers, vacation)
     currentStreak = result.currentStreak
   }
   const pointsWithBonus = applyBonus(effectiveBasePoints, currentStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
@@ -155,12 +165,20 @@ export async function POST(
   // Create partner completions
   const partnerCompletions = []
   for (const partnerId of withUserIds) {
+    const partnerRecord = await prisma.user.findUnique({
+      where: { id: partnerId },
+      select: { vacationStart: true, vacationEnd: true },
+    })
+    const partnerVacation = {
+      vacationStart: partnerRecord?.vacationStart ?? null,
+      vacationEnd: partnerRecord?.vacationEnd ?? null,
+    }
     let partnerStreak: number
     if (dateParam === 'yesterday') {
       const partnerState = await getOrCreateStreakState(partnerId)
-      partnerStreak = getEffectiveStreak(partnerState)
+      partnerStreak = getEffectiveStreak(partnerState, partnerVacation)
     } else {
-      const result = await updateStreakOnCompletion(partnerId, config.streakTiers)
+      const result = await updateStreakOnCompletion(partnerId, config.streakTiers, partnerVacation)
       partnerStreak = result.currentStreak
     }
     const partnerPoints = applyBonus(effectiveBasePoints, partnerStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })

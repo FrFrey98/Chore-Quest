@@ -1,15 +1,38 @@
 /**
  * Calculate the health percentage of a recurring task.
  * Returns 1.0 if not yet due, 0.0 if fully decayed.
+ * When vacation dates are provided, vacation time is excluded from decay.
  */
 export function calculateHealth(
   nextDueAt: Date | string | null,
   decayHours: number,
-  now: Date = new Date()
+  now: Date = new Date(),
+  vacationStart?: Date | string | null,
+  vacationEnd?: Date | string | null
 ): number {
   if (!nextDueAt || decayHours <= 0) return 1
   const dueDate = typeof nextDueAt === 'string' ? new Date(nextDueAt) : nextDueAt
-  const hoursSinceDue = (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60)
+
+  let effectiveNow = now
+
+  // If vacation dates are provided, subtract vacation time from elapsed time
+  if (vacationStart) {
+    const vStart = typeof vacationStart === 'string' ? new Date(vacationStart) : vacationStart
+    const vEnd = vacationEnd
+      ? (typeof vacationEnd === 'string' ? new Date(vacationEnd) : vacationEnd)
+      : now
+
+    // Calculate overlap between [dueDate, now] and [vStart, vEnd]
+    const overlapStart = Math.max(dueDate.getTime(), vStart.getTime())
+    const overlapEnd = Math.min(now.getTime(), vEnd.getTime())
+
+    if (overlapEnd > overlapStart) {
+      const vacationMs = overlapEnd - overlapStart
+      effectiveNow = new Date(now.getTime() - vacationMs)
+    }
+  }
+
+  const hoursSinceDue = (effectiveNow.getTime() - dueDate.getTime()) / (1000 * 60 * 60)
   if (hoursSinceDue <= 0) return 1
   return Math.max(0, 1 - hoursSinceDue / decayHours)
 }

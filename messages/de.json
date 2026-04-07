@@ -636,6 +636,18 @@
     "en": "English",
     "de": "Deutsch"
   },
+  "vacation": {
+    "label": "Urlaubsmodus",
+    "active": "Im Urlaub",
+    "activeUntil": "Im Urlaub bis {date}",
+    "start": "Urlaub starten",
+    "startWith": "Urlaub starten",
+    "end": "Urlaub beenden",
+    "endDate": "Enddatum (optional)",
+    "indefinite": "Kein Enddatum",
+    "partnerOnVacation": "{name} ist im Urlaub",
+    "partnerOnVacationUntil": "{name} ist im Urlaub bis {date}"
+  },
   "theme": {
     "light": "Hell",
     "dark": "Dunkel",

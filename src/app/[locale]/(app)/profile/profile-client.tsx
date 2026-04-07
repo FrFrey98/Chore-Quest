@@ -1,7 +1,10 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { Heatmap } from '@/components/stats/heatmap'
+import { isOnVacation } from '@/lib/vacation'
 
 type Purchase = {
   id: string
@@ -28,18 +31,111 @@ type AchievementsSummary = {
   previews: { id: string; emoji: string; unlocked: boolean }[]
 }
 
+function VacationToggle({
+  userId,
+  vacationStart,
+  vacationEnd,
+}: {
+  userId: string
+  vacationStart: string | null
+  vacationEnd: string | null
+}) {
+  const tv = useTranslations('vacation')
+  const locale = useLocale()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [endDate, setEndDate] = useState('')
+  const onVacation = isOnVacation(vacationStart, vacationEnd)
+
+  async function startVacation() {
+    setLoading(true)
+    await fetch(`/api/users/${userId}/vacation`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ endDate: endDate || null }),
+    })
+    setLoading(false)
+    setEndDate('')
+    router.refresh()
+  }
+
+  async function endVacation() {
+    setLoading(true)
+    await fetch(`/api/users/${userId}/vacation`, { method: 'DELETE' })
+    setLoading(false)
+    router.refresh()
+  }
+
+  if (onVacation) {
+    const statusText = vacationEnd
+      ? tv('activeUntil', { date: new Date(vacationEnd).toLocaleDateString(locale) })
+      : tv('active')
+    return (
+      <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span>🏖️</span>
+            <span className="text-sm font-medium text-amber-800 dark:text-amber-200">{statusText}</span>
+          </div>
+          <button
+            onClick={endVacation}
+            disabled={loading}
+            className="text-sm px-3 py-1.5 rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50 transition-colors"
+          >
+            {tv('end')}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-card rounded-xl p-4 shadow-sm">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+        {tv('label')}
+      </p>
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          <label className="text-xs text-muted-foreground">{tv('endDate')}</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            min={new Date().toISOString().slice(0, 10)}
+            className="w-full border rounded-lg px-3 py-2 text-sm bg-background"
+          />
+          {!endDate && (
+            <p className="text-xs text-muted-foreground mt-1">{tv('indefinite')}</p>
+          )}
+        </div>
+        <button
+          onClick={startVacation}
+          disabled={loading}
+          className="text-sm px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+        >
+          {tv('start')}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function ProfileClient({
   userName,
   userId,
   personal,
   achievementsSummary,
   isOwnProfile,
+  vacationStart = null,
+  vacationEnd = null,
 }: {
   userName: string
   userId: string
   personal: Personal
   achievementsSummary: AchievementsSummary
   isOwnProfile: boolean
+  vacationStart?: string | null
+  vacationEnd?: string | null
 }) {
   const t = useTranslations('profile')
   const tc = useTranslations('common')
@@ -106,6 +202,11 @@ export function ProfileClient({
           </Link>
         </div>
       </div>
+
+      {/* Vacation toggle (own profile only) */}
+      {isOwnProfile && (
+        <VacationToggle userId={userId} vacationStart={vacationStart ?? null} vacationEnd={vacationEnd ?? null} />
+      )}
 
       {/* Stats section */}
       <div className="space-y-4">

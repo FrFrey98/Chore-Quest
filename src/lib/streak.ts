@@ -6,6 +6,37 @@ import {
   DEFAULT_RESTORE_PER_DAY_PRICE,
   type StreakTierDef,
 } from '@/lib/config'
+import { isDateInVacation } from './vacation'
+
+export type VacationDates = {
+  vacationStart: Date | string | null | undefined
+  vacationEnd: Date | string | null | undefined
+}
+
+/**
+ * Calculate the effective gap in days between two date keys,
+ * excluding any days that fall within a vacation period.
+ */
+export function effectiveGapDays(
+  lastActiveKey: string,
+  todayKey: string,
+  vacation?: VacationDates
+): number {
+  const totalGap = daysBetween(lastActiveKey, todayKey)
+  if (totalGap <= 1 || !vacation?.vacationStart) return totalGap
+
+  // Count vacation days in the gap (excluding endpoints)
+  let vacationDays = 0
+  const lastActiveDate = new Date(lastActiveKey + 'T00:00:00Z')
+  for (let d = 1; d < totalGap; d++) {
+    const checkDate = new Date(lastActiveDate.getTime() + d * 24 * 60 * 60 * 1000)
+    if (isDateInVacation(checkDate, vacation.vacationStart, vacation.vacationEnd)) {
+      vacationDays++
+    }
+  }
+
+  return totalGap - vacationDays
+}
 
 export function getStreakTier(currentStreak: number, tiers?: StreakTierDef[]): StreakTierDef {
   const t = tiers ?? DEFAULT_STREAK_TIERS
@@ -50,11 +81,14 @@ export function daysBetween(a: string, b: string): number {
 }
 
 /** Returns the effective current streak, accounting for broken streaks since last activity. */
-export function getEffectiveStreak(state: { currentStreak: number; lastActiveAt: Date | null }): number {
+export function getEffectiveStreak(
+  state: { currentStreak: number; lastActiveAt: Date | null },
+  vacation?: VacationDates
+): number {
   if (!state.lastActiveAt || state.currentStreak === 0) return 0
   const todayKey = toDateKey(new Date())
   const lastKey = toDateKey(state.lastActiveAt)
-  const gap = daysBetween(lastKey, todayKey)
+  const gap = effectiveGapDays(lastKey, todayKey, vacation)
   if (gap <= 1) return state.currentStreak // today or yesterday — streak is still alive
   return 0 // gap of 2+ days — streak is broken
 }
@@ -176,7 +210,8 @@ export async function getOrCreateStreakState(userId: string) {
 
 export async function updateStreakOnCompletion(
   userId: string,
-  tiers?: StreakTierDef[]
+  tiers?: StreakTierDef[],
+  vacation?: VacationDates
 ): Promise<{ currentStreak: number; bonusPercent: number }> {
   const state = await getOrCreateStreakState(userId)
   const todayKey = toDateKey(new Date())
@@ -186,11 +221,11 @@ export async function updateStreakOnCompletion(
   if (lastActiveKey === todayKey) {
     // Already completed today — streak stays the same
     newStreak = state.currentStreak
-  } else if (lastActiveKey && daysBetween(lastActiveKey, todayKey) === 1) {
-    // Consecutive day — increment
+  } else if (lastActiveKey && effectiveGapDays(lastActiveKey, todayKey, vacation) <= 1) {
+    // Consecutive day (excluding vacation) — increment
     newStreak = state.currentStreak + 1
   } else {
-    // Gap of 2+ days — reset to 1
+    // Gap of 2+ effective days — reset to 1
     newStreak = 1
   }
 
