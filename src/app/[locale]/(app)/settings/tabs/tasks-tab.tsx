@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +13,9 @@ type UserItem = { id: string; name: string }
 
 export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; categories: Category[]; users?: UserItem[]; userId: string }) {
   const router = useRouter()
+  const t = useTranslations('settings.tasks')
+  const ti = useTranslations('intervals')
+  const tw = useTranslations('weekdays')
   const [error, setError] = useState('')
   const [form, setForm] = useState({
     title: '', emoji: '🏠', points: 30, categoryId: categories[0]?.id ?? '',
@@ -40,7 +44,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
       router.refresh()
     } else {
       const data = await res.json()
-      setError(data.error ?? 'Fehler beim Anlegen')
+      setError(data.error ?? t('createFailed'))
     }
   }
 
@@ -51,30 +55,30 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
       router.refresh()
     } else {
       const data = await res.json()
-      setError(data.error ?? 'Fehler beim Archivieren')
+      setError(data.error ?? t('archiveFailed'))
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
-        <h2 className="font-semibold">Neue Aufgabe anlegen</h2>
+        <h2 className="font-semibold">{t('newHeading')}</h2>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label>Emoji</Label>
+            <Label>{t('emoji')}</Label>
             <Input value={form.emoji} onChange={(e) => setForm({ ...form, emoji: e.target.value })} />
           </div>
           <div>
-            <Label>Punkte</Label>
+            <Label>{t('points')}</Label>
             <Input type="number" value={form.points} onChange={(e) => setForm({ ...form, points: Number(e.target.value) })} />
           </div>
         </div>
         <div>
-          <Label>Titel</Label>
+          <Label>{t('title')}</Label>
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </div>
         <div>
-          <Label>Kategorie</Label>
+          <Label>{t('category')}</Label>
           <select
             className="w-full border rounded-md px-3 py-2 text-sm"
             value={form.categoryId}
@@ -85,7 +89,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
         </div>
         {users && users.length > 0 && (
           <div>
-            <Label>Zugewiesen an (optional)</Label>
+            <Label>{t('assignedTo')}</Label>
             <div className="flex gap-1 flex-wrap mt-1">
               {users.map((u) => {
                 const active = form.assignedUserIds.includes(u.id)
@@ -116,27 +120,27 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
           <div className="flex items-center gap-3">
             <input type="checkbox" id="recurring" checked={form.isRecurring}
               onChange={(e) => setForm({ ...form, isRecurring: e.target.checked, scheduleDays: '' })} />
-            <Label htmlFor="recurring">Wiederkehrend</Label>
+            <Label htmlFor="recurring">{t('recurring')}</Label>
             {form.isRecurring && !form.scheduleDays && (
               <select
                 className="border rounded-md px-2 py-1 text-sm"
                 value={form.recurringInterval}
                 onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}
               >
-                <option value="daily">Täglich</option>
-                <option value="weekly">Wöchentlich</option>
-                <option value="monthly">Monatlich</option>
-                <option value="custom">Bestimmte Tage…</option>
+                <option value="daily">{ti('daily')}</option>
+                <option value="weekly">{ti('weekly')}</option>
+                <option value="monthly">{ti('monthly')}</option>
+                <option value="custom">{ti('customDays')}</option>
               </select>
             )}
           </div>
           {form.isRecurring && (form.recurringInterval === 'custom' || form.scheduleDays) && (
             <div className="flex gap-1 flex-wrap">
               {[
-                { key: 'mon', label: 'Mo' }, { key: 'tue', label: 'Di' },
-                { key: 'wed', label: 'Mi' }, { key: 'thu', label: 'Do' },
-                { key: 'fri', label: 'Fr' }, { key: 'sat', label: 'Sa' },
-                { key: 'sun', label: 'So' },
+                { key: 'mon', label: tw('mo') }, { key: 'tue', label: tw('tu') },
+                { key: 'wed', label: tw('we') }, { key: 'thu', label: tw('th') },
+                { key: 'fri', label: tw('fr') }, { key: 'sat', label: tw('sa') },
+                { key: 'sun', label: tw('su') },
               ].map(({ key, label }) => {
                 const days = form.scheduleDays ? form.scheduleDays.split(',') : []
                 const isActive = days.includes(key)
@@ -162,7 +166,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
           )}
           {form.isRecurring && (
             <div className="flex items-center gap-2">
-              <Label htmlFor="schedule-time">Erinnerung</Label>
+              <Label htmlFor="schedule-time">{t('reminder')}</Label>
               <input
                 type="time"
                 id="schedule-time"
@@ -176,33 +180,33 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
         <div className="flex items-center gap-3">
           <input type="checkbox" id="allowMultiple" checked={form.allowMultiple}
             onChange={(e) => setForm({ ...form, allowMultiple: e.target.checked })} />
-          <Label htmlFor="allowMultiple">Mehrfach pro Tag</Label>
+          <Label htmlFor="allowMultiple">{t('multiplePerDay')}</Label>
           {form.allowMultiple && (
             <div className="flex items-center gap-1">
-              <span className="text-sm text-slate-500">max</span>
+              <span className="text-sm text-slate-500">{t('max')}</span>
               <Input type="number" className="w-16" value={form.dailyLimit}
                 onChange={(e) => setForm({ ...form, dailyLimit: Number(e.target.value) })} />
-              <span className="text-sm text-slate-500">×/Tag</span>
+              <span className="text-sm text-slate-500">{t('perDay')}</span>
             </div>
           )}
         </div>
         <Button onClick={createTask} disabled={!form.title || !form.categoryId}>
-          Aufgabe anlegen (→ Freigabe nötig)
+          {t('submitButton')}
         </Button>
         {error && <p className="text-red-500 text-xs">{error}</p>}
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-sm text-slate-500 uppercase tracking-wide">Aktive Aufgaben ({tasks.length})</h2>
-        <Link href="/manage" className="text-xs text-indigo-500 hover:text-indigo-700">Bearbeiten → /manage</Link>
+        <h2 className="font-semibold text-sm text-slate-500 uppercase tracking-wide">{t('activeCount', { count: tasks.length })}</h2>
+        <Link href="/manage" className="text-xs text-indigo-500 hover:text-indigo-700">{t('editLink')}</Link>
       </div>
       <div className="space-y-2">
-        {tasks.map((t) => (
-          <div key={t.id} className="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm">
-            <span>{t.emoji}</span>
-            <span className="flex-1 text-sm">{t.title}</span>
-            <span className="text-xs text-slate-400">{t.status}</span>
-            <Button variant="outline" size="sm" onClick={() => archiveTask(t.id)}>Archivieren</Button>
+        {tasks.map((tk) => (
+          <div key={tk.id} className="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm">
+            <span>{tk.emoji}</span>
+            <span className="flex-1 text-sm">{tk.title}</span>
+            <span className="text-xs text-slate-400">{tk.status}</span>
+            <Button variant="outline" size="sm" onClick={() => archiveTask(tk.id)}>{t('archive')}</Button>
           </div>
         ))}
       </div>

@@ -1,12 +1,15 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { type GameConfig, type StreakTierDef } from '@/lib/config'
 
 export function StreakTab({ config }: { config: GameConfig }) {
   const router = useRouter()
+  const t = useTranslations('settings.streak')
+  const tc = useTranslations('common')
   const [tiers, setTiers] = useState<StreakTierDef[]>([...config.streakTiers])
   const [restoreBase, setRestoreBase] = useState(config.restoreBasePrice)
   const [restorePerDay, setRestorePerDay] = useState(config.restorePerDayPrice)
@@ -44,29 +47,29 @@ export function StreakTab({ config }: { config: GameConfig }) {
     setSaving(false)
     if (res.ok) {
       setTiers(sorted)
-      setMsg('Gespeichert ✓')
+      setMsg(tc('saved'))
       router.refresh()
     } else {
-      setMsg('Fehler beim Speichern')
+      setMsg(tc('saveFailed'))
     }
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold mb-1">Streak-Tiers</h2>
-        <p className="text-sm text-slate-500 mb-3">Bonus-Stufen basierend auf aufeinanderfolgenden Tagen. Werden automatisch nach Tagen absteigend sortiert.</p>
+        <h2 className="font-semibold mb-1">{t('heading')}</h2>
+        <p className="text-sm text-slate-500 mb-3">{t('description')}</p>
         <div className="space-y-2">
           {tiers.map((tier, i) => (
             <div key={i} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center flex-wrap">
-              <label className="text-xs text-slate-500 w-12">Ab Tag</label>
+              <label className="text-xs text-slate-500 w-12">{t('fromDay')}</label>
               <Input
                 type="number"
                 className="w-16 text-center"
                 value={tier.minDays}
                 onChange={(e) => updateTier(i, 'minDays', Number(e.target.value))}
               />
-              <label className="text-xs text-slate-500 w-12">Bonus</label>
+              <label className="text-xs text-slate-500 w-12">{t('bonus')}</label>
               <div className="flex items-center gap-1">
                 <Input
                   type="number"
@@ -76,7 +79,7 @@ export function StreakTab({ config }: { config: GameConfig }) {
                 />
                 <span className="text-sm text-slate-400">%</span>
               </div>
-              <label className="text-xs text-slate-500 w-10">Name</label>
+              <label className="text-xs text-slate-500 w-10">{t('name')}</label>
               <Input
                 className="flex-1 min-w-[100px]"
                 value={tier.name}
@@ -86,19 +89,19 @@ export function StreakTab({ config }: { config: GameConfig }) {
             </div>
           ))}
         </div>
-        <Button variant="outline" className="w-full mt-2" onClick={addTier}>+ Tier hinzufügen</Button>
+        <Button variant="outline" className="w-full mt-2" onClick={addTier}>{t('addTier')}</Button>
       </div>
 
       <div className="border-t pt-4">
-        <h2 className="font-semibold mb-1">Streak-Restore Preisformel</h2>
-        <p className="text-sm text-slate-500 mb-3">Preis = Basis + (Pro-Tag × aktuelle Streak-Tage)</p>
+        <h2 className="font-semibold mb-1">{t('restoreHeading')}</h2>
+        <p className="text-sm text-slate-500 mb-3">{t('restoreDescription')}</p>
         <div className="flex gap-4">
           <div>
-            <label className="text-xs text-slate-500">Basis-Preis</label>
+            <label className="text-xs text-slate-500">{t('basePrice')}</label>
             <Input type="number" className="w-24" value={restoreBase} onChange={(e) => setRestoreBase(Number(e.target.value))} />
           </div>
           <div>
-            <label className="text-xs text-slate-500">Pro Streak-Tag</label>
+            <label className="text-xs text-slate-500">{t('perDay')}</label>
             <Input type="number" className="w-24" value={restorePerDay} onChange={(e) => setRestorePerDay(Number(e.target.value))} />
           </div>
         </div>
@@ -107,7 +110,7 @@ export function StreakTab({ config }: { config: GameConfig }) {
       <div className="flex items-center justify-between">
         {msg && <p className="text-sm text-slate-500">{msg}</p>}
         <Button onClick={save} disabled={saving} className="ml-auto">
-          {saving ? 'Speichern...' : 'Speichern'}
+          {saving ? tc('saving') : tc('save')}
         </Button>
       </div>
     </div>

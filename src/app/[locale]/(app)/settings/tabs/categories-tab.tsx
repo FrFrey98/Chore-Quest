@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -8,6 +9,8 @@ type Category = { id: string; name: string; emoji: string; taskCount: number }
 
 export function CategoriesTab({ categories: initial }: { categories: Category[] }) {
   const router = useRouter()
+  const t = useTranslations('settings.categories')
+  const tc = useTranslations('common')
   const [categories, setCategories] = useState(initial)
   const [edits, setEdits] = useState<Record<string, { name: string; emoji: string }>>({})
   const [newCat, setNewCat] = useState({ name: '', emoji: '📁' })
@@ -32,11 +35,11 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
     })
     if (res.ok) {
       cancelEdit(id)
-      setMsg('Gespeichert ✓')
+      setMsg(tc('saved'))
       router.refresh()
     } else {
       const data = await res.json()
-      setMsg(data.error ?? 'Fehler')
+      setMsg(data.error ?? tc('error'))
     }
   }
 
@@ -45,11 +48,11 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
     const res = await fetch(`/api/settings/categories/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setCategories((prev) => prev.filter((c) => c.id !== id))
-      setMsg('Gelöscht ✓')
+      setMsg(t('deleted'))
       router.refresh()
     } else {
       const data = await res.json()
-      setMsg(data.error ?? 'Fehler')
+      setMsg(data.error ?? tc('error'))
     }
   }
 
@@ -63,17 +66,17 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
     })
     if (res.ok) {
       setNewCat({ name: '', emoji: '📁' })
-      setMsg('Erstellt ✓')
+      setMsg(tc('saved'))
       router.refresh()
     } else {
       const data = await res.json()
-      setMsg(data.error ?? 'Fehler')
+      setMsg(data.error ?? tc('error'))
     }
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">Kategorien für die Aufgaben-Gruppierung.</p>
+      <p className="text-sm text-slate-500">{t('description')}</p>
       <div className="space-y-2">
         {categories.map((cat) => {
           const edit = edits[cat.id]
@@ -90,13 +93,13 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
                 <>
                   <span className="text-lg w-8 text-center">{cat.emoji}</span>
                   <span className="flex-1 text-sm font-medium">{cat.name}</span>
-                  <span className="text-xs text-slate-400">{cat.taskCount} Tasks</span>
+                  <span className="text-xs text-slate-400">{t('taskCount', { count: cat.taskCount })}</span>
                   <button onClick={() => startEdit(cat)} className="text-slate-400 hover:text-slate-600 text-sm">✏️</button>
                   <button
                     onClick={() => deleteCat(cat.id)}
                     disabled={cat.taskCount > 0}
                     className={`text-lg px-1 ${cat.taskCount > 0 ? 'text-slate-300 cursor-not-allowed' : 'text-red-400 hover:text-red-600'}`}
-                    title={cat.taskCount > 0 ? 'Erst Tasks umziehen' : 'Löschen'}
+                    title={cat.taskCount > 0 ? t('moveFirst') : t('deleteTooltip')}
                   >×</button>
                 </>
               )}
@@ -107,13 +110,13 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
 
       <div className="bg-slate-50 rounded-lg p-3 flex gap-2 items-center">
         <Input className="w-12 text-center text-lg" value={newCat.emoji} onChange={(e) => setNewCat((prev) => ({ ...prev, emoji: e.target.value }))} />
-        <Input className="flex-1" placeholder="Neue Kategorie" value={newCat.name} onChange={(e) => setNewCat((prev) => ({ ...prev, name: e.target.value }))} />
-        <Button onClick={createCat} disabled={!newCat.name.trim()}>Erstellen</Button>
+        <Input className="flex-1" placeholder={t('newPlaceholder')} value={newCat.name} onChange={(e) => setNewCat((prev) => ({ ...prev, name: e.target.value }))} />
+        <Button onClick={createCat} disabled={!newCat.name.trim()}>{t('createButton')}</Button>
       </div>
 
       {categories.some((c) => c.taskCount > 0) && (
         <div className="p-3 bg-amber-50 rounded-lg text-xs text-amber-700">
-          ⚠️ Kategorien mit zugeordneten Tasks können nicht gelöscht werden. Erst alle Tasks umziehen oder archivieren.
+          {t('warning')}
         </div>
       )}
 

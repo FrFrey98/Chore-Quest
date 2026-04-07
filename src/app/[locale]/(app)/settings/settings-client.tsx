@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { type GameConfig } from '@/lib/config'
 import { UsersTab } from './tabs/users-tab'
 import { StreakTab } from './tabs/streak-tab'
@@ -20,20 +21,9 @@ type Achievement = {
 type StoreItem = { id: string; title: string; emoji: string; pointCost: number; type: string; isActive: boolean }
 type Task = { id: string; title: string; emoji: string; points: number; status: string; category: { id: string; name: string; emoji: string } }
 
-const TABS = [
-  { key: 'users', label: 'Benutzer' },
-  { key: 'streak', label: 'Streak' },
-  { key: 'level', label: 'Level' },
-  { key: 'bonus', label: 'Boni' },
-  { key: 'categories', label: 'Kategorien' },
-  { key: 'achievements', label: 'Achievements' },
-  { key: 'tasks', label: 'Tasks' },
-  { key: 'store', label: 'Store' },
-  { key: 'notifications', label: 'Benachrichtigungen' },
-  { key: 'backup', label: 'Backup' },
-] as const
+const TAB_KEYS = ['users', 'streak', 'level', 'bonus', 'categories', 'achievements', 'tasks', 'store', 'notifications', 'backup'] as const
 
-type TabKey = (typeof TABS)[number]['key']
+type TabKey = (typeof TAB_KEYS)[number]
 
 export function SettingsClient({
   config, users, categories, achievements, storeItems, tasks, userId, notificationsEnabled, vapidPublicKey,
@@ -48,24 +38,25 @@ export function SettingsClient({
   notificationsEnabled: boolean
   vapidPublicKey: string | null
 }) {
+  const t = useTranslations('settings')
   const [tab, setTab] = useState<TabKey>('users')
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">Einstellungen</h1>
+      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
 
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-1 px-1">
-        {TABS.map((t) => (
+        {TAB_KEYS.map((key) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={key}
+            onClick={() => setTab(key)}
             className={`whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              tab === t.key
+              tab === key
                 ? 'bg-indigo-600 text-white'
                 : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
             }`}
           >
-            {t.label}
+            {t(`tabs.${key === 'level' ? 'levels' : key}`)}
           </button>
         ))}
       </div>

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -10,18 +11,12 @@ type Achievement = {
 }
 type Category = { id: string; name: string; emoji: string; taskCount: number }
 
-const CONDITION_LABELS: Record<string, string> = {
-  task_count: 'Aufgaben-Anzahl',
-  category_count: 'Kategorie-Anzahl',
-  streak_days: 'Streak-Tage',
-  total_points: 'Gesamtpunkte',
-  level: 'Level',
-}
-
-const CONDITION_TYPES = Object.keys(CONDITION_LABELS)
+const CONDITION_TYPES = ['task_count', 'category_count', 'streak_days', 'total_points', 'level']
 
 export function AchievementsTab({ achievements: initial, categories }: { achievements: Achievement[]; categories: Category[] }) {
   const router = useRouter()
+  const t = useTranslations('settings.achievements')
+  const tc = useTranslations('common')
   const [achievements, setAchievements] = useState(initial)
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState<Partial<Achievement>>({})
@@ -56,11 +51,11 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
     if (res.ok) {
       setEditId(null)
       setForm({})
-      setMsg(isNew ? 'Erstellt ✓' : 'Gespeichert ✓')
+      setMsg(isNew ? t('created') : tc('saved'))
       router.refresh()
     } else {
       const data = await res.json()
-      setMsg(data.error ?? 'Fehler')
+      setMsg(data.error ?? tc('error'))
     }
   }
 
@@ -69,34 +64,34 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
     const res = await fetch(`/api/settings/achievements/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setAchievements((prev) => prev.filter((a) => a.id !== id))
-      setMsg('Gelöscht ✓')
+      setMsg(t('deleted'))
       router.refresh()
     } else {
       const data = await res.json()
-      setMsg(data.error ?? 'Fehler')
+      setMsg(data.error ?? tc('error'))
     }
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">Achievements werden automatisch freigeschaltet wenn die Bedingung erfüllt ist.</p>
+      <p className="text-sm text-slate-500">{t('description')}</p>
 
       {editId && (
         <div className="bg-white rounded-xl p-4 shadow-sm space-y-3 border-2 border-indigo-200">
-          <h3 className="font-semibold text-sm">{editId === 'new' ? 'Neues Achievement' : 'Achievement bearbeiten'}</h3>
+          <h3 className="font-semibold text-sm">{editId === 'new' ? t('newHeading') : t('editHeading')}</h3>
           <div className="flex gap-2">
-            <Input className="w-14 text-center text-lg" placeholder="Emoji" value={form.emoji ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, emoji: e.target.value }))} />
-            <Input className="flex-1" placeholder="Titel" value={form.title ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))} />
+            <Input className="w-14 text-center text-lg" placeholder={t('emojiPlaceholder')} value={form.emoji ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, emoji: e.target.value }))} />
+            <Input className="flex-1" placeholder={t('titlePlaceholder')} value={form.title ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))} />
           </div>
-          <Input placeholder="Beschreibung" value={form.description ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} />
+          <Input placeholder={t('descriptionPlaceholder')} value={form.description ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} />
           <div className="flex gap-2 flex-wrap items-center">
             <select
               className="border rounded-md px-2 py-1.5 text-sm"
               value={form.conditionType ?? 'task_count'}
               onChange={(e) => setForm((prev) => ({ ...prev, conditionType: e.target.value, conditionMeta: null }))}
             >
-              {CONDITION_TYPES.map((t) => (
-                <option key={t} value={t}>{CONDITION_LABELS[t]}</option>
+              {CONDITION_TYPES.map((ct) => (
+                <option key={ct} value={ct}>{t(`conditionTypes.${ct}` as Parameters<typeof t>[0])}</option>
               ))}
             </select>
             <span className="text-sm text-slate-500">≥</span>
@@ -107,18 +102,18 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
                 value={form.conditionMeta ?? ''}
                 onChange={(e) => setForm((prev) => ({ ...prev, conditionMeta: e.target.value || null }))}
               >
-                <option value="">Kategorie wählen</option>
+                <option value="">{t('categorySelect')}</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>
                 ))}
               </select>
             )}
-            <label className="text-xs text-slate-500 ml-auto">Reihenfolge:</label>
+            <label className="text-xs text-slate-500 ml-auto">{t('sortOrder')}</label>
             <Input type="number" className="w-14 text-center" value={form.sortOrder ?? 0} onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: Number(e.target.value) }))} />
           </div>
           <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={cancel}>Abbrechen</Button>
-            <Button onClick={save}>Speichern</Button>
+            <Button variant="outline" onClick={cancel}>{tc('cancel')}</Button>
+            <Button onClick={save}>{tc('save')}</Button>
           </div>
         </div>
       )}
@@ -129,7 +124,7 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
             <span className="text-lg w-8 text-center">{ach.emoji}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{ach.title}</p>
-              <p className="text-xs text-slate-400">{CONDITION_LABELS[ach.conditionType] ?? ach.conditionType} ≥ {ach.conditionValue}</p>
+              <p className="text-xs text-slate-400">{t(`conditionTypes.${ach.conditionType}` as Parameters<typeof t>[0])} ≥ {ach.conditionValue}</p>
             </div>
             <button onClick={() => startEdit(ach)} className="text-slate-400 hover:text-slate-600 text-sm">✏️</button>
             <button onClick={() => deleteAch(ach.id)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
@@ -138,11 +133,11 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
       </div>
 
       {!editId && (
-        <Button variant="outline" className="w-full" onClick={startCreate}>+ Achievement hinzufügen</Button>
+        <Button variant="outline" className="w-full" onClick={startCreate}>{t('addButton')}</Button>
       )}
 
       <div className="p-3 bg-blue-50 rounded-lg text-xs text-blue-700">
-        ℹ️ Bereits freigeschaltete Achievements bleiben erhalten, auch wenn die Bedingung geändert wird.
+        {t('info')}
       </div>
 
       {msg && <p className="text-sm text-slate-500">{msg}</p>}

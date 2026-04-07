@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/toast-provider'
 import { Bell, BellOff } from 'lucide-react'
 
@@ -12,6 +13,8 @@ type NotificationsTabProps = {
 
 export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey }: NotificationsTabProps) {
   const router = useRouter()
+  const t = useTranslations('settings.notifications')
+  const tc = useTranslations('common')
   const { toast } = useToast()
   const [enabled, setEnabled] = useState(notificationsEnabled)
   const [loading, setLoading] = useState(false)
@@ -21,12 +24,12 @@ export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey 
 
   async function handleToggle() {
     if (!pushSupported) {
-      toast('Push-Benachrichtigungen werden von diesem Browser nicht unterstützt', 'error')
+      toast(t('notSupported'), 'error')
       return
     }
 
     if (!configured) {
-      toast('Push ist serverseitig nicht konfiguriert', 'error')
+      toast(t('notConfigured'), 'error')
       return
     }
 
@@ -36,7 +39,7 @@ export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey 
         // Enable: request permission + subscribe
         const permission = await Notification.requestPermission()
         if (permission !== 'granted') {
-          toast('Browser-Berechtigung für Benachrichtigungen benötigt', 'error')
+          toast(t('permissionNeeded'), 'error')
           setLoading(false)
           return
         }
@@ -60,11 +63,11 @@ export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey 
 
         if (!res.ok) {
           const data = await res.json()
-          throw new Error(data.error ?? 'Fehler')
+          throw new Error(data.error ?? tc('error'))
         }
 
         setEnabled(true)
-        toast('Benachrichtigungen aktiviert', 'success')
+        toast(t('enabled'), 'success')
       } else {
         // Disable: unsubscribe + delete
         const registration = await navigator.serviceWorker.ready
@@ -75,11 +78,11 @@ export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey 
 
         await fetch('/api/notifications/push/subscribe', { method: 'DELETE' })
         setEnabled(false)
-        toast('Benachrichtigungen deaktiviert', 'info')
+        toast(t('disabled'), 'info')
       }
       router.refresh()
     } catch (err: unknown) {
-      toast(err instanceof Error ? err.message : 'Fehler', 'error')
+      toast(err instanceof Error ? err.message : tc('error'), 'error')
     } finally {
       setLoading(false)
     }
@@ -92,8 +95,8 @@ export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey 
           <div className="flex items-center gap-3">
             {enabled ? <Bell size={20} className="text-indigo-600" /> : <BellOff size={20} className="text-slate-400" />}
             <div>
-              <div className="text-sm font-semibold text-slate-800">Push-Benachrichtigungen</div>
-              <div className="text-xs text-slate-500">Erinnerung wenn Aufgaben mit Uhrzeit fällig sind</div>
+              <div className="text-sm font-semibold text-slate-800">{t('pushLabel')}</div>
+              <div className="text-xs text-slate-500">{t('pushDescription')}</div>
             </div>
           </div>
           <button
@@ -109,10 +112,10 @@ export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey 
           </button>
         </div>
         {!pushSupported && (
-          <p className="text-xs text-amber-600 mt-2">Dieser Browser unterstützt keine Push-Benachrichtigungen.</p>
+          <p className="text-xs text-amber-600 mt-2">{t('notSupported')}</p>
         )}
         {pushSupported && !configured && (
-          <p className="text-xs text-amber-600 mt-2">Push ist serverseitig nicht konfiguriert (VAPID-Keys fehlen).</p>
+          <p className="text-xs text-amber-600 mt-2">{t('notConfigured')}</p>
         )}
       </div>
     </div>

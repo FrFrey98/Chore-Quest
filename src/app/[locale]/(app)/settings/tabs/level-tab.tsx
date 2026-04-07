@@ -1,12 +1,15 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { type GameConfig, type LevelDef } from '@/lib/config'
 
 export function LevelTab({ config }: { config: GameConfig }) {
   const router = useRouter()
+  const t = useTranslations('settings.levels')
+  const tc = useTranslations('common')
   const [levels, setLevels] = useState<LevelDef[]>([...config.levelDefinitions])
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
@@ -40,50 +43,50 @@ export function LevelTab({ config }: { config: GameConfig }) {
     setSaving(false)
     if (res.ok) {
       setLevels(sorted)
-      setMsg('Gespeichert ✓')
+      setMsg(tc('saved'))
       router.refresh()
     } else {
-      setMsg('Fehler beim Speichern')
+      setMsg(tc('saveFailed'))
     }
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">Level-Definitionen mit Punkteschwellen. Level 1 beginnt immer bei 0 Punkten.</p>
+      <p className="text-sm text-slate-500">{t('description')}</p>
       <div className="space-y-2">
         {levels.map((level, i) => (
           <div key={i} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center flex-wrap">
             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded">Lv.{level.level}</span>
             <Input
               className="flex-1 min-w-[120px]"
-              placeholder="Titel"
+              placeholder={t('titlePlaceholder')}
               value={level.title}
               onChange={(e) => updateLevel(i, 'title', e.target.value)}
             />
             {i === 0 ? (
-              <span className="text-xs text-slate-400">ab 0 Pkt</span>
+              <span className="text-xs text-slate-400">{t('fromZero')}</span>
             ) : (
               <>
-                <label className="text-xs text-slate-500">ab</label>
+                <label className="text-xs text-slate-500">{t('from')}</label>
                 <Input
                   type="number"
                   className="w-20 text-center"
                   value={level.minPoints}
                   onChange={(e) => updateLevel(i, 'minPoints', Number(e.target.value))}
                 />
-                <span className="text-xs text-slate-400">Pkt</span>
+                <span className="text-xs text-slate-400">{tc('points')}</span>
                 <button onClick={() => removeLevel(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
               </>
             )}
           </div>
         ))}
       </div>
-      <Button variant="outline" className="w-full" onClick={addLevel}>+ Level hinzufügen</Button>
+      <Button variant="outline" className="w-full" onClick={addLevel}>{t('addLevel')}</Button>
 
       <div className="flex items-center justify-between">
         {msg && <p className="text-sm text-slate-500">{msg}</p>}
         <Button onClick={save} disabled={saving} className="ml-auto">
-          {saving ? 'Speichern...' : 'Speichern'}
+          {saving ? tc('saving') : tc('save')}
         </Button>
       </div>
     </div>
