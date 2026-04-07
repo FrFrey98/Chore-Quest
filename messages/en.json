@@ -1,0 +1,13 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "points": "Pts"
+  },
+  "metadata": {
+    "title": "Chore-Quest",
+    "description": "Gamified household planner"
+  }
+}

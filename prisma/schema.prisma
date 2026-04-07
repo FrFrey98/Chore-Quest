@@ -18,6 +18,7 @@ model User {
   name        String
   pin         String
   role        Role     @default(member)
+  locale      String   @default("en")
   createdAt   DateTime @default(now())
   notificationsEnabled     Boolean @default(false)
   installPromptDismissed   Boolean @default(false)

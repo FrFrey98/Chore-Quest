@@ -1,0 +1,13 @@
+{
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "points": "Pkt"
+  },
+  "metadata": {
+    "title": "Chore-Quest",
+    "description": "Gamifizierter Haushaltsplaner"
+  }
+}
