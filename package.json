@@ -22,7 +22,8 @@
     "lint": "next lint",
     "seed": "npx prisma db seed",
     "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "generate:openapi": "tsx scripts/generate-openapi.ts"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.6.0",
@@ -47,6 +48,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "devDependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/bcryptjs": "^2.4.6",
