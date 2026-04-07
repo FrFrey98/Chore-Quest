@@ -54,13 +54,14 @@ Screenshots will be added soon. To see the app in action, follow the [Quick Star
 | [shadcn/ui](https://ui.shadcn.com/) | Accessible UI components |
 | [Recharts](https://recharts.org/) | Charts and data visualization |
 | [Zod](https://zod.dev/) | Schema validation |
+| [OpenAPI](docs/openapi.json) | API documentation (generated from Zod schemas) |
 | [Vitest](https://vitest.dev/) | Unit and integration testing |
 
 ## Architecture
 
 **Frontend:** Next.js App Router with a mix of Server and Client Components. UI built with Tailwind CSS and shadcn/ui. The app is a PWA with service worker for offline support, push notifications, and background sync.
 
-**API Layer:** RESTful route handlers in `app/api/` with role-based permission guards. All mutations validate input and check authorization before touching the database.
+**API Layer:** RESTful route handlers in `app/api/` with role-based permission guards. All mutations validate input via Zod schemas and check authorization before touching the database. API endpoints are documented in an [OpenAPI 3.1 spec](docs/openapi.json), auto-generated from the Zod schemas.
 
 **Database:** Prisma ORM with SQLite (via better-sqlite3 driver). 13 models covering users, tasks, completions, achievements, streaks, store items, and push subscriptions. Full backup/restore via JSON export with transactional imports.
 
