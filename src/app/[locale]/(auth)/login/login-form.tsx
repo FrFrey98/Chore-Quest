@@ -2,18 +2,16 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 type User = { id: string; name: string; role: string }
 
-const ROLE_LABELS: Record<string, string> = {
-  admin: 'Admin',
-  member: 'Mitglied',
-  child: 'Kind',
-}
-
 export function LoginForm({ users }: { users: User[] }) {
+  const t = useTranslations('auth.login')
+  const tRoles = useTranslations('roles')
+
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
@@ -32,7 +30,7 @@ export function LoginForm({ users }: { users: User[] }) {
     })
     setLoading(false)
     if (res?.error) {
-      setError('Falscher PIN. Nochmal versuchen.')
+      setError(t('wrongPin'))
     } else {
       router.push('/')
     }
@@ -54,7 +52,7 @@ export function LoginForm({ users }: { users: User[] }) {
             }`}
           >
             <span className="font-medium block">{u.name}</span>
-            <span className="text-xs text-slate-400">{ROLE_LABELS[u.role] ?? u.role}</span>
+            <span className="text-xs text-slate-400">{tRoles(u.role as 'admin' | 'member' | 'child') ?? u.role}</span>
           </button>
         ))}
       </div>
@@ -65,7 +63,7 @@ export function LoginForm({ users }: { users: User[] }) {
             type="password"
             inputMode="numeric"
             pattern="\d*"
-            placeholder="PIN eingeben"
+            placeholder={t('pinPlaceholder')}
             value={pin}
             onChange={(e) => setPin(e.target.value)}
             maxLength={8}
@@ -73,7 +71,7 @@ export function LoginForm({ users }: { users: User[] }) {
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <Button type="submit" className="w-full" disabled={loading || !pin}>
-            {loading ? 'Prüfe…' : 'Einloggen'}
+            {loading ? t('checking') : t('submit')}
           </Button>
         </div>
       )}
