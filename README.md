@@ -53,6 +53,7 @@ Screenshots will be added soon. To see the app in action, follow the [Quick Star
 | [Tailwind CSS](https://tailwindcss.com/) | Utility-first styling |
 | [shadcn/ui](https://ui.shadcn.com/) | Accessible UI components |
 | [Recharts](https://recharts.org/) | Charts and data visualization |
+| [Zod](https://zod.dev/) | Schema validation |
 | [Vitest](https://vitest.dev/) | Unit and integration testing |
 
 ## Architecture
