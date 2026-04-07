@@ -43,3 +43,10 @@ next-env.d.ts
 /src/generated/prisma
 .superpowers/
 docs/superpowers/
+
+# e2e test artifacts
+test.db
+test.db-journal
+e2e/.auth/
+/test-results/
+/playwright-report/

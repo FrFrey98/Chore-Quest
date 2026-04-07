@@ -23,7 +23,9 @@
     "seed": "npx prisma db seed",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "generate:openapi": "tsx scripts/generate-openapi.ts"
+    "generate:openapi": "tsx scripts/generate-openapi.ts",
+    "test:e2e": "DATABASE_URL=file:./test.db npx prisma migrate dev && DATABASE_URL=file:./test.db npm run seed && playwright test",
+    "test:e2e:ui": "DATABASE_URL=file:./test.db npx prisma migrate dev && DATABASE_URL=file:./test.db npm run seed && playwright test --ui"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.6.0",
@@ -49,6 +51,7 @@
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
+    "@playwright/test": "^1.59.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/bcryptjs": "^2.4.6",
