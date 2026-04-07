@@ -6,17 +6,16 @@ export default defineConfig({
   retries: 0,
   use: {
     baseURL: 'http://localhost:3001',
-    storageState: 'e2e/.auth/user.json',
   },
   projects: [
     {
       name: 'setup',
       testMatch: /auth\.setup\.ts/,
-      use: { storageState: undefined },
     },
     {
       name: 'tests',
       dependencies: ['setup'],
+      use: { storageState: 'e2e/.auth/user.json' },
     },
   ],
   webServer: {
