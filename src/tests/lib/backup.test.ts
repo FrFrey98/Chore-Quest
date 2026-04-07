@@ -1,5 +1,19 @@
 import { vi, describe, it, expect } from 'vitest'
 
+const { mockMkdir, mockWriteFile, mockReaddir, mockUnlink } = vi.hoisted(() => ({
+  mockMkdir: vi.fn().mockResolvedValue(undefined),
+  mockWriteFile: vi.fn().mockResolvedValue(undefined),
+  mockReaddir: vi.fn().mockResolvedValue(['pre-restore-old1.json', 'pre-restore-old2.json']),
+  mockUnlink: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('fs/promises', () => ({
+  mkdir: (...args: unknown[]) => mockMkdir(...args),
+  writeFile: (...args: unknown[]) => mockWriteFile(...args),
+  readdir: (...args: unknown[]) => mockReaddir(...args),
+  unlink: (...args: unknown[]) => mockUnlink(...args),
+}))
+
 const mockUsers = [
   { id: 'u1', name: 'Alice', pin: '$2a$10$hash', role: 'admin', createdAt: new Date('2026-01-01'), notificationsEnabled: false, installPromptDismissed: false },
 ]
@@ -122,5 +136,37 @@ describe('restoreAllData', () => {
     expect(prisma.$transaction).toHaveBeenCalled()
     expect(prisma.user.deleteMany).toHaveBeenCalled()
     expect(prisma.user.createMany).toHaveBeenCalledWith({ data: backup.data.users })
+  })
+})
+
+describe('createPreRestoreBackup', () => {
+  it('writes backup JSON and returns filepath', async () => {
+    const { createPreRestoreBackup } = await import('@/lib/backup')
+    const path = await createPreRestoreBackup()
+
+    expect(path).toMatch(/\/app\/data\/backups\/pre-restore-.*\.json$/)
+    expect(mockMkdir).toHaveBeenCalledWith(expect.stringContaining('backups'), { recursive: true })
+    expect(mockWriteFile).toHaveBeenCalledWith(
+      expect.stringMatching(/pre-restore-.*\.json$/),
+      expect.any(String),
+      'utf-8'
+    )
+  })
+
+  it('cleans up old backups keeping max 5', async () => {
+    mockReaddir.mockResolvedValueOnce([
+      'pre-restore-2026-01-01.json',
+      'pre-restore-2026-01-02.json',
+      'pre-restore-2026-01-03.json',
+      'pre-restore-2026-01-04.json',
+      'pre-restore-2026-01-05.json',
+      'pre-restore-2026-01-06.json',
+    ])
+
+    const { createPreRestoreBackup } = await import('@/lib/backup')
+    await createPreRestoreBackup()
+
+    expect(mockUnlink).toHaveBeenCalledTimes(1)
+    expect(mockUnlink).toHaveBeenCalledWith(expect.stringContaining('pre-restore-2026-01-01.json'))
   })
 })

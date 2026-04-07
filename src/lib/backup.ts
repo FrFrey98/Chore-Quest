@@ -1,5 +1,10 @@
+import { mkdir, writeFile, readdir, unlink } from 'fs/promises'
+import { join } from 'path'
 import { prisma } from '@/lib/prisma'
 import packageJson from '../../package.json'
+
+const BACKUP_DIR = process.env.BACKUP_DIR || '/app/data/backups'
+const MAX_PRE_RESTORE_BACKUPS = 5
 
 export const BACKUP_VERSION = 1
 
@@ -110,6 +115,29 @@ export async function restoreAllData(backup: BackupData): Promise<void> {
     if (backup.data.taskScheduleOverrides.length) await tx.taskScheduleOverride.createMany({ data: backup.data.taskScheduleOverrides as any })
     if (backup.data.pushSubscriptions.length) await tx.pushSubscription.createMany({ data: backup.data.pushSubscriptions as any })
   }, { timeout: 30000 })
+}
+
+export async function createPreRestoreBackup(): Promise<string> {
+  await mkdir(BACKUP_DIR, { recursive: true })
+
+  const backup = await exportAllData()
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  const filename = `pre-restore-${timestamp}.json`
+  const filepath = join(BACKUP_DIR, filename)
+
+  await writeFile(filepath, JSON.stringify(backup, null, 2), 'utf-8')
+
+  // Clean up old backups, keep only MAX_PRE_RESTORE_BACKUPS
+  const files = (await readdir(BACKUP_DIR))
+    .filter((f) => f.startsWith('pre-restore-') && f.endsWith('.json'))
+    .sort()
+
+  while (files.length > MAX_PRE_RESTORE_BACKUPS) {
+    const oldest = files.shift()!
+    await unlink(join(BACKUP_DIR, oldest))
+  }
+
+  return filepath
 }
 
 export function validateBackup(data: unknown): { valid: true; backup: BackupData } | { valid: false; error: string } {
