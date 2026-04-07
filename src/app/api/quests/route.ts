@@ -38,8 +38,26 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { title, titleDe, description, descriptionDe, emoji, bonusPoints, steps } = body
 
-  if (!title || !titleDe || !description || !descriptionDe || !emoji || bonusPoints == null || !Array.isArray(steps) || steps.length === 0) {
+  if (
+    typeof title !== 'string' || !title ||
+    typeof titleDe !== 'string' || !titleDe ||
+    typeof description !== 'string' || !description ||
+    typeof descriptionDe !== 'string' || !descriptionDe ||
+    typeof emoji !== 'string' || !emoji ||
+    typeof bonusPoints !== 'number' || bonusPoints <= 0 ||
+    !Array.isArray(steps) || steps.length === 0
+  ) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+  }
+
+  const invalidStep = steps.some(
+    (step: any) =>
+      typeof step.taskId !== 'string' || !step.taskId ||
+      typeof step.description !== 'string' || !step.description ||
+      typeof step.descriptionDe !== 'string' || !step.descriptionDe
+  )
+  if (invalidStep) {
+    return NextResponse.json({ error: 'Each step must have taskId, description, and descriptionDe' }, { status: 400 })
   }
 
   const quest = await prisma.quest.create({

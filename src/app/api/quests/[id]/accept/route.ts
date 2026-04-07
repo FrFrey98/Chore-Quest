@@ -20,27 +20,30 @@ export async function POST(
 
   if (!quest) return NextResponse.json({ error: 'Quest not found' }, { status: 404 })
   if (!quest.isActive) return NextResponse.json({ error: 'Quest is not active' }, { status: 400 })
+  if (quest.steps.length === 0) return NextResponse.json({ error: 'Quest has no steps' }, { status: 400 })
 
-  const existing = await prisma.userQuest.findUnique({
-    where: { userId_questId: { userId, questId: id } },
-  })
-  if (existing) return NextResponse.json({ error: 'Quest already accepted' }, { status: 400 })
-
-  const userQuest = await prisma.userQuest.create({
-    data: {
-      userId,
-      questId: id,
-      currentStepOrder: 1,
-      userQuestSteps: {
-        create: quest.steps.map((step) => ({
-          questStepId: step.id,
-        })),
+  try {
+    const userQuest = await prisma.userQuest.create({
+      data: {
+        userId,
+        questId: id,
+        currentStepOrder: 1,
+        userQuestSteps: {
+          create: quest.steps.map((step) => ({
+            questStepId: step.id,
+          })),
+        },
       },
-    },
-    include: {
-      userQuestSteps: true,
-    },
-  })
+      include: {
+        userQuestSteps: true,
+      },
+    })
 
-  return NextResponse.json(userQuest, { status: 201 })
+    return NextResponse.json(userQuest, { status: 201 })
+  } catch (err: any) {
+    if (err?.code === 'P2002') {
+      return NextResponse.json({ error: 'Quest already accepted' }, { status: 400 })
+    }
+    throw err
+  }
 }

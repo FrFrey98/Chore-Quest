@@ -7,6 +7,7 @@ import { loadGameConfig } from '@/lib/config'
 import { getNextDueAt } from '@/lib/recurring'
 import { checkAndUnlockAchievements } from '@/lib/achievements'
 import { updateChallengeProgress } from '@/lib/challenges'
+import { updateQuestProgress } from '@/lib/quests'
 import { applyBonus, updateStreakOnCompletion, recalculateStreak, getOrCreateStreakState, getEffectiveStreak } from '@/lib/streak'
 import { calculateHealth, getDecayHours, applyPointDecay } from '@/lib/health'
 
@@ -276,6 +277,19 @@ export async function POST(
     }
   }
 
+  // Quest progress update for current user
+  let completedQuests: Array<{ id: string; title: string; titleDe: string; emoji: string; bonusPoints: number }> = []
+  try {
+    completedQuests = await updateQuestProgress(userId, id)
+    // Also check for partners
+    for (const partnerId of withUserIds) {
+      await updateQuestProgress(partnerId, id)
+      // partner quests don't go into the current user's response
+    }
+  } catch {
+    // Don't block completion
+  }
+
   return NextResponse.json({
     ...completion,
     basePoints: effectiveBasePoints,
@@ -285,6 +299,7 @@ export async function POST(
     partnerCount: withUserIds.length,
     newAchievements,
     completedChallenges,
+    completedQuests,
     healthPercent: health !== undefined ? health : 1,
     decayApplied: effectiveBasePoints < task.points,
     originalBasePoints: task.points,

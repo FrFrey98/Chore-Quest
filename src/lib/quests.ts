@@ -62,17 +62,17 @@ export async function updateQuestProgress(
         bonusPoints: uq.quest.bonusPoints,
       })
     } else {
-      // Advance to next step
-      await prisma.$transaction([
-        prisma.userQuestStep.update({
-          where: { id: userQuestStep.id },
-          data: { completedAt: new Date() },
-        }),
-        prisma.userQuest.update({
-          where: { id: uq.id },
-          data: { currentStepOrder: uq.currentStepOrder + 1 },
-        }),
-      ])
+      // Advance to next step using optimistic lock to prevent race conditions
+      const result = await prisma.userQuest.updateMany({
+        where: { id: uq.id, currentStepOrder: uq.currentStepOrder, completedAt: null },
+        data: { currentStepOrder: { increment: 1 } },
+      })
+      if (result.count === 0) continue // Another completion already advanced it
+
+      await prisma.userQuestStep.update({
+        where: { id: userQuestStep.id },
+        data: { completedAt: new Date() },
+      })
     }
   }
 
