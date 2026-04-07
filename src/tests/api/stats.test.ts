@@ -14,6 +14,9 @@ vi.mock('@/lib/prisma', () => ({
           user: { id: 'seed-user-1', name: 'Alice' } },
       ]),
     },
+    userChallenge: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
     streakState: {
       findUnique: vi.fn().mockResolvedValue({
         userId: 'seed-user-1',

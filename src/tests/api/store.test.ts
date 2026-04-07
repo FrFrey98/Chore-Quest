@@ -24,6 +24,9 @@ vi.mock('@/lib/prisma', () => {
       findUnique: vi.fn().mockResolvedValue({ id: 'pur-1', userId: 'seed-user-1', redeemedAt: null }),
       update: vi.fn().mockResolvedValue({ id: 'pur-1', redeemedAt: new Date() }),
     },
+    userChallenge: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
     $transaction: vi.fn(),
   }
   mock.$transaction.mockImplementation((fn: (tx: typeof mock) => Promise<unknown>) => fn(mock))
