@@ -189,3 +189,104 @@ export async function generateWeeklyChallenges() {
     userCount: users.length,
   }
 }
+
+/**
+ * Update challenge progress for a user after task completion.
+ * Returns array of newly completed challenges (for bonus points and notifications).
+ */
+export async function updateChallengeProgress(
+  userId: string,
+  taskCategoryId: string,
+  isShared: boolean
+): Promise<Array<{ id: string; title: string; titleDe: string; emoji: string; bonusPoints: number }>> {
+  const now = new Date()
+
+  // Get active user challenges for this week
+  const userChallenges = await prisma.userChallenge.findMany({
+    where: {
+      userId,
+      completedAt: null,
+      challenge: {
+        weekStart: { lte: now },
+        weekEnd: { gte: now },
+      },
+    },
+    include: { challenge: true },
+  })
+
+  const completed: Array<{ id: string; title: string; titleDe: string; emoji: string; bonusPoints: number }> = []
+
+  for (const uc of userChallenges) {
+    if (uc.challenge.type === 'streak_days') continue
+
+    let shouldIncrement = false
+
+    switch (uc.challenge.type) {
+      case 'task_count':
+        shouldIncrement = true
+        break
+      case 'category_count':
+        shouldIncrement = uc.challenge.categoryId === taskCategoryId
+        break
+      case 'teamwork_count':
+        shouldIncrement = isShared
+        break
+    }
+
+    if (shouldIncrement) {
+      const newProgress = uc.currentProgress + 1
+      const isNowComplete = newProgress >= uc.challenge.targetValue
+
+      await prisma.userChallenge.update({
+        where: { id: uc.id },
+        data: {
+          currentProgress: newProgress,
+          completedAt: isNowComplete ? now : null,
+        },
+      })
+
+      if (isNowComplete) {
+        completed.push({
+          id: uc.challenge.id,
+          title: uc.challenge.title,
+          titleDe: uc.challenge.titleDe,
+          emoji: uc.challenge.emoji,
+          bonusPoints: uc.challenge.bonusPoints,
+        })
+      }
+    }
+  }
+
+  // Handle streak_days challenges separately — check actual streak value
+  const streakChallenges = userChallenges.filter((uc) => uc.challenge.type === 'streak_days' && !uc.completedAt)
+  if (streakChallenges.length > 0) {
+    const streakState = await prisma.streakState.findUnique({ where: { userId } })
+    if (streakState) {
+      for (const uc of streakChallenges) {
+        if (streakState.currentStreak >= uc.challenge.targetValue && !uc.completedAt) {
+          await prisma.userChallenge.update({
+            where: { id: uc.id },
+            data: {
+              currentProgress: streakState.currentStreak,
+              completedAt: now,
+            },
+          })
+          completed.push({
+            id: uc.challenge.id,
+            title: uc.challenge.title,
+            titleDe: uc.challenge.titleDe,
+            emoji: uc.challenge.emoji,
+            bonusPoints: uc.challenge.bonusPoints,
+          })
+        } else {
+          await prisma.userChallenge.update({
+            where: { id: uc.id },
+            data: { currentProgress: streakState.currentStreak },
+          })
+        }
+      }
+    }
+  }
+
+  return completed
+}

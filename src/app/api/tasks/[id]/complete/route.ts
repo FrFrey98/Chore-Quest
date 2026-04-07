@@ -6,6 +6,7 @@ import { requirePermission } from '@/lib/permissions'
 import { loadGameConfig } from '@/lib/config'
 import { getNextDueAt } from '@/lib/recurring'
 import { checkAndUnlockAchievements } from '@/lib/achievements'
+import { updateChallengeProgress } from '@/lib/challenges'
 import { applyBonus, updateStreakOnCompletion, recalculateStreak, getOrCreateStreakState, getEffectiveStreak } from '@/lib/streak'
 import { calculateHealth, getDecayHours, applyPointDecay } from '@/lib/health'
 
@@ -254,6 +255,27 @@ export async function POST(
     }
   }
 
+  // Challenge progress update for current user
+  let completedChallenges: Array<{ id: string; title: string; titleDe: string; emoji: string; bonusPoints: number }> = []
+  try {
+    completedChallenges = await updateChallengeProgress(
+      userId,
+      task.categoryId,
+      withUserIds.length > 0
+    )
+  } catch {
+    // Challenge update failure should not block the completion response
+  }
+
+  // Challenge progress update for partners
+  for (const partnerId of withUserIds) {
+    try {
+      await updateChallengeProgress(partnerId, task.categoryId, true)
+    } catch {
+      // Silent fail
+    }
+  }
+
   return NextResponse.json({
     ...completion,
     basePoints: effectiveBasePoints,
@@ -262,6 +284,7 @@ export async function POST(
     isShared: withUserIds.length > 0,
     partnerCount: withUserIds.length,
     newAchievements,
+    completedChallenges,
     healthPercent: health !== undefined ? health : 1,
     decayApplied: effectiveBasePoints < task.points,
     originalBasePoints: task.points,
