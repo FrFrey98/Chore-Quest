@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { loadGameConfig } from '@/lib/config'
-import { getLevel, getTotalEarned } from '@/lib/points'
+import { getLevel, getTotalEarned, getChallengeBonusEarned } from '@/lib/points'
 import { getOrCreateStreakState } from '@/lib/streak'
 
 export async function GET(req: NextRequest) {
@@ -28,11 +28,14 @@ export async function GET(req: NextRequest) {
       orderBy: { completedAt: 'asc' },
     })
 
-    const allTimeCompletions = await prisma.taskCompletion.findMany({
-      where: { userId: session.user.id },
-      select: { points: true, completedAt: true },
-    })
-    const totalEarned = getTotalEarned(allTimeCompletions)
+    const [allTimeCompletions, challengeBonus] = await Promise.all([
+      prisma.taskCompletion.findMany({
+        where: { userId: session.user.id },
+        select: { points: true, completedAt: true },
+      }),
+      getChallengeBonusEarned(session.user.id),
+    ])
+    const totalEarned = getTotalEarned(allTimeCompletions) + challengeBonus
 
     // Streak
     const streakState = await getOrCreateStreakState(session.user.id)

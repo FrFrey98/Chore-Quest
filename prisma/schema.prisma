@@ -35,13 +35,15 @@ model User {
   sharedCompletions  TaskCompletion[] @relation("sharedCompletions")
   pushSubscriptions  PushSubscription[]
   assignedTasks      Task[]           @relation("TaskAssignments")
+  userChallenges     UserChallenge[]
 }
 
 model Category {
-  id    String @id @default(cuid())
-  name  String
-  emoji String
-  tasks Task[]
+  id         String      @id @default(cuid())
+  name       String
+  emoji      String
+  tasks      Task[]
+  challenges Challenge[]
 }
 
 model Task {
@@ -193,4 +195,38 @@ model PushSubscription {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model Challenge {
+  id            String   @id @default(cuid())
+  type          String   // 'task_count', 'category_count', 'streak_days', 'teamwork_count'
+  title         String
+  titleDe       String
+  description   String
+  descriptionDe String
+  emoji         String
+  targetValue   Int
+  bonusPoints   Int
+  weekStart     DateTime
+  weekEnd       DateTime
+  categoryId    String?  // Only for category_count type
+  createdAt     DateTime @default(now())
+
+  category       Category?       @relation(fields: [categoryId], references: [id])
+  userChallenges UserChallenge[]
+}
+
+model UserChallenge {
+  id              String    @id @default(cuid())
+  userId          String
+  challengeId     String
+  currentProgress Int       @default(0)
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([challengeId])
 }

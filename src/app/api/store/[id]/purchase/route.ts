@@ -20,15 +20,22 @@ export async function POST(
   try {
     const purchase = await prisma.$transaction(async (tx) => {
       // Re-check points balance inside transaction
-      const completions = await tx.taskCompletion.findMany({
-        where: { userId: session.user.id },
-        select: { points: true },
-      })
-      const purchases = await tx.purchase.findMany({
-        where: { userId: session.user.id },
-        select: { pointsSpent: true },
-      })
-      const earned = getTotalEarned(completions)
+      const [completions, purchases, completedChallenges] = await Promise.all([
+        tx.taskCompletion.findMany({
+          where: { userId: session.user.id },
+          select: { points: true },
+        }),
+        tx.purchase.findMany({
+          where: { userId: session.user.id },
+          select: { pointsSpent: true },
+        }),
+        tx.userChallenge.findMany({
+          where: { userId: session.user.id, completedAt: { not: null } },
+          include: { challenge: { select: { bonusPoints: true } } },
+        }),
+      ])
+      const challengeBonus = completedChallenges.reduce((s, uc) => s + uc.challenge.bonusPoints, 0)
+      const earned = getTotalEarned(completions) + challengeBonus
       const spent = purchases.reduce((s, p) => s + p.pointsSpent, 0)
       const balance = getCurrentPoints(earned, spent)
 

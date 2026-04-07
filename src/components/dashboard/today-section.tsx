@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useToast } from '@/components/toast-provider'
 import { Check, Users, Undo2 } from 'lucide-react'
 import { HealthBar } from '@/components/tasks/health-bar'
@@ -50,6 +50,8 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   const { toast } = useToast()
   const t = useTranslations('dashboard')
   const tc = useTranslations('common')
+  const tCh = useTranslations('challenges')
+  const locale = useLocale()
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set())
   const [sharedTaskId, setSharedTaskId] = useState<string | null>(null)
@@ -122,6 +124,16 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
           setTimeout(() => {
             toast(t('achievementUnlocked', { emoji: a.emoji, title: a.title }), 'success')
           }, 1500 + i * 1500)
+        })
+      }
+
+      if (data.completedChallenges?.length) {
+        const achDelay = (data.newAchievements?.length ?? 0) * 1500
+        data.completedChallenges.forEach((ch: { emoji: string; title: string; titleDe: string }, i: number) => {
+          setTimeout(() => {
+            const chTitle = locale === 'de' ? ch.titleDe : ch.title
+            toast(tCh('challengeCompleted', { emoji: ch.emoji, title: chTitle }), 'success')
+          }, 1500 + achDelay + i * 1500)
         })
       }
 

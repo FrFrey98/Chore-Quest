@@ -16,6 +16,7 @@ import { WeekChart } from '@/components/dashboard/week-chart'
 import { GroupedFeed } from '@/components/dashboard/grouped-feed'
 import { DashboardNotifications } from '@/components/dashboard/dashboard-notifications'
 import { YesterdayBanner } from '@/components/dashboard/yesterday-banner'
+import { ChallengesWidget } from '@/components/dashboard/challenges-widget'
 
 const WEEKDAY_KEYS = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'] as const
 
@@ -68,6 +69,32 @@ export default async function DashboardPage() {
   const partnerAchievementCount = partner ? partner.userAchievements.length : 0
   const userOnVacation = isOnVacation(userRecord?.vacationStart, userRecord?.vacationEnd)
   const partnerOnVacation = partner ? isOnVacation(partner.vacationStart, partner.vacationEnd) : false
+
+  // --- Challenges Widget Data ---
+  const userChallenges = await prisma.userChallenge.findMany({
+    where: {
+      userId,
+      challenge: {
+        weekStart: { lte: now },
+        weekEnd: { gte: now },
+      },
+    },
+    include: { challenge: true },
+    orderBy: { challenge: { createdAt: 'asc' } },
+  })
+  const challengesForWidget = userChallenges.map((uc) => ({
+    id: uc.id,
+    currentProgress: uc.currentProgress,
+    completedAt: uc.completedAt?.toISOString() ?? null,
+    challenge: {
+      id: uc.challenge.id,
+      emoji: uc.challenge.emoji,
+      title: uc.challenge.title,
+      titleDe: uc.challenge.titleDe,
+      targetValue: uc.challenge.targetValue,
+      bonusPoints: uc.challenge.bonusPoints,
+    },
+  }))
 
   // --- Today Section Data ---
   const todayStart = new Date(now)
@@ -262,6 +289,8 @@ export default async function DashboardPage() {
         balance={balance}
         levelDefinitions={config.levelDefinitions}
       />
+
+      <ChallengesWidget challenges={challengesForWidget} />
 
       {partner && partnerLevel && (
         <Link href={`/profile/${partner.id}`}>

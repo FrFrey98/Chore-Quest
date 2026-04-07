@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/toast-provider'
@@ -30,6 +30,8 @@ export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursB
   const { toast } = useToast()
   const t = useTranslations('tasks')
   const tc = useTranslations('common')
+  const tCh = useTranslations('challenges')
+  const locale = useLocale()
 
   async function handleComplete() {
     setLoading(true)
@@ -73,6 +75,16 @@ export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursB
           setTimeout(() => {
             toast(t('achievementUnlocked', { emoji: a.emoji, title: a.title }), 'success')
           }, 1500 + i * 1500)
+        })
+      }
+
+      if (data.completedChallenges?.length) {
+        const achDelay = (data.newAchievements?.length ?? 0) * 1500
+        data.completedChallenges.forEach((ch: { emoji: string; title: string; titleDe: string }, i: number) => {
+          setTimeout(() => {
+            const chTitle = locale === 'de' ? ch.titleDe : ch.title
+            toast(tCh('challengeCompleted', { emoji: ch.emoji, title: chTitle }), 'success')
+          }, 1500 + achDelay + i * 1500)
         })
       }
 
