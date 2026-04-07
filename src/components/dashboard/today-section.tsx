@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/toast-provider'
 import { Check, Users, Undo2 } from 'lucide-react'
+import { HealthBar } from '@/components/tasks/health-bar'
+import { getDecayHours } from '@/lib/health'
 
 type CompletedTask = {
   id: string
@@ -21,6 +23,9 @@ type DueTask = {
   allowMultiple: boolean
   dailyLimit: number | null
   todayCount: number
+  nextDueAt?: string | null
+  decayHours?: number | null
+  recurringInterval?: string | null
 }
 
 type SuggestedTask = {
@@ -35,9 +40,10 @@ type TodaySectionProps = {
   suggestions: SuggestedTask[]
   partnerId?: string
   partnerName?: string
+  decayHoursByInterval?: Record<string, number>
 }
 
-export function TodaySection({ completed, due, suggestions, partnerId, partnerName }: TodaySectionProps) {
+export function TodaySection({ completed, due, suggestions, partnerId, partnerName, decayHoursByInterval }: TodaySectionProps) {
   const router = useRouter()
   const { toast } = useToast()
   const t = useTranslations('dashboard')
@@ -175,6 +181,12 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
               <span className="text-sm text-foreground truncate block">{task.title}</span>
               {task.allowMultiple && task.dailyLimit && (
                 <span className="text-[10px] text-muted-foreground">{task.todayCount}/{task.dailyLimit} {t('today').toLowerCase()}</span>
+              )}
+              {decayHoursByInterval && (
+                <HealthBar
+                  nextDueAt={task.nextDueAt ?? null}
+                  decayHours={getDecayHours(task.decayHours, task.recurringInterval, decayHoursByInterval)}
+                />
               )}
             </div>
             {partnerId && (

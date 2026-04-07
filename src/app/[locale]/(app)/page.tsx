@@ -77,7 +77,7 @@ export default async function DashboardPage() {
           { nextDueAt: { lte: now } },
         ],
       },
-      select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true },
+      select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true, nextDueAt: true, decayHours: true, recurringInterval: true },
     }),
     prisma.taskCompletion.findMany({
       where: { userId, completedAt: { gte: yesterdayStart, lt: todayStart } },
@@ -115,6 +115,7 @@ export default async function DashboardPage() {
     })
     .map((t) => ({
       ...t,
+      nextDueAt: t.nextDueAt?.toISOString() ?? null,
       todayCount: completionCountByTask.get(t.id) ?? 0,
     }))
 
@@ -257,6 +258,7 @@ export default async function DashboardPage() {
         suggestions={suggestions}
         partnerId={partner?.id}
         partnerName={partner?.name ?? t('partner')}
+        decayHoursByInterval={config.decayHoursByInterval}
       />
 
       <WeekChart

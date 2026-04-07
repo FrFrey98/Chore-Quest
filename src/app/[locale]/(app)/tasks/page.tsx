@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { loadGameConfig } from '@/lib/config'
 import { getTasksForMonth } from '@/lib/calendar'
 import { TasksClient } from './tasks-client'
 
@@ -16,7 +17,10 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   const calMonth = resolvedParams.month ? parseInt(resolvedParams.month) : now.getUTCMonth() + 1
 
   const userId = session.user?.id
-  const users = await prisma.user.findMany({ select: { id: true, name: true } })
+  const [users, config] = await Promise.all([
+    prisma.user.findMany({ select: { id: true, name: true } }),
+    loadGameConfig(),
+  ])
   const partner = users.find((u) => u.id !== userId)
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } })
 
@@ -32,7 +36,18 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   )
   const grouped = categories.map((cat) => ({
     ...cat,
-    tasks: visible.filter((t) => t.categoryId === cat.id),
+    tasks: visible.filter((t) => t.categoryId === cat.id).map((t) => ({
+      id: t.id,
+      title: t.title,
+      emoji: t.emoji,
+      points: t.points,
+      isRecurring: t.isRecurring,
+      recurringInterval: t.recurringInterval,
+      allowMultiple: t.allowMultiple,
+      dailyLimit: t.dailyLimit,
+      nextDueAt: t.nextDueAt?.toISOString() ?? null,
+      decayHours: t.decayHours ?? null,
+    })),
   }))
 
   // Calendar view data
@@ -105,6 +120,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
       calMonth={calMonth}
       today={now.toISOString().slice(0, 10)}
       availableTasks={availableTasks}
+      decayHoursByInterval={config.decayHoursByInterval}
     />
   )
 }
