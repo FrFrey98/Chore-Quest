@@ -13,8 +13,8 @@ export default async function SetupPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="w-full max-w-sm p-8 bg-white rounded-2xl shadow-lg">
+    <main className="min-h-screen flex items-center justify-center bg-muted/50">
+      <div className="w-full max-w-sm p-8 bg-card rounded-2xl shadow-lg">
         <h1 className="text-2xl font-bold text-center mb-2">{t('heading')}</h1>
         <SetupForm />
       </div>

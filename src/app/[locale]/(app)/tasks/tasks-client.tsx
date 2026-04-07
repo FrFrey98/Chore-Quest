@@ -48,17 +48,17 @@ export function TasksClient({ grouped, categories, users, userRole, partnerId, p
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-xl font-bold">{t('heading')}</h1>
         <div className="flex items-center gap-2">
-          <div className="flex bg-slate-100 rounded-lg p-0.5">
+          <div className="flex bg-muted rounded-lg p-0.5">
             <button
               onClick={() => router.push('/tasks?view=list')}
-              className={`p-1.5 rounded-md transition-colors ${!isCalendar ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-md transition-colors ${!isCalendar ? 'bg-card shadow-sm text-indigo-600' : 'text-muted-foreground hover:text-muted-foreground'}`}
               title={t('listView')}
             >
               <List size={16} />
             </button>
             <button
               onClick={() => router.push(`/tasks?view=calendar&year=${calYear}&month=${calMonth}`)}
-              className={`p-1.5 rounded-md transition-colors ${isCalendar ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-md transition-colors ${isCalendar ? 'bg-card shadow-sm text-indigo-600' : 'text-muted-foreground hover:text-muted-foreground'}`}
               title={t('calendarView')}
             >
               <Calendar size={16} />
@@ -70,7 +70,7 @@ export function TasksClient({ grouped, categories, users, userRole, partnerId, p
 
       {isCalendar ? (
         <>
-          <p className="text-sm text-slate-500 mb-4">{t('monthOverview')}</p>
+          <p className="text-sm text-muted-foreground mb-4">{t('monthOverview')}</p>
           {calendarDays && (
             <CalendarView
               year={calYear}
@@ -85,12 +85,12 @@ export function TasksClient({ grouped, categories, users, userRole, partnerId, p
         </>
       ) : (
         <>
-          <p className="text-sm text-slate-500 mb-6">{t('openTasks', { total })}</p>
+          <p className="text-sm text-muted-foreground mb-6">{t('openTasks', { total })}</p>
           {total === 0 && (
             <div className="text-center py-16">
               <p className="text-4xl mb-3">🎉</p>
-              <p className="text-lg font-semibold text-slate-700">{t('allDone')}</p>
-              <p className="text-sm text-slate-400 mt-1">{t('allDoneSubtitle')}</p>
+              <p className="text-lg font-semibold text-foreground">{t('allDone')}</p>
+              <p className="text-sm text-muted-foreground mt-1">{t('allDoneSubtitle')}</p>
             </div>
           )}
           {grouped.map((cat) => (

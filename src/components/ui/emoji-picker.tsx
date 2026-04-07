@@ -51,16 +51,16 @@ export function EmojiPicker({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full h-9 px-3 border border-slate-200 rounded-md text-2xl flex items-center justify-center hover:bg-slate-50 transition-colors"
+        className="w-full h-9 px-3 border border-border rounded-md text-2xl flex items-center justify-center hover:bg-muted/50 transition-colors"
       >
         {value || '😀'}
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-slate-200 rounded-xl shadow-xl p-3 w-72 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1 z-50 bg-card border border-border rounded-xl shadow-xl p-3 w-72 max-h-64 overflow-y-auto">
           {EMOJI_GROUPS.map((group) => (
             <div key={group.label} className="mb-2 last:mb-0">
-              <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold mb-1">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">
                 {group.label}
               </p>
               <div className="flex flex-wrap gap-0.5">

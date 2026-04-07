@@ -176,17 +176,17 @@ export function CalendarView({
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigateMonth(-1)}
-          className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors"
+          className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
           aria-label={t('prevMonth')}
         >
           <ChevronLeft size={20} />
         </button>
-        <h2 className="text-base font-semibold text-slate-800">
+        <h2 className="text-base font-semibold text-foreground">
           {tMonths(MONTH_KEYS[month - 1])} {year}
         </h2>
         <button
           onClick={() => navigateMonth(1)}
-          className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors"
+          className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
           aria-label={t('nextMonth')}
         >
           <ChevronRight size={20} />
@@ -197,7 +197,7 @@ export function CalendarView({
       <div className="grid grid-cols-7 gap-1">
         {/* Weekday headers */}
         {WEEKDAY_KEYS.map((d) => (
-          <div key={d} className="text-center text-xs font-medium text-slate-400 py-1">
+          <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">
             {tWeekdays(d)}
           </div>
         ))}
@@ -224,13 +224,13 @@ export function CalendarView({
             <button
               key={date}
               onClick={() => toggleDay(date)}
-              className={`min-h-[52px] rounded-lg bg-white p-1 flex flex-col items-center gap-0.5 transition-all
+              className={`min-h-[52px] rounded-lg bg-card p-1 flex flex-col items-center gap-0.5 transition-all
                 ${isToday ? 'ring-2 ring-indigo-400' : ''}
                 ${isSelected ? 'ring-2 ring-indigo-500' : ''}
-                ${!isToday && !isSelected ? 'hover:bg-slate-50' : ''}
+                ${!isToday && !isSelected ? 'hover:bg-muted/50' : ''}
               `}
             >
-              <span className={`text-xs font-medium leading-none ${isToday ? 'text-indigo-600' : 'text-slate-700'}`}>
+              <span className={`text-xs font-medium leading-none ${isToday ? 'text-indigo-600' : 'text-foreground'}`}>
                 {dayNum}
               </span>
               {/* Emoji badges */}
@@ -240,7 +240,7 @@ export function CalendarView({
                     <span key={i} className="text-[10px] leading-none">{tk.emoji}</span>
                   ))}
                   {overflow > 0 && (
-                    <span className="text-[9px] text-slate-400 leading-none">+{overflow}</span>
+                    <span className="text-[9px] text-muted-foreground leading-none">+{overflow}</span>
                   )}
                 </div>
               )}
@@ -254,7 +254,7 @@ export function CalendarView({
                     <span key={`m-${i}`} className="w-[5px] h-[5px] rounded-full bg-red-400 inline-block" />
                   ))}
                   {pendingTasks.map((_, i) => (
-                    <span key={`p-${i}`} className="w-[5px] h-[5px] rounded-full bg-slate-300 inline-block" />
+                    <span key={`p-${i}`} className="w-[5px] h-[5px] rounded-full bg-muted-foreground/40 inline-block" />
                   ))}
                 </div>
               )}
@@ -264,13 +264,13 @@ export function CalendarView({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 text-xs text-slate-500">
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
           <span className="w-[5px] h-[5px] rounded-full bg-green-500 inline-block" />
           {t('legend.completed')}
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-[5px] h-[5px] rounded-full bg-slate-300 inline-block" />
+          <span className="w-[5px] h-[5px] rounded-full bg-muted-foreground/40 inline-block" />
           {t('legend.open')}
         </span>
         <span className="flex items-center gap-1">
@@ -281,9 +281,9 @@ export function CalendarView({
 
       {/* Day detail */}
       {selectedDate && (
-        <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-800">
+            <h3 className="text-sm font-semibold text-foreground">
               {new Date(selectedDate + 'T12:00:00').toLocaleDateString(locale, {
                 weekday: 'long',
                 day: 'numeric',
@@ -292,7 +292,7 @@ export function CalendarView({
             </h3>
             <button
               onClick={() => { setSelectedDate(null); setShowAddTask(false) }}
-              className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors"
+              className="p-1 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
             >
               <X size={16} />
             </button>
@@ -309,11 +309,11 @@ export function CalendarView({
                       ? 'bg-green-50'
                       : task.status === 'missed'
                       ? 'bg-red-50'
-                      : 'bg-slate-50'
+                      : 'bg-muted/50'
                   }`}
                 >
                   <span className="text-lg">{task.emoji}</span>
-                  <span className="flex-1 text-sm text-slate-700 truncate">{task.title}</span>
+                  <span className="flex-1 text-sm text-foreground truncate">{task.title}</span>
                   {task.status === 'completed' && (
                     <span className="text-xs text-green-600 font-semibold">✓ +{task.points}</span>
                   )}
@@ -335,7 +335,7 @@ export function CalendarView({
                     <button
                       onClick={() => handleToggleSkip(task.taskId, false)}
                       disabled={loadingId === task.taskId}
-                      className="flex items-center gap-1 text-slate-400 hover:text-red-500 hover:bg-red-50 text-xs font-semibold rounded-lg px-2 py-1.5 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1 text-muted-foreground hover:text-red-500 hover:bg-red-50 text-xs font-semibold rounded-lg px-2 py-1.5 transition-colors disabled:opacity-50"
                       title={t('taskSkipped')}
                     >
                       {loadingId === task.taskId ? '…' : <X size={14} />}
@@ -345,7 +345,7 @@ export function CalendarView({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-slate-400">{t('noTasks')}</p>
+            <p className="text-sm text-muted-foreground">{t('noTasks')}</p>
           )}
 
           {/* Add task button for future days */}
@@ -361,10 +361,10 @@ export function CalendarView({
               ) : (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-600">{t('addTask')}</span>
+                    <span className="text-xs font-semibold text-muted-foreground">{t('addTask')}</span>
                     <button
                       onClick={() => setShowAddTask(false)}
-                      className="text-xs text-slate-400 hover:text-slate-600"
+                      className="text-xs text-muted-foreground hover:text-muted-foreground"
                     >
                       {t('cancel')}
                     </button>
@@ -375,15 +375,15 @@ export function CalendarView({
                         key={tk.id}
                         onClick={() => handleAddOverride(tk.id)}
                         disabled={loadingId === tk.id}
-                        className="flex items-center gap-2 p-2 bg-slate-50 hover:bg-indigo-50 rounded-lg text-sm text-left transition-colors disabled:opacity-50"
+                        className="flex items-center gap-2 p-2 bg-muted/50 hover:bg-indigo-50 rounded-lg text-sm text-left transition-colors disabled:opacity-50"
                       >
                         <span>{tk.emoji}</span>
-                        <span className="flex-1 text-slate-700">{tk.title}</span>
-                        {loadingId === tk.id && <span className="text-xs text-slate-400">…</span>}
+                        <span className="flex-1 text-foreground">{tk.title}</span>
+                        {loadingId === tk.id && <span className="text-xs text-muted-foreground">…</span>}
                       </button>
                     ))}
                     {availableTasks.length === 0 && (
-                      <p className="text-xs text-slate-400">{t('noTasksAvailable')}</p>
+                      <p className="text-xs text-muted-foreground">{t('noTasksAvailable')}</p>
                     )}
                   </div>
                 </div>

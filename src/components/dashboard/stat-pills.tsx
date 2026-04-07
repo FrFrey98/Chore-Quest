@@ -59,39 +59,39 @@ export function StatPills({
       <div className="grid grid-cols-[1fr_2fr_1fr] gap-3">
         {/* Streak — clickable */}
         <Link href="/streak">
-          <div className="bg-white border border-slate-200 rounded-xl p-3 text-center flex flex-col items-center justify-center hover:bg-slate-50 transition-colors cursor-pointer h-full">
+          <div className="bg-card border border-border rounded-xl p-3 text-center flex flex-col items-center justify-center hover:bg-muted/50 transition-colors cursor-pointer h-full">
             <span className="text-2xl">🔥</span>
-            <span className="text-2xl font-bold text-slate-800">{streakDays}</span>
+            <span className="text-2xl font-bold text-foreground">{streakDays}</span>
             {streakBonusPercent > 0 ? (
               <span className="text-[10px] text-indigo-600 font-medium">+{streakBonusPercent}%</span>
             ) : (
-              <span className="text-[10px] text-slate-500">{t('streak')}</span>
+              <span className="text-[10px] text-muted-foreground">{t('streak')}</span>
             )}
           </div>
         </Link>
 
         {/* Level Progress */}
-        <div className="bg-white border border-slate-200 rounded-xl p-3">
+        <div className="bg-card border border-border rounded-xl p-3">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-slate-800">Lv.{level} {levelTitle}</span>
+            <span className="text-xs font-semibold text-foreground">Lv.{level} {levelTitle}</span>
             <span className="text-xs text-indigo-600 font-semibold">{progressPercent}%</span>
           </div>
-          <div className="bg-slate-200 rounded-full h-2 overflow-hidden">
+          <div className="bg-accent rounded-full h-2 overflow-hidden">
             <div
               className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-full rounded-full transition-all"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <p className="text-[10px] text-slate-400 mt-1">
+          <p className="text-[10px] text-muted-foreground mt-1">
             {nextLevel ? t('ptsToNext', { points: pointsToNext, title: nextLevel.title }) : t('maxLevel')}
           </p>
         </div>
 
         {/* Points */}
-        <div className="bg-white border border-slate-200 rounded-xl p-3 text-center flex flex-col items-center justify-center">
+        <div className="bg-card border border-border rounded-xl p-3 text-center flex flex-col items-center justify-center">
           <span className="text-2xl">💰</span>
-          <span className="text-2xl font-bold text-slate-800">{balance.toLocaleString()}</span>
-          <span className="text-[10px] text-slate-500">{tc('pointsFull')}</span>
+          <span className="text-2xl font-bold text-foreground">{balance.toLocaleString()}</span>
+          <span className="text-[10px] text-muted-foreground">{tc('pointsFull')}</span>
         </div>
       </div>
     </div>

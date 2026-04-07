@@ -90,23 +90,23 @@ export function NotificationsTab({ userId, notificationsEnabled, vapidPublicKey 
 
   return (
     <div className="space-y-4">
-      <div className="bg-white border border-slate-200 rounded-xl p-4">
+      <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {enabled ? <Bell size={20} className="text-indigo-600" /> : <BellOff size={20} className="text-slate-400" />}
+            {enabled ? <Bell size={20} className="text-indigo-600" /> : <BellOff size={20} className="text-muted-foreground" />}
             <div>
-              <div className="text-sm font-semibold text-slate-800">{t('pushLabel')}</div>
-              <div className="text-xs text-slate-500">{t('pushDescription')}</div>
+              <div className="text-sm font-semibold text-foreground">{t('pushLabel')}</div>
+              <div className="text-xs text-muted-foreground">{t('pushDescription')}</div>
             </div>
           </div>
           <button
             onClick={handleToggle}
             disabled={loading || !pushSupported || !configured}
             className={`relative w-12 h-7 rounded-full transition-colors ${
-              enabled ? 'bg-indigo-600' : 'bg-slate-300'
+              enabled ? 'bg-indigo-600' : 'bg-muted-foreground/40'
             } ${loading || !pushSupported || !configured ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
-            <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
+            <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-card rounded-full shadow transition-transform ${
               enabled ? 'translate-x-5' : 'translate-x-0'
             }`} />
           </button>

@@ -58,18 +58,18 @@ export function StreakTab({ config }: { config: GameConfig }) {
     <div className="space-y-6">
       <div>
         <h2 className="font-semibold mb-1">{t('heading')}</h2>
-        <p className="text-sm text-slate-500 mb-3">{t('description')}</p>
+        <p className="text-sm text-muted-foreground mb-3">{t('description')}</p>
         <div className="space-y-2">
           {tiers.map((tier, i) => (
-            <div key={i} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center flex-wrap">
-              <label className="text-xs text-slate-500 w-12">{t('fromDay')}</label>
+            <div key={i} className="bg-card rounded-lg p-3 shadow-sm flex gap-2 items-center flex-wrap">
+              <label className="text-xs text-muted-foreground w-12">{t('fromDay')}</label>
               <Input
                 type="number"
                 className="w-16 text-center"
                 value={tier.minDays}
                 onChange={(e) => updateTier(i, 'minDays', Number(e.target.value))}
               />
-              <label className="text-xs text-slate-500 w-12">{t('bonus')}</label>
+              <label className="text-xs text-muted-foreground w-12">{t('bonus')}</label>
               <div className="flex items-center gap-1">
                 <Input
                   type="number"
@@ -77,9 +77,9 @@ export function StreakTab({ config }: { config: GameConfig }) {
                   value={tier.percent}
                   onChange={(e) => updateTier(i, 'percent', Number(e.target.value))}
                 />
-                <span className="text-sm text-slate-400">%</span>
+                <span className="text-sm text-muted-foreground">%</span>
               </div>
-              <label className="text-xs text-slate-500 w-10">{t('name')}</label>
+              <label className="text-xs text-muted-foreground w-10">{t('name')}</label>
               <Input
                 className="flex-1 min-w-[100px]"
                 value={tier.name}
@@ -94,21 +94,21 @@ export function StreakTab({ config }: { config: GameConfig }) {
 
       <div className="border-t pt-4">
         <h2 className="font-semibold mb-1">{t('restoreHeading')}</h2>
-        <p className="text-sm text-slate-500 mb-3">{t('restoreDescription')}</p>
+        <p className="text-sm text-muted-foreground mb-3">{t('restoreDescription')}</p>
         <div className="flex gap-4">
           <div>
-            <label className="text-xs text-slate-500">{t('basePrice')}</label>
+            <label className="text-xs text-muted-foreground">{t('basePrice')}</label>
             <Input type="number" className="w-24" value={restoreBase} onChange={(e) => setRestoreBase(Number(e.target.value))} />
           </div>
           <div>
-            <label className="text-xs text-slate-500">{t('perDay')}</label>
+            <label className="text-xs text-muted-foreground">{t('perDay')}</label>
             <Input type="number" className="w-24" value={restorePerDay} onChange={(e) => setRestorePerDay(Number(e.target.value))} />
           </div>
         </div>
       </div>
 
       <div className="flex items-center justify-between">
-        {msg && <p className="text-sm text-slate-500">{msg}</p>}
+        {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
         <Button onClick={save} disabled={saving} className="ml-auto">
           {saving ? tc('saving') : tc('save')}
         </Button>

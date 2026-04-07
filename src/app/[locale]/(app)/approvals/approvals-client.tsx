@@ -22,13 +22,13 @@ export function ApprovalsClient({ approvals }: { approvals: Approval[] }) {
     <div>
       <h1 className="text-xl font-bold mb-1">{t('heading')}</h1>
       {approvals.length > 0 && (
-        <p className="text-sm text-slate-500 mb-6">{t('openCount', { count: approvals.length })}</p>
+        <p className="text-sm text-muted-foreground mb-6">{t('openCount', { count: approvals.length })}</p>
       )}
       {approvals.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-4xl mb-3">✅</p>
-          <p className="text-lg font-semibold text-slate-700">{t('allApproved')}</p>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-lg font-semibold text-foreground">{t('allApproved')}</p>
+          <p className="text-sm text-muted-foreground mt-1">
             {t('allApprovedSubtitle')}
           </p>
         </div>

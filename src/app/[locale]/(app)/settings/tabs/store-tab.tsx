@@ -35,7 +35,7 @@ export function StoreTab({ storeItems }: { storeItems: StoreItem[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
+      <div className="bg-card rounded-xl p-4 shadow-sm space-y-3">
         <h2 className="font-semibold">{t('newHeading')}</h2>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -72,16 +72,16 @@ export function StoreTab({ storeItems }: { storeItems: StoreItem[] }) {
         {error && <p className="text-red-500 text-xs">{error}</p>}
       </div>
 
-      <h2 className="font-semibold text-sm text-slate-500 uppercase tracking-wide">{t('existingHeading')}</h2>
+      <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('existingHeading')}</h2>
       <div className="space-y-2">
         {storeItems.filter((i) => i.type !== 'streak_restore').map((item) => (
-          <div key={item.id} className="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm">
+          <div key={item.id} className="flex items-center gap-3 bg-card rounded-xl p-3 shadow-sm">
             <span>{item.emoji}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{item.title}</p>
-              <p className="text-xs text-slate-400">{item.pointCost} {tc('points')} · {item.type}</p>
+              <p className="text-xs text-muted-foreground">{item.pointCost} {tc('points')} · {item.type}</p>
             </div>
-            <span className={`text-xs px-2 py-0.5 rounded ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+            <span className={`text-xs px-2 py-0.5 rounded ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'}`}>
               {item.isActive ? tc('active') : tc('inactive')}
             </span>
           </div>

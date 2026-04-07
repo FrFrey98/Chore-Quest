@@ -81,12 +81,12 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
   if (done) return null
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
+    <div className="flex items-center gap-3 p-3 bg-card rounded-xl shadow-sm">
       <span className="text-2xl">{task.emoji}</span>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-slate-800 truncate">{task.title}</p>
+        <p className="font-medium text-foreground truncate">{task.title}</p>
         {task.isRecurring && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             {task.recurringInterval === 'daily' ? t('recurring.daily')
               : task.recurringInterval === 'weekly' ? t('recurring.weekly')
               : t('recurring.monthly')}
@@ -100,7 +100,7 @@ export function TaskCard({ task, onComplete, partnerId, partnerName }: {
         <button
           onClick={() => setShared(!shared)}
           className={`p-1.5 rounded-lg transition-colors ${
-            shared ? 'bg-amber-100 text-amber-700' : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
+            shared ? 'bg-amber-100 text-amber-700' : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted'
           }`}
           title={t('togetherWith', { name: partnerName ?? '' })}
         >

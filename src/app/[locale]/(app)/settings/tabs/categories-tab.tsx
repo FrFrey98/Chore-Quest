@@ -76,29 +76,29 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">{t('description')}</p>
+      <p className="text-sm text-muted-foreground">{t('description')}</p>
       <div className="space-y-2">
         {categories.map((cat) => {
           const edit = edits[cat.id]
           return (
-            <div key={cat.id} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center">
+            <div key={cat.id} className="bg-card rounded-lg p-3 shadow-sm flex gap-2 items-center">
               {edit ? (
                 <>
                   <Input className="w-12 text-center text-lg" value={edit.emoji} onChange={(e) => setEdits((prev) => ({ ...prev, [cat.id]: { ...prev[cat.id], emoji: e.target.value } }))} />
                   <Input className="flex-1" value={edit.name} onChange={(e) => setEdits((prev) => ({ ...prev, [cat.id]: { ...prev[cat.id], name: e.target.value } }))} />
                   <Button size="sm" onClick={() => saveEdit(cat.id)}>✓</Button>
-                  <button onClick={() => cancelEdit(cat.id)} className="text-slate-400 px-1">✕</button>
+                  <button onClick={() => cancelEdit(cat.id)} className="text-muted-foreground px-1">✕</button>
                 </>
               ) : (
                 <>
                   <span className="text-lg w-8 text-center">{cat.emoji}</span>
                   <span className="flex-1 text-sm font-medium">{cat.name}</span>
-                  <span className="text-xs text-slate-400">{t('taskCount', { count: cat.taskCount })}</span>
-                  <button onClick={() => startEdit(cat)} className="text-slate-400 hover:text-slate-600 text-sm">✏️</button>
+                  <span className="text-xs text-muted-foreground">{t('taskCount', { count: cat.taskCount })}</span>
+                  <button onClick={() => startEdit(cat)} className="text-muted-foreground hover:text-muted-foreground text-sm">✏️</button>
                   <button
                     onClick={() => deleteCat(cat.id)}
                     disabled={cat.taskCount > 0}
-                    className={`text-lg px-1 ${cat.taskCount > 0 ? 'text-slate-300 cursor-not-allowed' : 'text-red-400 hover:text-red-600'}`}
+                    className={`text-lg px-1 ${cat.taskCount > 0 ? 'text-muted-foreground/50 cursor-not-allowed' : 'text-red-400 hover:text-red-600'}`}
                     title={cat.taskCount > 0 ? t('moveFirst') : t('deleteTooltip')}
                   >×</button>
                 </>
@@ -108,7 +108,7 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
         })}
       </div>
 
-      <div className="bg-slate-50 rounded-lg p-3 flex gap-2 items-center">
+      <div className="bg-muted/50 rounded-lg p-3 flex gap-2 items-center">
         <Input className="w-12 text-center text-lg" value={newCat.emoji} onChange={(e) => setNewCat((prev) => ({ ...prev, emoji: e.target.value }))} />
         <Input className="flex-1" placeholder={t('newPlaceholder')} value={newCat.name} onChange={(e) => setNewCat((prev) => ({ ...prev, name: e.target.value }))} />
         <Button onClick={createCat} disabled={!newCat.name.trim()}>{t('createButton')}</Button>
@@ -120,7 +120,7 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
         </div>
       )}
 
-      {msg && <p className="text-sm text-slate-500">{msg}</p>}
+      {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
     </div>
   )
 }

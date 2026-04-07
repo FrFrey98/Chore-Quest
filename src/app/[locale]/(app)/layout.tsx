@@ -9,7 +9,7 @@ import { AuthProvider } from '@/components/auth-provider'
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <div className="flex flex-col md:flex-row min-h-screen bg-slate-50">
+      <div className="flex flex-col md:flex-row min-h-screen bg-background">
         <Navigation />
         <ToastProvider>
           <SwRegister />

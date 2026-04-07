@@ -20,16 +20,16 @@ export function FeedItem({ entry, currentUserId }: { entry: FeedEntry; currentUs
   })
 
   return (
-    <div className={`flex items-start gap-3 p-3 border-l-4 ${isMe ? 'border-indigo-400' : 'border-pink-400'} bg-white rounded-r-lg shadow-sm`}>
+    <div className={`flex items-start gap-3 p-3 border-l-4 ${isMe ? 'border-indigo-400' : 'border-pink-400'} bg-card rounded-r-lg shadow-sm`}>
       <span className="text-2xl">{entry.task.emoji}</span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-slate-800 truncate">
+        <p className="text-sm font-medium text-foreground truncate">
           <span className={isMe ? 'text-indigo-600' : 'text-pink-600'}>{entry.user.name}</span>
           {t('feed.verb') ? ` ${t('feed.verb')} ` : ' '}
           <span className="font-semibold">&ldquo;{entry.task.title}&rdquo;</span>
           {' '}{t('feed.completed')}
         </p>
-        <p className="text-xs text-slate-500">{time}</p>
+        <p className="text-xs text-muted-foreground">{time}</p>
       </div>
       <span className={`text-sm font-bold whitespace-nowrap ${isMe ? 'text-indigo-600' : 'text-pink-600'}`}>
         +{entry.points} {tc('points')}

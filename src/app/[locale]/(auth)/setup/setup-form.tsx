@@ -132,7 +132,7 @@ export function SetupForm() {
     return (
       <div className="text-center space-y-4">
         <p className="text-lg font-medium">{t('welcome')}</p>
-        <p className="text-slate-500 text-sm">{t('welcomeSubtitle')}</p>
+        <p className="text-muted-foreground text-sm">{t('welcomeSubtitle')}</p>
         <Button className="w-full" onClick={() => setStep(2)}>
           {t('letsGo')}
         </Button>
@@ -187,9 +187,9 @@ export function SetupForm() {
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-center">{t('familyMembers')}</h2>
         {members.map((m, i) => (
-          <div key={m.id} className="space-y-2 border border-slate-200 rounded-xl p-4">
+          <div key={m.id} className="space-y-2 border border-border rounded-xl p-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-600">{t('memberN', { n: i + 1 })}</span>
+              <span className="text-sm font-medium text-muted-foreground">{t('memberN', { n: i + 1 })}</span>
               {members.length > 1 && (
                 <button
                   type="button"
@@ -225,7 +225,7 @@ export function SetupForm() {
               maxLength={8}
             />
             <select
-              className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm bg-white"
+              className="w-full border border-border rounded-md px-3 py-2 text-sm bg-card"
               value={m.role}
               onChange={(e) => updateMember(i, { role: e.target.value as Role })}
             >
@@ -258,10 +258,10 @@ export function SetupForm() {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-center">{t('summary')}</h2>
-      <div className="space-y-2 bg-slate-50 rounded-xl p-4">
+      <div className="space-y-2 bg-muted/50 rounded-xl p-4">
         {allUsers.map((u, i) => (
           <p key={i} className="text-sm">
-            <span className="text-slate-500">{tRoles(u.role)}:</span>{' '}
+            <span className="text-muted-foreground">{tRoles(u.role)}:</span>{' '}
             <span className="font-medium">{u.name}</span>
           </p>
         ))}

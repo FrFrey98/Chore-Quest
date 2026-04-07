@@ -39,7 +39,7 @@ export function MyRewards({ purchases }: { purchases: PendingPurchase[] }) {
 
   return (
     <div className="mb-8">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
+      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
         {t('myRewards')}
       </h2>
       <div className="space-y-2">

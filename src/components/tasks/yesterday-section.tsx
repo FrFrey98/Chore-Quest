@@ -109,13 +109,13 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
     <div className="space-y-4">
       {/* Completed yesterday */}
       {completed.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">{ty('completed')}</h2>
+        <div className="bg-card border border-border rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{ty('completed')}</h2>
           <div className="flex flex-col gap-2">
             {completed.map((c) => (
               <div key={c.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
                 <span className="text-lg">{c.emoji}</span>
-                <span className="flex-1 text-sm text-slate-400 line-through truncate">{c.title}</span>
+                <span className="flex-1 text-sm text-muted-foreground line-through truncate">{c.title}</span>
                 <span className="text-xs text-green-600 font-semibold">✓ +{c.points}</span>
                 {confirmUndoId === c.id ? (
                   <div className="flex items-center gap-1">
@@ -128,7 +128,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
                     </button>
                     <button
                       onClick={() => setConfirmUndoId(null)}
-                      className="text-xs text-slate-400 hover:text-slate-600"
+                      className="text-xs text-muted-foreground hover:text-muted-foreground"
                     >
                       {tc('no')}
                     </button>
@@ -136,7 +136,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
                 ) : (
                   <button
                     onClick={() => setConfirmUndoId(c.id)}
-                    className="text-slate-300 hover:text-slate-500 transition-colors p-1"
+                    className="text-muted-foreground/50 hover:text-muted-foreground transition-colors p-1"
                     title={t('undo')}
                   >
                     <Undo2 size={14} />
@@ -150,14 +150,14 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
 
       {/* Due yesterday — backfill */}
       {pendingDue.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">{ty('catchUp')}</h2>
+        <div className="bg-card border border-border rounded-xl p-4">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{ty('catchUp')}</h2>
           <div className="flex flex-col gap-2">
             {pendingDue.map((task) => (
               <div key={task.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400">
                 <span className="text-lg">{task.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-slate-800 truncate block">{task.title}</span>
+                  <span className="text-sm text-foreground truncate block">{task.title}</span>
                 </div>
                 {partnerId && (
                   <button
@@ -165,7 +165,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
                     className={`p-1.5 rounded-lg transition-colors ${
                       sharedTaskId === task.id
                         ? 'bg-amber-100 text-amber-700'
-                        : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
+                        : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted'
                     }`}
                     title={t('togetherWith', { name: partnerName ?? '' })}
                   >
@@ -187,8 +187,8 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
 
       {/* Empty state */}
       {!hasContent && (
-        <div className="bg-white border border-slate-200 rounded-xl p-8 text-center">
-          <p className="text-sm text-slate-400">{ty('noTasks')}</p>
+        <div className="bg-card border border-border rounded-xl p-8 text-center">
+          <p className="text-sm text-muted-foreground">{ty('noTasks')}</p>
         </div>
       )}
     </div>

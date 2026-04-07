@@ -69,7 +69,7 @@ export function StreakClient({
   }
 
   function heatColor(value: number): string {
-    if (value === 0) return 'bg-slate-100'
+    if (value === 0) return 'bg-muted'
     if (value < 20) return 'bg-indigo-200'
     if (value < 50) return 'bg-indigo-300'
     if (value < 100) return 'bg-indigo-400'
@@ -84,13 +84,13 @@ export function StreakClient({
       </Link>
 
       {/* Header */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 text-center">
+      <div className="bg-card border border-border rounded-xl p-6 text-center">
         <span className="text-5xl">🔥</span>
-        <p className="text-4xl font-bold text-slate-800 mt-2">{t('counter', { days: currentStreak })}</p>
+        <p className="text-4xl font-bold text-foreground mt-2">{t('counter', { days: currentStreak })}</p>
         {tierPercent > 0 ? (
           <p className="text-indigo-600 font-medium mt-1">{tierName} · {t('nextTierBonus', { percent: tierPercent })}</p>
         ) : (
-          <p className="text-slate-500 mt-1">{t('noBonusActive')}</p>
+          <p className="text-muted-foreground mt-1">{t('noBonusActive')}</p>
         )}
       </div>
 
@@ -126,12 +126,12 @@ export function StreakClient({
 
       {/* Next Tier Progress */}
       {nextTier && (
-        <div className="bg-white border border-slate-200 rounded-xl p-4">
+        <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold text-slate-800">{t('nextTier')}</span>
+            <span className="text-sm font-semibold text-foreground">{t('nextTier')}</span>
             <span className="text-xs text-indigo-600 font-medium">{nextTier.name} ({t('nextTierBonus', { percent: nextTier.percent })})</span>
           </div>
-          <div className="bg-slate-200 rounded-full h-2.5 overflow-hidden">
+          <div className="bg-accent rounded-full h-2.5 overflow-hidden">
             <div
               className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-full rounded-full transition-all"
               style={{
@@ -143,15 +143,15 @@ export function StreakClient({
               }}
             />
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {t('daysRemaining', { count: nextTier.daysNeeded })}
           </p>
         </div>
       )}
 
       {/* Bonus Tiers Table */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">{t('tiers.heading')}</h2>
+      <div className="bg-card border border-border rounded-xl p-4">
+        <h2 className="text-sm font-semibold text-foreground mb-3">{t('tiers.heading')}</h2>
         <div className="space-y-2">
           {tiers.map((tier) => {
             const isActive = tier.name === tierName
@@ -159,14 +159,14 @@ export function StreakClient({
               <div
                 key={tier.minDays}
                 className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm ${
-                  isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-slate-600'
+                  isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-muted-foreground'
                 }`}
               >
                 <span>
                   {isActive && '► '}{tier.name}
                 </span>
                 <span className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400">{t('tiers.fromDays', { days: tier.minDays })}</span>
+                  <span className="text-xs text-muted-foreground">{t('tiers.fromDays', { days: tier.minDays })}</span>
                   <span className={`font-medium ${isActive ? 'text-indigo-600' : ''}`}>
                     +{tier.percent}%
                   </span>
@@ -178,23 +178,23 @@ export function StreakClient({
       </div>
 
       {/* Streak History */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">{t('history.heading')}</h2>
+      <div className="bg-card border border-border rounded-xl p-4">
+        <h2 className="text-sm font-semibold text-foreground mb-3">{t('history.heading')}</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-slate-800">{bestStreak}</p>
-            <p className="text-xs text-slate-500">{t('history.best')}</p>
+            <p className="text-2xl font-bold text-foreground">{bestStreak}</p>
+            <p className="text-xs text-muted-foreground">{t('history.best')}</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-slate-800">{restoreCount}</p>
-            <p className="text-xs text-slate-500">{t('history.restoreCount')}</p>
+            <p className="text-2xl font-bold text-foreground">{restoreCount}</p>
+            <p className="text-xs text-muted-foreground">{t('history.restoreCount')}</p>
           </div>
         </div>
       </div>
 
       {/* Heatmap */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">{t('history.activityHeading')}</h2>
+      <div className="bg-card border border-border rounded-xl p-4">
+        <h2 className="text-sm font-semibold text-foreground mb-3">{t('history.activityHeading')}</h2>
         <div className="flex gap-1 justify-center">
           {weeks.map((week, wi) => (
             <div key={wi} className="flex flex-col gap-1">
@@ -211,9 +211,9 @@ export function StreakClient({
       </div>
 
       {/* Explanation */}
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-slate-700 mb-2">{t('howItWorks.heading')}</h2>
-        <p className="text-xs text-slate-600 leading-relaxed">
+      <div className="bg-muted/50 border border-border rounded-xl p-4">
+        <h2 className="text-sm font-semibold text-foreground mb-2">{t('howItWorks.heading')}</h2>
+        <p className="text-xs text-muted-foreground leading-relaxed">
           {t('howItWorks.body')}
         </p>
       </div>

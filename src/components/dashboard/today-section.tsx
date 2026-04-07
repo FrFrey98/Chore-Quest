@@ -126,9 +126,9 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4">
+    <div className="bg-card border border-border rounded-xl p-4 mb-4">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">{t('today')}</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('today')}</h2>
         <span className="bg-green-50 text-green-700 text-xs font-semibold rounded-full px-2 py-0.5">
           {t('doneOfTotal', { done: doneCount, total: totalTasks })}
         </span>
@@ -138,7 +138,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
         {completed.map((task) => (
           <div key={task.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
             <span className="text-lg">{task.emoji}</span>
-            <span className="flex-1 text-sm text-slate-400 line-through truncate">{task.title}</span>
+            <span className="flex-1 text-sm text-muted-foreground line-through truncate">{task.title}</span>
             <span className="text-xs text-green-600 font-semibold">✓ +{task.points}</span>
             {confirmUndoId === task.id ? (
               <div className="flex items-center gap-1">
@@ -151,7 +151,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
                 </button>
                 <button
                   onClick={() => setConfirmUndoId(null)}
-                  className="text-xs text-slate-400 hover:text-slate-600"
+                  className="text-xs text-muted-foreground hover:text-muted-foreground"
                 >
                   {tc('no')}
                 </button>
@@ -159,7 +159,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
             ) : (
               <button
                 onClick={() => setConfirmUndoId(task.id)}
-                className="text-slate-300 hover:text-slate-500 transition-colors p-1"
+                className="text-muted-foreground/50 hover:text-muted-foreground transition-colors p-1"
                 title={t('undoConfirm')}
               >
                 <Undo2 size={14} />
@@ -169,12 +169,12 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
         ))}
         {/* Due tasks */}
         {due.filter((task) => !doneIds.has(task.id)).map((task) => (
-          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg border-l-[3px] border-slate-300">
+          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-muted/50 rounded-lg border-l-[3px] border-border">
             <span className="text-lg">{task.emoji}</span>
             <div className="flex-1 min-w-0">
-              <span className="text-sm text-slate-800 truncate block">{task.title}</span>
+              <span className="text-sm text-foreground truncate block">{task.title}</span>
               {task.allowMultiple && task.dailyLimit && (
-                <span className="text-[10px] text-slate-400">{task.todayCount}/{task.dailyLimit} {t('today').toLowerCase()}</span>
+                <span className="text-[10px] text-muted-foreground">{task.todayCount}/{task.dailyLimit} {t('today').toLowerCase()}</span>
               )}
             </div>
             {partnerId && (
@@ -183,7 +183,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
                 className={`p-1.5 rounded-lg transition-colors ${
                   sharedTaskId === task.id
                     ? 'bg-amber-100 text-amber-700'
-                    : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
+                    : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted'
                 }`}
                 title={t('togetherWith', { name: partnerName ?? '' })}
               >
@@ -209,7 +209,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
         ))}
         {/* Empty state */}
         {completed.length === 0 && due.length === 0 && suggestions.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-4">{t('noTasksToday')}</p>
+          <p className="text-sm text-muted-foreground text-center py-4">{t('noTasksToday')}</p>
         )}
       </div>
     </div>

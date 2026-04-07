@@ -61,7 +61,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
+      <div className="bg-card rounded-xl p-4 shadow-sm space-y-3">
         <h2 className="font-semibold">{t('newHeading')}</h2>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -106,7 +106,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
                       }))
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      active ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {u.name}
@@ -155,7 +155,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
                       setForm({ ...form, scheduleDays: newDays.join(',') })
                     }}
                     className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
-                      isActive ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      isActive ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {label}
@@ -183,10 +183,10 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
           <Label htmlFor="allowMultiple">{t('multiplePerDay')}</Label>
           {form.allowMultiple && (
             <div className="flex items-center gap-1">
-              <span className="text-sm text-slate-500">{t('max')}</span>
+              <span className="text-sm text-muted-foreground">{t('max')}</span>
               <Input type="number" className="w-16" value={form.dailyLimit}
                 onChange={(e) => setForm({ ...form, dailyLimit: Number(e.target.value) })} />
-              <span className="text-sm text-slate-500">{t('perDay')}</span>
+              <span className="text-sm text-muted-foreground">{t('perDay')}</span>
             </div>
           )}
         </div>
@@ -197,15 +197,15 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-sm text-slate-500 uppercase tracking-wide">{t('activeCount', { count: tasks.length })}</h2>
+        <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('activeCount', { count: tasks.length })}</h2>
         <Link href="/manage" className="text-xs text-indigo-500 hover:text-indigo-700">{t('editLink')}</Link>
       </div>
       <div className="space-y-2">
         {tasks.map((tk) => (
-          <div key={tk.id} className="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm">
+          <div key={tk.id} className="flex items-center gap-3 bg-card rounded-xl p-3 shadow-sm">
             <span>{tk.emoji}</span>
             <span className="flex-1 text-sm">{tk.title}</span>
-            <span className="text-xs text-slate-400">{tk.status}</span>
+            <span className="text-xs text-muted-foreground">{tk.status}</span>
             <Button variant="outline" size="sm" onClick={() => archiveTask(tk.id)}>{t('archive')}</Button>
           </div>
         ))}

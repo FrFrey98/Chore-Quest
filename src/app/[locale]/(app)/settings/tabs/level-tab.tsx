@@ -52,10 +52,10 @@ export function LevelTab({ config }: { config: GameConfig }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">{t('description')}</p>
+      <p className="text-sm text-muted-foreground">{t('description')}</p>
       <div className="space-y-2">
         {levels.map((level, i) => (
-          <div key={i} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center flex-wrap">
+          <div key={i} className="bg-card rounded-lg p-3 shadow-sm flex gap-2 items-center flex-wrap">
             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded">Lv.{level.level}</span>
             <Input
               className="flex-1 min-w-[120px]"
@@ -64,17 +64,17 @@ export function LevelTab({ config }: { config: GameConfig }) {
               onChange={(e) => updateLevel(i, 'title', e.target.value)}
             />
             {i === 0 ? (
-              <span className="text-xs text-slate-400">{t('fromZero')}</span>
+              <span className="text-xs text-muted-foreground">{t('fromZero')}</span>
             ) : (
               <>
-                <label className="text-xs text-slate-500">{t('from')}</label>
+                <label className="text-xs text-muted-foreground">{t('from')}</label>
                 <Input
                   type="number"
                   className="w-20 text-center"
                   value={level.minPoints}
                   onChange={(e) => updateLevel(i, 'minPoints', Number(e.target.value))}
                 />
-                <span className="text-xs text-slate-400">{tc('points')}</span>
+                <span className="text-xs text-muted-foreground">{tc('points')}</span>
                 <button onClick={() => removeLevel(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
               </>
             )}
@@ -84,7 +84,7 @@ export function LevelTab({ config }: { config: GameConfig }) {
       <Button variant="outline" className="w-full" onClick={addLevel}>{t('addLevel')}</Button>
 
       <div className="flex items-center justify-between">
-        {msg && <p className="text-sm text-slate-500">{msg}</p>}
+        {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
         <Button onClick={save} disabled={saving} className="ml-auto">
           {saving ? tc('saving') : tc('save')}
         </Button>

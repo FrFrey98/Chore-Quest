@@ -48,11 +48,11 @@ export function LoginForm({ users }: { users: User[] }) {
             className={`p-4 rounded-xl border-2 text-center transition-colors ${
               selectedId === u.id
                 ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                : 'border-slate-200 hover:border-slate-300'
+                : 'border-border hover:border-border'
             }`}
           >
             <span className="font-medium block">{u.name}</span>
-            <span className="text-xs text-slate-400">{tRoles(u.role as 'admin' | 'member' | 'child') ?? u.role}</span>
+            <span className="text-xs text-muted-foreground">{tRoles(u.role as 'admin' | 'member' | 'child') ?? u.role}</span>
           </button>
         ))}
       </div>

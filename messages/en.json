@@ -628,5 +628,11 @@
     "label": "Language",
     "en": "English",
     "de": "Deutsch"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "label": "Theme"
   }
 }

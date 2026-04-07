@@ -49,23 +49,23 @@ export function ProfileClient({
   return (
     <div className="space-y-6">
       {/* Header card */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
+      <div className="bg-card rounded-xl p-4 shadow-sm">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-xl font-bold text-indigo-700">
             {userName.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-lg font-bold text-slate-900">{userName}</h1>
-            <p className="text-sm text-slate-500">
+            <h1 className="text-lg font-bold text-foreground">{userName}</h1>
+            <p className="text-sm text-muted-foreground">
               {t('levelSubtitle', { level: personal.level.level, title: personal.level.title })}
             </p>
           </div>
           <div className="ml-auto text-right">
-            <p className="text-xs text-slate-400">{tc('pointsFull')}</p>
+            <p className="text-xs text-muted-foreground">{tc('pointsFull')}</p>
             <p className="font-bold text-indigo-700">{personal.totalPointsEarned.toLocaleString()}</p>
           </div>
           {isOwnProfile && (
-            <Link href="/settings" className="ml-2 text-slate-400 hover:text-slate-600 transition-colors">
+            <Link href="/settings" className="ml-2 text-muted-foreground hover:text-muted-foreground transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
               </svg>
@@ -74,14 +74,14 @@ export function ProfileClient({
         </div>
 
         <div className="flex items-center gap-4 mb-3">
-          <div className="flex items-center gap-1 text-sm text-slate-600">
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <span>🔥</span>
             <span className="font-semibold">{t('stats.streakValue', { days: personal.streak })}</span>
           </div>
-          <div className="flex items-center gap-1 text-sm text-slate-600">
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <span>✓</span>
             <span className="font-semibold">{personal.totalCompletions}</span>
-            <span className="text-slate-400">{t('stats.tasks')}</span>
+            <span className="text-muted-foreground">{t('stats.tasks')}</span>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export function ProfileClient({
 
       {/* Stats section */}
       <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">{t('stats.heading')}</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('stats.heading')}</h2>
 
         <div className="grid grid-cols-2 gap-3">
           {[
@@ -118,27 +118,27 @@ export function ProfileClient({
             { label: t('stats.streak'), value: t('stats.streakValue', { days: personal.streak }) },
             { label: t('stats.level'), value: t('stats.levelValue', { level: personal.level.level, title: personal.level.title }) },
           ].map(({ label, value }) => (
-            <div key={label} className="bg-white rounded-xl p-4 shadow-sm">
-              <p className="text-xs text-slate-500 mb-1">{label}</p>
+            <div key={label} className="bg-card rounded-xl p-4 shadow-sm">
+              <p className="text-xs text-muted-foreground mb-1">{label}</p>
               <p className="font-bold text-indigo-700">{value}</p>
             </div>
           ))}
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+        <div className="bg-card rounded-xl p-4 shadow-sm">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             {t('heatmap')}
           </p>
           <Heatmap data={personal.heatmap} />
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+        <div className="bg-card rounded-xl p-4 shadow-sm">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             {t('topTasks')}
           </p>
           <div className="space-y-2">
             {personal.topTasks.length === 0 && (
-              <p className="text-slate-400 text-sm">{t('noTasks')}</p>
+              <p className="text-muted-foreground text-sm">{t('noTasks')}</p>
             )}
             {personal.topTasks.map((t) => (
               <div key={t.id} className="flex items-center gap-2">
@@ -151,16 +151,16 @@ export function ProfileClient({
         </div>
 
         {isOwnProfile && (
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+          <div className="bg-card rounded-xl p-4 shadow-sm">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
               {t('purchaseHistory')}
             </p>
             {personal.purchases.length === 0 ? (
-              <p className="text-slate-400 text-sm">{t('noPurchases')}</p>
+              <p className="text-muted-foreground text-sm">{t('noPurchases')}</p>
             ) : (
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-slate-500 text-xs">
+                  <tr className="text-muted-foreground text-xs">
                     <th className="text-left pb-2">{t('tableHeaders.item')}</th>
                     <th className="text-right pb-2">{t('tableHeaders.date')}</th>
                     <th className="text-right pb-2">{t('tableHeaders.status')}</th>
@@ -168,11 +168,11 @@ export function ProfileClient({
                 </thead>
                 <tbody>
                   {personal.purchases.map((p) => (
-                    <tr key={p.id} className="border-t border-slate-100">
+                    <tr key={p.id} className="border-t border-border">
                       <td className="py-2">
                         {p.item.emoji} {p.item.title}
                       </td>
-                      <td className="py-2 text-right text-slate-500 text-xs">
+                      <td className="py-2 text-right text-muted-foreground text-xs">
                         {new Date(p.purchasedAt).toLocaleDateString(locale)}
                       </td>
                       <td className="py-2 text-right">

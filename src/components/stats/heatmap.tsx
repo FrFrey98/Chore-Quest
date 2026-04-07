@@ -1,5 +1,8 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { useTheme } from 'next-themes'
+
 type HeatmapProps = {
   data: Record<string, number>
   from?: string // 'YYYY-MM-DD'
@@ -8,15 +11,22 @@ type HeatmapProps = {
 
 const DEFAULT_WEEKS = 26
 
-function getColor(points: number): string {
-  if (points === 0) return '#e2e8f0'
-  if (points < 50) return '#c7d2fe'
-  if (points < 150) return '#818cf8'
-  if (points < 300) return '#6366f1'
-  return '#4338ca'
-}
-
 export function Heatmap({ data, from, to }: HeatmapProps) {
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  const isDark = mounted && resolvedTheme === 'dark'
+  const emptyColor = isDark ? '#1e293b' : '#e2e8f0'
+
+  function getColor(points: number): string {
+    if (points === 0) return emptyColor
+    if (points < 50) return '#c7d2fe'
+    if (points < 150) return '#818cf8'
+    if (points < 300) return '#6366f1'
+    return '#4338ca'
+  }
+
   let startDate: Date
   let totalDays: number
 
