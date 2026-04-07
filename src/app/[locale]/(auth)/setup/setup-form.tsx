@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import templates from '@/data/task-templates.json'
 
 type Role = 'admin' | 'member' | 'child'
 
@@ -24,6 +25,8 @@ export function SetupForm() {
   const t = useTranslations('auth.setup')
   const tRoles = useTranslations('roles')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
+  const router = useRouter()
 
   function validateName(name: string): string | null {
     if (name.trim().length < 2) return t('validation.nameMin')
@@ -38,30 +41,92 @@ export function SetupForm() {
   }
 
   const [step, setStep] = useState(1)
-  const router = useRouter()
 
-  // Step 2: admin
+  // Step 1: Language
+  const [selectedLocale, setSelectedLocale] = useState(locale)
+
+  // Step 3: Admin
   const [adminName, setAdminName] = useState('')
   const [adminPin, setAdminPin] = useState('')
   const [adminPinConfirm, setAdminPinConfirm] = useState('')
 
-  // Step 3: members
+  // Step 4: Members
   const [members, setMembers] = useState<MemberEntry[]>([emptyMember()])
+
+  // Step 5: Categories
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set())
+
+  // Step 6: Tasks
+  const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // --- Step 2 handlers ---
+  // --- Helpers ---
+  const isDE = selectedLocale === 'de'
+
+  function toggleCategory(cat: string) {
+    setSelectedCategories((prev) => {
+      const next = new Set(prev)
+      if (next.has(cat)) {
+        next.delete(cat)
+        // Also remove tasks from this category
+        setSelectedTasks((prevTasks) => {
+          const nextTasks = new Set(prevTasks)
+          for (const key of prevTasks) {
+            if (key.startsWith(cat + '::')) nextTasks.delete(key)
+          }
+          return nextTasks
+        })
+      } else {
+        next.add(cat)
+      }
+      return next
+    })
+  }
+
+  function toggleTask(key: string) {
+    setSelectedTasks((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  function selectAllInCategory(category: string) {
+    const cat = templates.find((c) => c.category === category)
+    if (!cat) return
+    setSelectedTasks((prev) => {
+      const next = new Set(prev)
+      for (const tmpl of cat.templates) {
+        next.add(`${category}::${tmpl.title}`)
+      }
+      return next
+    })
+  }
+
+  function deselectAllInCategory(category: string) {
+    setSelectedTasks((prev) => {
+      const next = new Set(prev)
+      for (const key of prev) {
+        if (key.startsWith(category + '::')) next.delete(key)
+      }
+      return next
+    })
+  }
+
+  // --- Step 3 handlers ---
   function handleAdminNext() {
     setError('')
     const nameErr = validateName(adminName)
     if (nameErr) { setError(nameErr); return }
     const pinErr = validatePin(adminPin, adminPinConfirm)
     if (pinErr) { setError(pinErr); return }
-    setStep(3)
+    setStep(4)
   }
 
-  // --- Step 3 handlers ---
+  // --- Step 4 handlers ---
   function updateMember(index: number, patch: Partial<MemberEntry>) {
     setMembers((prev) => prev.map((m, i) => (i === index ? { ...m, ...patch } : m)))
   }
@@ -95,10 +160,27 @@ export function SetupForm() {
       if (pinErr) { setError(t('validation.memberError', { n: i + 1, error: pinErr })); return }
     }
 
-    setStep(4)
+    setStep(5)
   }
 
-  // --- Step 4: submit ---
+  // --- Step 5 handler ---
+  function handleCategoriesNext() {
+    setError('')
+    // Pre-select all tasks in chosen categories
+    const newTasks = new Set<string>()
+    for (const catName of selectedCategories) {
+      const cat = templates.find((c) => c.category === catName)
+      if (cat) {
+        for (const tmpl of cat.templates) {
+          newTasks.add(`${catName}::${tmpl.title}`)
+        }
+      }
+    }
+    setSelectedTasks(newTasks)
+    setStep(6)
+  }
+
+  // --- Step 7: submit ---
   async function handleSubmit() {
     setError('')
     setLoading(true)
@@ -108,11 +190,30 @@ export function SetupForm() {
       ...members.map((m) => ({ name: m.name.trim(), pin: m.pin, role: m.role })),
     ]
 
+    const categories = templates
+      .filter((c) => selectedCategories.has(c.category))
+      .map((c) => ({ name: c.category, emoji: c.emoji }))
+
+    const tasks = templates
+      .filter((c) => selectedCategories.has(c.category))
+      .flatMap((c) =>
+        c.templates
+          .filter((tmpl) => selectedTasks.has(`${c.category}::${tmpl.title}`))
+          .map((tmpl) => ({
+            title: tmpl.title,
+            emoji: tmpl.emoji,
+            points: tmpl.suggestedPoints,
+            categoryName: c.category,
+            isRecurring: true,
+            recurringInterval: tmpl.suggestedInterval,
+          }))
+      )
+
     try {
       const res = await fetch('/api/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ users }),
+        body: JSON.stringify({ users, locale: selectedLocale, categories, tasks }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -127,21 +228,69 @@ export function SetupForm() {
     }
   }
 
-  // --- Step 1: Welcome ---
+  // --- Step 1: Language Selection ---
   if (step === 1) {
+    return (
+      <div className="text-center space-y-4">
+        <p className="text-lg font-medium">{t('chooseLanguage')}</p>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            className={`flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-colors ${
+              selectedLocale === 'en'
+                ? 'border-primary bg-primary/10'
+                : 'border-border hover:border-primary/50'
+            }`}
+            onClick={() => {
+              setSelectedLocale('en')
+              document.cookie = `NEXT_LOCALE=en;path=/;max-age=31536000`
+              router.refresh()
+              setStep(2)
+            }}
+          >
+            <span className="text-4xl">🇬🇧</span>
+            <span className="font-medium">English</span>
+          </button>
+          <button
+            type="button"
+            className={`flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-colors ${
+              selectedLocale === 'de'
+                ? 'border-primary bg-primary/10'
+                : 'border-border hover:border-primary/50'
+            }`}
+            onClick={() => {
+              setSelectedLocale('de')
+              document.cookie = `NEXT_LOCALE=de;path=/;max-age=31536000`
+              router.refresh()
+              setStep(2)
+            }}
+          >
+            <span className="text-4xl">🇩🇪</span>
+            <span className="font-medium">Deutsch</span>
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Step 2: Welcome ---
+  if (step === 2) {
     return (
       <div className="text-center space-y-4">
         <p className="text-lg font-medium">{t('welcome')}</p>
         <p className="text-muted-foreground text-sm">{t('welcomeSubtitle')}</p>
-        <Button className="w-full" onClick={() => setStep(2)}>
+        <Button className="w-full" onClick={() => setStep(3)}>
           {t('letsGo')}
+        </Button>
+        <Button variant="outline" className="w-full" onClick={() => setStep(1)}>
+          {t('back')}
         </Button>
       </div>
     )
   }
 
-  // --- Step 2: Admin ---
-  if (step === 2) {
+  // --- Step 3: Admin ---
+  if (step === 3) {
     return (
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-center">{t('setupAdmin')}</h2>
@@ -171,7 +320,7 @@ export function SetupForm() {
           maxLength={8}
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
-        <Button variant="outline" className="w-full" onClick={() => setStep(1)}>
+        <Button variant="outline" className="w-full" onClick={() => setStep(2)}>
           {t('back')}
         </Button>
         <Button className="w-full" onClick={handleAdminNext}>
@@ -181,8 +330,8 @@ export function SetupForm() {
     )
   }
 
-  // --- Step 3: Members ---
-  if (step === 3) {
+  // --- Step 4: Members ---
+  if (step === 4) {
     return (
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-center">{t('familyMembers')}</h2>
@@ -239,7 +388,7 @@ export function SetupForm() {
         <Button variant="outline" className="w-full" onClick={addMember}>
           {t('addMember')}
         </Button>
-        <Button variant="outline" className="w-full" onClick={() => setStep(2)}>
+        <Button variant="outline" className="w-full" onClick={() => setStep(3)}>
           {t('back')}
         </Button>
         <Button className="w-full" onClick={handleMembersNext}>
@@ -249,25 +398,192 @@ export function SetupForm() {
     )
   }
 
-  // --- Step 4: Summary ---
+  // --- Step 5: Category Selection ---
+  if (step === 5) {
+    return (
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-center">{t('chooseCategories')}</h2>
+        <p className="text-muted-foreground text-sm text-center">{t('chooseCategoriesSubtitle')}</p>
+        <div className="grid grid-cols-2 gap-3">
+          {templates.map((cat) => {
+            const selected = selectedCategories.has(cat.category)
+            return (
+              <button
+                key={cat.category}
+                type="button"
+                className={`flex flex-col items-center gap-1 p-4 rounded-xl border-2 transition-colors ${
+                  selected
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => toggleCategory(cat.category)}
+              >
+                <span className="text-2xl">{cat.emoji}</span>
+                <span className="font-medium text-sm">
+                  {isDE ? cat.categoryDe : cat.category}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {cat.templates.length} {t('tasksSelected').split(' ').slice(-1)[0]}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <Button variant="outline" className="w-full" onClick={() => setStep(4)}>
+          {t('back')}
+        </Button>
+        <Button
+          className="w-full"
+          onClick={handleCategoriesNext}
+          disabled={selectedCategories.size === 0}
+        >
+          {t('next')}
+        </Button>
+      </div>
+    )
+  }
+
+  // --- Step 6: Task Import ---
+  if (step === 6) {
+    const filteredTemplates = templates.filter((c) => selectedCategories.has(c.category))
+    const totalSelected = selectedTasks.size
+
+    return (
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-center">{t('importTasks')}</h2>
+        <p className="text-muted-foreground text-sm text-center">{t('importTasksSubtitle')}</p>
+        <p className="text-sm font-medium text-center">
+          {t('tasksSelected', { count: totalSelected })}
+        </p>
+
+        {filteredTemplates.length === 0 ? (
+          <p className="text-muted-foreground text-sm text-center">{t('noTemplatesForCategories')}</p>
+        ) : (
+          <div className="space-y-4 max-h-[400px] overflow-y-auto">
+            {filteredTemplates.map((cat) => (
+              <div key={cat.category} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-sm">
+                    {cat.emoji} {isDE ? cat.categoryDe : cat.category}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className="text-xs text-primary hover:underline"
+                      onClick={() => selectAllInCategory(cat.category)}
+                    >
+                      {t('selectAll')}
+                    </button>
+                    <button
+                      type="button"
+                      className="text-xs text-muted-foreground hover:underline"
+                      onClick={() => deselectAllInCategory(cat.category)}
+                    >
+                      {t('deselectAll')}
+                    </button>
+                  </div>
+                </div>
+                {cat.templates.map((tmpl) => {
+                  const key = `${cat.category}::${tmpl.title}`
+                  const checked = selectedTasks.has(key)
+                  return (
+                    <label
+                      key={key}
+                      className={`flex items-center gap-3 p-2 rounded-lg border cursor-pointer transition-colors ${
+                        checked ? 'border-primary/50 bg-primary/5' : 'border-border'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleTask(key)}
+                        className="rounded"
+                      />
+                      <span className="text-base">{tmpl.emoji}</span>
+                      <span className="text-sm flex-1">
+                        {isDE ? tmpl.titleDe : tmpl.title}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {tmpl.suggestedPoints} pts
+                      </span>
+                    </label>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <Button variant="outline" className="w-full" onClick={() => setStep(5)}>
+          {t('back')}
+        </Button>
+        <button
+          type="button"
+          className="w-full text-sm text-muted-foreground hover:underline text-center py-1"
+          onClick={() => {
+            setSelectedTasks(new Set())
+            setStep(7)
+          }}
+        >
+          {t('skipTasks')}
+        </button>
+        <Button className="w-full" onClick={() => setStep(7)}>
+          {t('next')}
+        </Button>
+      </div>
+    )
+  }
+
+  // --- Step 7: Summary ---
   const allUsers = [
     { name: adminName.trim(), role: 'admin' as Role },
     ...members.map((m) => ({ name: m.name.trim(), role: m.role })),
   ]
 
+  const selectedCategoryList = templates.filter((c) => selectedCategories.has(c.category))
+  const totalTaskCount = selectedTasks.size
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-center">{t('summary')}</h2>
-      <div className="space-y-2 bg-muted/50 rounded-xl p-4">
-        {allUsers.map((u, i) => (
-          <p key={i} className="text-sm">
-            <span className="text-muted-foreground">{tRoles(u.role)}:</span>{' '}
-            <span className="font-medium">{u.name}</span>
-          </p>
-        ))}
+      <div className="space-y-3 bg-muted/50 rounded-xl p-4">
+        {/* Language */}
+        <div className="text-sm">
+          <span className="text-muted-foreground">{t('chooseLanguage')}:</span>{' '}
+          <span className="font-medium">
+            {selectedLocale === 'de' ? '🇩🇪 Deutsch' : '🇬🇧 English'}
+          </span>
+        </div>
+
+        {/* Users */}
+        <div className="space-y-1">
+          {allUsers.map((u, i) => (
+            <p key={i} className="text-sm">
+              <span className="text-muted-foreground">{tRoles(u.role)}:</span>{' '}
+              <span className="font-medium">{u.name}</span>
+            </p>
+          ))}
+        </div>
+
+        {/* Categories */}
+        <div className="text-sm">
+          <span className="text-muted-foreground">
+            {t('chooseCategories')} ({selectedCategoryList.length}):
+          </span>{' '}
+          <span className="font-medium">
+            {selectedCategoryList.map((c) => `${c.emoji} ${isDE ? c.categoryDe : c.category}`).join(', ')}
+          </span>
+        </div>
+
+        {/* Tasks */}
+        <div className="text-sm">
+          <span className="text-muted-foreground">{t('importTasks')}:</span>{' '}
+          <span className="font-medium">{totalTaskCount}</span>
+        </div>
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      <Button variant="outline" className="w-full" onClick={() => setStep(3)}>
+      <Button variant="outline" className="w-full" onClick={() => setStep(6)}>
         {t('back')}
       </Button>
       <Button className="w-full" onClick={handleSubmit} disabled={loading}>
