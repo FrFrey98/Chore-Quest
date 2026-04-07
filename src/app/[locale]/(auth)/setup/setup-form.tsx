@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -61,6 +61,7 @@ export function SetupForm() {
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const isSubmitting = useRef(false)
 
   // --- Helpers ---
   const isDE = selectedLocale === 'de'
@@ -68,18 +69,15 @@ export function SetupForm() {
   function toggleCategory(cat: string) {
     setSelectedCategories((prev) => {
       const next = new Set(prev)
-      if (next.has(cat)) {
-        next.delete(cat)
-        // Also remove tasks from this category
-        setSelectedTasks((prevTasks) => {
-          const nextTasks = new Set(prevTasks)
-          for (const key of prevTasks) {
-            if (key.startsWith(cat + '::')) nextTasks.delete(key)
-          }
-          return nextTasks
-        })
-      } else {
-        next.add(cat)
+      if (next.has(cat)) next.delete(cat)
+      else next.add(cat)
+      return next
+    })
+    // Remove tasks from deselected category (idempotent if adding)
+    setSelectedTasks((prev) => {
+      const next = new Set(prev)
+      for (const key of prev) {
+        if (key.startsWith(cat + '::')) next.delete(key)
       }
       return next
     })
@@ -182,6 +180,8 @@ export function SetupForm() {
 
   // --- Step 7: submit ---
   async function handleSubmit() {
+    if (isSubmitting.current) return
+    isSubmitting.current = true
     setError('')
     setLoading(true)
 
@@ -192,7 +192,7 @@ export function SetupForm() {
 
     const categories = templates
       .filter((c) => selectedCategories.has(c.category))
-      .map((c) => ({ name: c.category, emoji: c.emoji }))
+      .map((c) => ({ name: isDE ? c.categoryDe : c.category, emoji: c.emoji }))
 
     const tasks = templates
       .filter((c) => selectedCategories.has(c.category))
@@ -200,10 +200,10 @@ export function SetupForm() {
         c.templates
           .filter((tmpl) => selectedTasks.has(`${c.category}::${tmpl.title}`))
           .map((tmpl) => ({
-            title: tmpl.title,
+            title: isDE ? tmpl.titleDe : tmpl.title,
             emoji: tmpl.emoji,
             points: tmpl.suggestedPoints,
-            categoryName: c.category,
+            categoryName: isDE ? c.categoryDe : c.category,
             isRecurring: true,
             recurringInterval: tmpl.suggestedInterval,
           }))
@@ -218,12 +218,13 @@ export function SetupForm() {
       const data = await res.json()
       if (!res.ok) {
         setError(data.error || t('validation.genericError'))
-        setLoading(false)
         return
       }
       router.push('/login')
     } catch {
       setError(t('validation.genericError'))
+    } finally {
+      isSubmitting.current = false
       setLoading(false)
     }
   }
