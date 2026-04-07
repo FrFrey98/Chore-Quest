@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { TaskRow } from '@/components/manage/task-row'
 import { RewardRow } from '@/components/manage/reward-row'
 
@@ -43,6 +44,7 @@ type ManageClientProps = {
 export function ManageClient({ tasks, categories, rewards, users, initialTab }: ManageClientProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslations('manage')
   const tab = searchParams.get('tab') ?? initialTab
   const [editingId, setEditingId] = useState<string | null>(null)
 
@@ -64,7 +66,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">Verwalten</h1>
+      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
 
       <div className="flex gap-2 mb-6">
         <button
@@ -74,7 +76,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
             tab === 'tasks' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
         >
-          Aufgaben
+          {t('tasksTab')}
         </button>
         <button
           type="button"
@@ -83,14 +85,14 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
             tab === 'rewards' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
         >
-          Belohnungen
+          {t('rewardsTab')}
         </button>
       </div>
 
       {tab === 'tasks' ? (
         <div className="space-y-2">
           {sortedTasks.length === 0 && (
-            <p className="text-center py-8 text-slate-400 text-sm">Keine Aufgaben vorhanden.</p>
+            <p className="text-center py-8 text-slate-400 text-sm">{t('noTasks')}</p>
           )}
           {sortedTasks.map((task) => (
             <TaskRow
@@ -107,7 +109,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
       ) : (
         <div className="space-y-2">
           {sortedRewards.length === 0 && (
-            <p className="text-center py-8 text-slate-400 text-sm">Keine Belohnungen vorhanden.</p>
+            <p className="text-center py-8 text-slate-400 text-sm">{t('noRewards')}</p>
           )}
           {sortedRewards.map((reward) => (
             <RewardRow

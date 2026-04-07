@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getTranslations } from 'next-intl/server'
 import { ManageClient } from './manage-client'
 
 export default async function ManagePage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
@@ -54,8 +55,10 @@ export default async function ManagePage({ searchParams }: { searchParams: Promi
     isActive: r.isActive,
   }))
 
+  const tc = await getTranslations('common')
+
   return (
-    <Suspense fallback={<div className="text-center py-16 text-slate-400">Lade...</div>}>
+    <Suspense fallback={<div className="text-center py-16 text-slate-400">{tc('loading')}</div>}>
       <ManageClient
         tasks={serializedTasks}
         categories={categories}

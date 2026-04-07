@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { SummaryCards } from '@/components/stats/summary-cards'
 import { ActivityChart } from '@/components/stats/activity-chart'
 import { Scoreboard } from '@/components/stats/scoreboard'
@@ -48,6 +49,7 @@ function daysBetween(from: string, to: string): number {
 export function StatsClient({ completions, users, currentUserId, categories, allTasks, from, to }: StatsClientProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslations('stats')
   const tab = searchParams.get('tab') ?? 'personal'
   const [metric, setMetric] = useState<'count' | 'points'>('count')
   const [filterTaskId, setFilterTaskId] = useState<string | null>(null)
@@ -146,7 +148,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">Statistiken</h1>
+      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
 
       {/* Tab pills */}
       <div className="flex gap-2 mb-4">
@@ -157,7 +159,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
             tab === 'personal' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
         >
-          Persönlich
+          {t('personalTab')}
         </button>
         <button
           type="button"
@@ -166,7 +168,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
             tab === 'comparison' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
         >
-          Vergleich
+          {t('comparisonTab')}
         </button>
       </div>
 
@@ -197,19 +199,19 @@ export function StatsClient({ completions, users, currentUserId, categories, all
           {/* Row 2: Activity chart */}
           <div className="bg-white border border-slate-200 rounded-xl p-4">
             <div className="flex justify-between items-center mb-3">
-              <h2 className="text-sm font-semibold text-slate-700">Aktivitäts-Verlauf</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t('activityChart')}</h2>
               <div className="flex gap-1">
                 <button
                   onClick={() => setMetric('count')}
                   className={`px-2 py-0.5 rounded text-xs ${metric === 'count' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
                 >
-                  Aufgaben
+                  {t('metricsToggle.tasks')}
                 </button>
                 <button
                   onClick={() => setMetric('points')}
                   className={`px-2 py-0.5 rounded text-xs ${metric === 'points' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
                 >
-                  Punkte
+                  {t('metricsToggle.points')}
                 </button>
               </div>
             </div>
@@ -223,21 +225,21 @@ export function StatsClient({ completions, users, currentUserId, categories, all
           {/* Row 3: Category + Top Tasks (2 col grid) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <h2 className="text-sm font-semibold text-slate-700 mb-3">Kategorie-Verteilung</h2>
+              <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('categoryDistribution')}</h2>
               <CategoryPieChart
-                byCategory={Object.fromEntries(myCategoryData.map((c) => [c.categoryId, { [me?.name ?? 'Ich']: c.count }]))}
+                byCategory={Object.fromEntries(myCategoryData.map((c) => [c.categoryId, { [me?.name ?? t('me')]: c.count }]))}
                 categories={categories}
               />
             </div>
             <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <h2 className="text-sm font-semibold text-slate-700 mb-3">Top-Aufgaben</h2>
+              <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('topTasks')}</h2>
               <TopTasks tasks={myTopTasks} />
             </div>
           </div>
 
           {/* Row 4: Heatmap */}
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <h2 className="text-sm font-semibold text-slate-700 mb-3">Heatmap</h2>
+            <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('heatmap')}</h2>
             <Heatmap data={myHeatmap} from={from} to={to} />
           </div>
         </div>
@@ -250,7 +252,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
           <div className="bg-white border border-slate-200 rounded-xl p-4">
             <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-slate-700">Aktivitäts-Verlauf</h2>
+                <h2 className="text-sm font-semibold text-slate-700">{t('activityChart')}</h2>
                 <TaskFilter tasks={allTasks} value={filterTaskId} onChange={setFilterTaskId} />
               </div>
               <div className="flex gap-1">
@@ -258,13 +260,13 @@ export function StatsClient({ completions, users, currentUserId, categories, all
                   onClick={() => setMetric('count')}
                   className={`px-2 py-0.5 rounded text-xs ${metric === 'count' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
                 >
-                  Aufgaben
+                  {t('metricsToggle.tasks')}
                 </button>
                 <button
                   onClick={() => setMetric('points')}
                   className={`px-2 py-0.5 rounded text-xs ${metric === 'points' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
                 >
-                  Punkte
+                  {t('metricsToggle.points')}
                 </button>
               </div>
             </div>
@@ -272,20 +274,20 @@ export function StatsClient({ completions, users, currentUserId, categories, all
               mode="comparison"
               metric={metric}
               comparisonData={useWeeks ? comparisonWeekData : comparisonDayData}
-              userName={me?.name ?? 'Ich'}
-              partnerName={partner?.name ?? 'Partner'}
+              userName={me?.name ?? t('me')}
+              partnerName={partner?.name ?? t('me')}
             />
           </div>
 
           {/* Row 3: Category + Top Tasks (2 col grid) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <h2 className="text-sm font-semibold text-slate-700 mb-3">Kategorie-Verteilung</h2>
+              <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('categoryDistribution')}</h2>
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-semibold text-indigo-600 mb-1">{me?.name ?? 'Ich'}</p>
+                  <p className="text-xs font-semibold text-indigo-600 mb-1">{me?.name ?? t('me')}</p>
                   <CategoryPieChart
-                    byCategory={Object.fromEntries(userCategoryData.map((c) => [c.categoryId, { [me?.name ?? 'Ich']: c.count }]))}
+                    byCategory={Object.fromEntries(userCategoryData.map((c) => [c.categoryId, { [me?.name ?? t('me')]: c.count }]))}
                     categories={categories}
                   />
                 </div>
@@ -301,11 +303,11 @@ export function StatsClient({ completions, users, currentUserId, categories, all
               </div>
             </div>
             <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <h2 className="text-sm font-semibold text-slate-700 mb-3">Top-Aufgaben</h2>
+              <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('topTasks')}</h2>
               <div className="space-y-4">
-                <TopTasks tasks={myTopTasksComparison} barColor="bg-indigo-400" label={`${me?.name ?? 'Ich'} Top 5`} />
+                <TopTasks tasks={myTopTasksComparison} barColor="bg-indigo-400" label={t('top5', { name: me?.name ?? t('me') })} />
                 {partner && (
-                  <TopTasks tasks={partnerTopTasks} barColor="bg-pink-400" label={`${partner.name} Top 5`} />
+                  <TopTasks tasks={partnerTopTasks} barColor="bg-pink-400" label={t('top5', { name: partner.name })} />
                 )}
               </div>
             </div>
@@ -313,10 +315,10 @@ export function StatsClient({ completions, users, currentUserId, categories, all
 
           {/* Row 4: Heatmaps */}
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <h2 className="text-sm font-semibold text-slate-700 mb-3">Heatmaps</h2>
+            <h2 className="text-sm font-semibold text-slate-700 mb-3">{t('heatmaps')}</h2>
             <div className="space-y-4">
               <div>
-                <p className="text-xs font-semibold text-indigo-600 mb-1">{me?.name ?? 'Ich'}</p>
+                <p className="text-xs font-semibold text-indigo-600 mb-1">{me?.name ?? t('me')}</p>
                 <Heatmap data={userHeatmap} from={from} to={to} />
               </div>
               {partner && (

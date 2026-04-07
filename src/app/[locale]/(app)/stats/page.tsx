@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getTranslations } from 'next-intl/server'
 import { StatsClient } from './stats-client'
 
 export default async function StatsPage({ searchParams }: { searchParams: Promise<{ tab?: string; from?: string; to?: string }> }) {
@@ -45,8 +46,10 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
     task: c.task,
   }))
 
+  const t = await getTranslations('stats')
+
   return (
-    <Suspense fallback={<div className="text-center py-16 text-slate-400">Lade Statistiken...</div>}>
+    <Suspense fallback={<div className="text-center py-16 text-slate-400">{t('loading')}</div>}>
       <StatsClient
         completions={serialized}
         users={users}

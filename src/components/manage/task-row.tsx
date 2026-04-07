@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { EmojiPicker } from '@/components/ui/emoji-picker'
 import { useToast } from '@/components/toast-provider'
@@ -36,15 +37,20 @@ type TaskRowProps = {
   onCancelEdit: () => void
 }
 
-const STATUS_BADGES: Record<string, { label: string; className: string }> = {
-  pending_approval: { label: 'Wartend', className: 'bg-amber-100 text-amber-700' },
-  rejected: { label: 'Abgelehnt', className: 'bg-red-100 text-red-700' },
-  archived: { label: 'Archiviert', className: 'bg-slate-100 text-slate-500' },
-}
-
 export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCancelEdit }: TaskRowProps) {
   const router = useRouter()
   const { toast } = useToast()
+  const t = useTranslations('manage.taskRow')
+  const tc = useTranslations('common')
+  const tIntervals = useTranslations('intervals')
+  const tWeekdays = useTranslations('weekdays')
+  const tTasks = useTranslations('tasks.createDialog')
+
+  const STATUS_BADGES: Record<string, { label: string; className: string }> = {
+    pending_approval: { label: t('waiting'), className: 'bg-amber-100 text-amber-700' },
+    rejected: { label: t('rejected'), className: 'bg-red-100 text-red-700' },
+    archived: { label: t('archived'), className: 'bg-slate-100 text-slate-500' },
+  }
   const [form, setForm] = useState({
     title: task.title,
     emoji: task.emoji,
@@ -83,15 +89,15 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
         }),
       })
       if (res.ok) {
-        toast('Aufgabe gespeichert', 'success')
+        toast(t('saved'), 'success')
         onCancelEdit()
         router.refresh()
       } else {
         const data = await res.json()
-        toast(data.error ?? 'Fehler beim Speichern', 'error')
+        toast(data.error ?? t('saveFailed'), 'error')
       }
     } catch {
-      toast('Netzwerkfehler', 'error')
+      toast(tc('networkError'), 'error')
     } finally {
       setSaving(false)
     }
@@ -102,14 +108,14 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
     try {
       const res = await fetch(`/api/tasks/${task.id}`, { method: 'DELETE' })
       if (res.ok) {
-        toast('Aufgabe archiviert', 'success')
+        toast(t('taskArchived'), 'success')
         setConfirmOpen(false)
         router.refresh()
       } else {
-        toast('Fehler beim Archivieren', 'error')
+        toast(t('archiveFailed'), 'error')
       }
     } catch {
-      toast('Netzwerkfehler', 'error')
+      toast(tc('networkError'), 'error')
     } finally {
       setArchiving(false)
     }
@@ -124,13 +130,13 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
         body: JSON.stringify({ status: 'active' }),
       })
       if (res.ok) {
-        toast('Aufgabe wiederhergestellt', 'success')
+        toast(t('taskRestored'), 'success')
         router.refresh()
       } else {
-        toast('Fehler beim Wiederherstellen', 'error')
+        toast(t('restoreFailed'), 'error')
       }
     } catch {
-      toast('Netzwerkfehler', 'error')
+      toast(tc('networkError'), 'error')
     } finally {
       setSaving(false)
     }
@@ -141,21 +147,21 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
       <div className="bg-white border border-indigo-200 rounded-xl p-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">Emoji</label>
+            <label className="text-xs text-slate-500 mb-1 block">{tTasks('emoji')}</label>
             <EmojiPicker value={form.emoji} onChange={(emoji) => setForm({ ...form, emoji })} />
           </div>
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">Punkte</label>
+            <label className="text-xs text-slate-500 mb-1 block">{tTasks('pointsLabel')}</label>
             <Input type="number" value={form.points} onChange={(e) => setForm({ ...form, points: Number(e.target.value) })} />
           </div>
         </div>
         <div>
-          <label className="text-xs text-slate-500 mb-1 block">Titel</label>
+          <label className="text-xs text-slate-500 mb-1 block">{tTasks('titleLabel')}</label>
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">Kategorie</label>
+            <label className="text-xs text-slate-500 mb-1 block">{tTasks('category')}</label>
             <select
               className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm"
               value={form.categoryId}
@@ -171,14 +177,14 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
               value={form.status}
               onChange={(e) => setForm({ ...form, status: e.target.value })}
             >
-              <option value="active">Aktiv</option>
-              <option value="archived">Archiviert</option>
+              <option value="active">{t('active')}</option>
+              <option value="archived">{t('archived')}</option>
             </select>
           </div>
         </div>
         {users && users.length > 0 && (
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">Zugewiesen an (optional)</label>
+            <label className="text-xs text-slate-500 mb-1 block">{tTasks('assignedTo')}</label>
             <div className="flex gap-1 flex-wrap">
               {users.map((u) => {
                 const active = form.assignedUserIds.includes(u.id)
@@ -213,27 +219,27 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
               checked={form.isRecurring}
               onChange={(e) => setForm({ ...form, isRecurring: e.target.checked, scheduleDays: '' })}
             />
-            <label htmlFor={`recurring-${task.id}`} className="text-sm">Wiederkehrend</label>
+            <label htmlFor={`recurring-${task.id}`} className="text-sm">{tTasks('recurring')}</label>
             {form.isRecurring && !form.scheduleDays && (
               <select
                 className="border border-slate-200 rounded-md px-2 py-1 text-sm"
                 value={form.recurringInterval}
                 onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}
               >
-                <option value="daily">Täglich</option>
-                <option value="weekly">Wöchentlich</option>
-                <option value="monthly">Monatlich</option>
-                <option value="custom">Bestimmte Tage…</option>
+                <option value="daily">{tIntervals('daily')}</option>
+                <option value="weekly">{tIntervals('weekly')}</option>
+                <option value="monthly">{tIntervals('monthly')}</option>
+                <option value="custom">{tIntervals('customDays')}</option>
               </select>
             )}
           </div>
           {form.isRecurring && (form.recurringInterval === 'custom' || form.scheduleDays) && (
             <div className="flex gap-1 flex-wrap">
               {[
-                { key: 'mon', label: 'Mo' }, { key: 'tue', label: 'Di' },
-                { key: 'wed', label: 'Mi' }, { key: 'thu', label: 'Do' },
-                { key: 'fri', label: 'Fr' }, { key: 'sat', label: 'Sa' },
-                { key: 'sun', label: 'So' },
+                { key: 'mon', label: tWeekdays('mo') }, { key: 'tue', label: tWeekdays('tu') },
+                { key: 'wed', label: tWeekdays('we') }, { key: 'thu', label: tWeekdays('th') },
+                { key: 'fri', label: tWeekdays('fr') }, { key: 'sat', label: tWeekdays('sa') },
+                { key: 'sun', label: tWeekdays('su') },
               ].map(({ key, label }) => {
                 const days = form.scheduleDays ? form.scheduleDays.split(',') : []
                 const isActive = days.includes(key)
@@ -259,7 +265,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
           )}
           {form.isRecurring && (
             <div className="flex items-center gap-2">
-              <label htmlFor={`schedule-time-${task.id}`} className="text-sm">Erinnerung</label>
+              <label htmlFor={`schedule-time-${task.id}`} className="text-sm">{tTasks('reminder')}</label>
               <input
                 type="time"
                 id={`schedule-time-${task.id}`}
@@ -277,10 +283,10 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             checked={form.allowMultiple}
             onChange={(e) => setForm({ ...form, allowMultiple: e.target.checked })}
           />
-          <label htmlFor={`multi-${task.id}`} className="text-sm">Mehrfach pro Tag</label>
+          <label htmlFor={`multi-${task.id}`} className="text-sm">{tTasks('multiplePerDay')}</label>
           {form.allowMultiple && (
             <div className="flex items-center gap-1">
-              <span className="text-xs text-slate-500">Max</span>
+              <span className="text-xs text-slate-500">{tTasks('max')}</span>
               <Input
                 type="number"
                 min={2}
@@ -289,7 +295,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
                 value={form.dailyLimit}
                 onChange={(e) => setForm({ ...form, dailyLimit: Number(e.target.value) })}
               />
-              <span className="text-xs text-slate-500">×/Tag</span>
+              <span className="text-xs text-slate-500">{tTasks('perDay')}</span>
             </div>
           )}
         </div>
@@ -321,7 +327,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
         <div className="flex items-center gap-3 min-w-0">
           <span className="text-lg">{task.emoji}</span>
           <span className="text-sm font-medium text-slate-700 truncate">{task.title}</span>
-          <span className="text-xs text-slate-400 shrink-0">{task.points} Pkt</span>
+          <span className="text-xs text-slate-400 shrink-0">{task.points} {tc('points')}</span>
           {category && (
             <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0">
               {category.emoji} {category.name}
@@ -364,9 +370,9 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Aufgabe archivieren"
-        description={`Aufgabe "${task.title}" wirklich archivieren?`}
-        confirmLabel="Ja, archivieren"
+        title={t('archiveTitle')}
+        description={t('archiveDescription', { title: task.title })}
+        confirmLabel={t('archiveConfirm')}
         onConfirm={handleArchive}
         loading={archiving}
       />
