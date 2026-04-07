@@ -12,8 +12,9 @@ function isValidScheduleDays(value: string): boolean {
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -27,7 +28,7 @@ export async function PATCH(
 
   try {
     const task = await prisma.task.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         title: updateFields.title,
         emoji: updateFields.emoji,
@@ -58,14 +59,15 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
     await prisma.task.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { status: 'archived' },
     })
   } catch (error: any) {

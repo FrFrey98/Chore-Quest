@@ -6,8 +6,9 @@ import { requirePermission } from '@/lib/permissions'
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -31,7 +32,7 @@ export async function PATCH(
     sortOrder?: number
   }
 
-  const achievement = await prisma.achievement.findUnique({ where: { id: params.id } })
+  const achievement = await prisma.achievement.findUnique({ where: { id: id } })
   if (!achievement) {
     return NextResponse.json({ error: 'Achievement nicht gefunden' }, { status: 404 })
   }
@@ -57,7 +58,7 @@ export async function PATCH(
   }
 
   const updated = await prisma.achievement.update({
-    where: { id: params.id },
+    where: { id: id },
     data: {
       ...(title !== undefined ? { title: title.trim() } : {}),
       ...(description !== undefined ? { description: description.trim() } : {}),
@@ -74,20 +75,21 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const permError = requirePermission(session.user.role, 'editSettings')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  const achievement = await prisma.achievement.findUnique({ where: { id: params.id } })
+  const achievement = await prisma.achievement.findUnique({ where: { id: id } })
   if (!achievement) {
     return NextResponse.json({ error: 'Achievement nicht gefunden' }, { status: 404 })
   }
 
   // Delete cascades to UserAchievements via onDelete: Cascade in schema
-  await prisma.achievement.delete({ where: { id: params.id } })
+  await prisma.achievement.delete({ where: { id: id } })
   return NextResponse.json({ success: true })
 }

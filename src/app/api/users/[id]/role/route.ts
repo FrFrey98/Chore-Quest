@@ -6,15 +6,16 @@ import { requirePermission } from '@/lib/permissions'
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session?.user?.role) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const permError = requirePermission(session.user.role, 'manageUsers')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  if (params.id === session.user.id) {
+  if (id === session.user.id) {
     return NextResponse.json({ error: 'Du kannst deine eigene Rolle nicht ändern' }, { status: 400 })
   }
 
@@ -26,13 +27,13 @@ export async function PUT(
 
   try {
     await prisma.$transaction(async (tx) => {
-      const target = await tx.user.findUnique({ where: { id: params.id } })
+      const target = await tx.user.findUnique({ where: { id } })
       if (!target) throw new Error('NOT_FOUND')
       if (target.role === 'admin' && role !== 'admin') {
         const adminCount = await tx.user.count({ where: { role: 'admin' } })
         if (adminCount <= 1) throw new Error('LAST_ADMIN')
       }
-      await tx.user.update({ where: { id: params.id }, data: { role } })
+      await tx.user.update({ where: { id }, data: { role } })
     })
     return NextResponse.json({ success: true })
   } catch (error) {

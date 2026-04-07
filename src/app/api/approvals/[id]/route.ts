@@ -6,8 +6,9 @@ import { requirePermission } from '@/lib/permissions'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -19,7 +20,7 @@ export async function POST(
     return NextResponse.json({ error: 'Ungültige Aktion' }, { status: 400 })
   }
 
-  const approval = await prisma.taskApproval.findUnique({ where: { id: params.id } })
+  const approval = await prisma.taskApproval.findUnique({ where: { id: id } })
   if (!approval || approval.status !== 'pending') {
     return NextResponse.json({ error: 'Genehmigung nicht gefunden' }, { status: 404 })
   }
@@ -31,7 +32,7 @@ export async function POST(
 
   await prisma.$transaction(async (tx) => {
     await tx.taskApproval.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { status: action === 'approve' ? 'approved' : 'rejected' },
     })
     await tx.task.update({

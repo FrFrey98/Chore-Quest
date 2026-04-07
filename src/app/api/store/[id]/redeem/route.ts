@@ -5,13 +5,14 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const purchase = await prisma.purchase.findUnique({
-    where: { id: params.id },
+    where: { id },
   })
 
   if (!purchase) {
@@ -28,7 +29,7 @@ export async function POST(
   }
 
   const updated = await prisma.purchase.update({
-    where: { id: params.id },
+    where: { id },
     data: { redeemedAt: new Date(), notifiedAt: null },
   })
   return NextResponse.json(updated)

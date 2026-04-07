@@ -6,12 +6,13 @@ import { getCurrentPoints, getTotalEarned } from '@/lib/points'
 
 export async function POST(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const item = await prisma.storeItem.findUnique({ where: { id: params.id } })
+  const item = await prisma.storeItem.findUnique({ where: { id } })
   if (!item || !item.isActive) {
     return NextResponse.json({ error: 'Artikel nicht gefunden' }, { status: 404 })
   }
@@ -36,7 +37,7 @@ export async function POST(
       }
 
       return tx.purchase.create({
-        data: { itemId: params.id, userId: session.user.id, pointsSpent: item.pointCost },
+        data: { itemId: id, userId: session.user.id, pointsSpent: item.pointCost },
       })
     })
     return NextResponse.json(purchase, { status: 201 })

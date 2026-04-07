@@ -5,12 +5,13 @@ import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  if (params.id !== session.user.id) {
+  if (id !== session.user.id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -21,7 +22,7 @@ export async function PATCH(
     installPromptDismissed?: boolean
   }
 
-  const user = await prisma.user.findUnique({ where: { id: params.id } })
+  const user = await prisma.user.findUnique({ where: { id: id } })
   if (!user) {
     return NextResponse.json({ error: 'User nicht gefunden' }, { status: 404 })
   }
@@ -48,7 +49,7 @@ export async function PATCH(
   }
 
   const updated = await prisma.user.update({
-    where: { id: params.id },
+    where: { id: id },
     data,
   })
 

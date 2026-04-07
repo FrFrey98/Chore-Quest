@@ -6,21 +6,22 @@ import { requirePermission } from '@/lib/permissions'
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session?.user?.role) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const permError = requirePermission(session.user.role, 'manageUsers')
   if (permError) return NextResponse.json({ error: permError.error }, { status: permError.status })
 
-  if (params.id === session.user.id) {
+  if (id === session.user.id) {
     return NextResponse.json({ error: 'Du kannst dein eigenes Konto nicht löschen' }, { status: 400 })
   }
 
   try {
     await prisma.$transaction(async (tx) => {
-      const target = await tx.user.findUnique({ where: { id: params.id } })
+      const target = await tx.user.findUnique({ where: { id: id } })
       if (!target) throw new Error('NOT_FOUND')
 
       // Prevent deleting the last admin
@@ -29,11 +30,11 @@ export async function DELETE(
         if (adminCount <= 1) throw new Error('LAST_ADMIN')
       }
 
-      await tx.pushSubscription.deleteMany({ where: { userId: params.id } })
-      await tx.streakState.deleteMany({ where: { userId: params.id } })
-      await tx.userAchievement.deleteMany({ where: { userId: params.id } })
-      await tx.taskApproval.deleteMany({ where: { requestedById: params.id } })
-      await tx.user.delete({ where: { id: params.id } })
+      await tx.pushSubscription.deleteMany({ where: { userId: id } })
+      await tx.streakState.deleteMany({ where: { userId: id } })
+      await tx.userAchievement.deleteMany({ where: { userId: id } })
+      await tx.taskApproval.deleteMany({ where: { requestedById: id } })
+      await tx.user.delete({ where: { id: id } })
     })
   } catch (error) {
     if (error instanceof Error) {

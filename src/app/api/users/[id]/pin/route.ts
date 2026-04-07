@@ -6,8 +6,9 @@ import bcrypt from 'bcryptjs'
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -17,7 +18,7 @@ export async function PUT(
     return NextResponse.json({ error: 'PIN muss 4–8 Ziffern haben' }, { status: 400 })
   }
 
-  const isOwnPin = params.id === session.user.id
+  const isOwnPin = id === session.user.id
   const isAdmin = session.user.role === 'admin'
 
   // Must be own PIN or an admin
@@ -30,13 +31,13 @@ export async function PUT(
     if (!currentPin || typeof currentPin !== 'string') {
       return NextResponse.json({ error: 'Aktueller PIN erforderlich' }, { status: 400 })
     }
-    const user = await prisma.user.findUnique({ where: { id: params.id } })
+    const user = await prisma.user.findUnique({ where: { id } })
     if (!user) return NextResponse.json({ error: 'Benutzer nicht gefunden' }, { status: 404 })
     const valid = await bcrypt.compare(currentPin, user.pin)
     if (!valid) return NextResponse.json({ error: 'Aktueller PIN ist falsch' }, { status: 403 })
   }
 
   const hashed = await bcrypt.hash(pin, 10)
-  await prisma.user.update({ where: { id: params.id }, data: { pin: hashed } })
+  await prisma.user.update({ where: { id }, data: { pin: hashed } })
   return NextResponse.json({ success: true })
 }

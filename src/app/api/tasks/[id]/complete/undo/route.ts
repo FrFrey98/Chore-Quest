@@ -6,8 +6,9 @@ import { recalculateStreak } from '@/lib/streak'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -66,14 +67,14 @@ export async function POST(
       }
     }
 
-    const task = await tx.task.findUnique({ where: { id: params.id } })
+    const task = await tx.task.findUnique({ where: { id } })
     if (task) {
       if (task.isRecurring && task.recurringInterval) {
         // Recurring task: reset nextDueAt to now (immediately visible again)
-        await tx.task.update({ where: { id: params.id }, data: { nextDueAt: new Date() } })
+        await tx.task.update({ where: { id }, data: { nextDueAt: new Date() } })
       } else if (task.status === 'archived') {
         // One-time task: revert to active
-        await tx.task.update({ where: { id: params.id }, data: { status: 'active' } })
+        await tx.task.update({ where: { id }, data: { status: 'active' } })
       }
     }
   })

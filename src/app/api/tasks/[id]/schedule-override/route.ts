@@ -5,8 +5,9 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -28,7 +29,7 @@ export async function POST(
     return NextResponse.json({ error: 'Datum muss in der Zukunft liegen' }, { status: 400 })
   }
 
-  const task = await prisma.task.findUnique({ where: { id: params.id } })
+  const task = await prisma.task.findUnique({ where: { id } })
   if (!task || task.status !== 'active') {
     return NextResponse.json({ error: 'Aufgabe nicht gefunden' }, { status: 404 })
   }
@@ -37,9 +38,9 @@ export async function POST(
   }
 
   const override = await prisma.taskScheduleOverride.upsert({
-    where: { taskId_date: { taskId: params.id, date } },
+    where: { taskId_date: { taskId: id, date } },
     update: { type },
-    create: { taskId: params.id, date, type },
+    create: { taskId: id, date, type },
   })
 
   return NextResponse.json(override, { status: 200 })
@@ -47,8 +48,9 @@ export async function POST(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -61,7 +63,7 @@ export async function DELETE(
 
   try {
     await prisma.taskScheduleOverride.delete({
-      where: { taskId_date: { taskId: params.id, date } },
+      where: { taskId_date: { taskId: id, date } },
     })
   } catch (error: unknown) {
     const prismaError = error as { code?: string }
