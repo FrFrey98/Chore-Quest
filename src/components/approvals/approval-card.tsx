@@ -36,12 +36,12 @@ export function ApprovalCard({
   if (done) return null
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4 space-y-3">
+    <div className="bg-card rounded-xl shadow-sm p-4 space-y-3">
       <div className="flex items-center gap-3">
         <span className="text-2xl">{approval.task.emoji}</span>
         <div className="flex-1">
           <p className="font-medium">{approval.task.title}</p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             {t('from', { name: approval.requestedBy.name ?? tc('unknown') })}{' '}
             {approval.task.isRecurring
               ? (approval.task.recurringInterval === 'daily' ? t('recurringDaily')

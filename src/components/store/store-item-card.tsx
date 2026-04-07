@@ -37,12 +37,12 @@ export function StoreItemCard({
   }
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm p-4 space-y-2${purchased ? ' opacity-50' : ''}`}>
+    <div className={`bg-card rounded-xl shadow-sm p-4 space-y-2${purchased ? ' opacity-50' : ''}`}>
       <div className="flex items-center gap-3">
         <span className="text-3xl">{item.emoji}</span>
         <div className="flex-1">
           <p className="font-semibold">{item.title}</p>
-          <p className="text-sm text-slate-500">{item.description}</p>
+          <p className="text-sm text-muted-foreground">{item.description}</p>
         </div>
         <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded shrink-0">
           {item.pointCost} {tc('points')}

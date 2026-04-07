@@ -49,7 +49,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   const t = await getTranslations('stats')
 
   return (
-    <Suspense fallback={<div className="text-center py-16 text-slate-400">{t('loading')}</div>}>
+    <Suspense fallback={<div className="text-center py-16 text-muted-foreground">{t('loading')}</div>}>
       <StatsClient
         completions={serialized}
         users={users}

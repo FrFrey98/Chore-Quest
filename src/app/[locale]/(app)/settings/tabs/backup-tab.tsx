@@ -97,7 +97,7 @@ export function BackupTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted-foreground">
         {t('description')}
       </p>
 
@@ -114,7 +114,7 @@ export function BackupTab() {
         <button
           onClick={() => fileRef.current?.click()}
           disabled={exporting || restoring}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <Upload size={16} />
           {restoring ? t('restoring') : t('restoreButton')}
@@ -131,14 +131,14 @@ export function BackupTab() {
 
       {showConfirm && fileInfo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-xl p-6 max-w-sm mx-4 space-y-4">
+          <div className="bg-card rounded-xl p-6 max-w-sm mx-4 space-y-4">
             <div className="flex items-center gap-3 text-amber-600">
               <AlertTriangle size={24} />
-              <h3 className="font-semibold text-lg text-slate-800">{t('confirmTitle')}</h3>
+              <h3 className="font-semibold text-lg text-foreground">{t('confirmTitle')}</h3>
             </div>
-            <div className="space-y-2 text-sm text-slate-600">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <p>{t('confirmBody')}</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 {t('fileLabel', { name: fileInfo.name })}<br />
                 {t('exportedAt', { date: fileInfo.exportedAt })}
               </p>
@@ -149,7 +149,7 @@ export function BackupTab() {
                   setShowConfirm(false)
                   pendingFileRef.current = null
                 }}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-lg transition-colors"
               >
                 {tc('cancel')}
               </button>

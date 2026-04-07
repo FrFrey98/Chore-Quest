@@ -128,7 +128,7 @@ export function CreateTaskDialog({ categories, users, userRole }: {
                         }))
                       }}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                        active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        active ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
                       }`}
                     >
                       {u.name}
@@ -172,7 +172,7 @@ export function CreateTaskDialog({ categories, users, userRole }: {
                         setForm({ ...form, scheduleDays: newDays.join(',') })
                       }}
                       className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
-                        isActive ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        isActive ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
                       }`}
                     >
                       {tWeekdays(WEEKDAY_KEYS[idx])}
@@ -200,7 +200,7 @@ export function CreateTaskDialog({ categories, users, userRole }: {
             <Label htmlFor="task-multi">{t('multiplePerDay')}</Label>
             {form.allowMultiple && (
               <div className="flex items-center gap-1">
-                <span className="text-sm text-slate-500">{t('max')}</span>
+                <span className="text-sm text-muted-foreground">{t('max')}</span>
                 <Input
                   type="number"
                   min={2}
@@ -209,7 +209,7 @@ export function CreateTaskDialog({ categories, users, userRole }: {
                   value={form.dailyLimit}
                   onChange={(e) => setForm({ ...form, dailyLimit: Number(e.target.value) })}
                 />
-                <span className="text-sm text-slate-500">{t('perDay')}</span>
+                <span className="text-sm text-muted-foreground">{t('perDay')}</span>
               </div>
             )}
           </div>

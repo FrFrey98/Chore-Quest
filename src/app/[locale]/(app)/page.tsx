@@ -240,13 +240,13 @@ export default async function DashboardPage() {
 
       {partner && partnerLevel && (
         <Link href={`/profile/${partner.id}`}>
-          <div className="mb-4 p-3 bg-white rounded-xl border border-slate-200 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer">
+          <div className="mb-4 p-3 bg-card rounded-xl border border-border flex items-center gap-3 hover:bg-muted/50 transition-colors cursor-pointer">
             <div className="text-2xl">👫</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">{partner.name ?? tc('unknown')}</p>
-              <p className="text-xs text-slate-500">{partnerLevel.title} · {partnerAchievementCount} {t('achievements')}</p>
+              <p className="text-sm font-semibold text-foreground truncate">{partner.name ?? tc('unknown')}</p>
+              <p className="text-xs text-muted-foreground">{partnerLevel.title} · {partnerAchievementCount} {t('achievements')}</p>
             </div>
-            <span className="text-slate-400 text-sm">›</span>
+            <span className="text-muted-foreground text-sm">›</span>
           </div>
         </Link>
       )}

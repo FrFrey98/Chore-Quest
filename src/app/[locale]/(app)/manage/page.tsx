@@ -58,7 +58,7 @@ export default async function ManagePage({ searchParams }: { searchParams: Promi
   const tc = await getTranslations('common')
 
   return (
-    <Suspense fallback={<div className="text-center py-16 text-slate-400">{tc('loading')}</div>}>
+    <Suspense fallback={<div className="text-center py-16 text-muted-foreground">{tc('loading')}</div>}>
       <ManageClient
         tasks={serializedTasks}
         categories={categories}

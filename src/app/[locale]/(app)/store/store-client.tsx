@@ -50,15 +50,15 @@ export function StoreClient({
 
       <MyRewards purchases={myPendingPurchases} />
 
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">
+      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
         {t('rewards')}
       </h2>
       <div className="space-y-3">
         {rewards.length === 0 && (
           <div className="text-center py-8">
             <p className="text-3xl mb-2">🎁</p>
-            <p className="text-slate-400 text-sm">{t('noRewards')}</p>
-            <p className="text-slate-400 text-xs mt-1">{t('createHint')}</p>
+            <p className="text-muted-foreground text-sm">{t('noRewards')}</p>
+            <p className="text-muted-foreground text-xs mt-1">{t('createHint')}</p>
           </div>
         )}
         {rewards.map((item) => (

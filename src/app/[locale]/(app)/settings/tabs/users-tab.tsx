@@ -9,7 +9,7 @@ type UserItem = { id: string; name: string; role: string; createdAt: string }
 
 const ROLE_BADGE_CLASS: Record<string, string> = {
   admin: 'bg-indigo-100 text-indigo-700',
-  member: 'bg-slate-100 text-slate-600',
+  member: 'bg-muted text-muted-foreground',
   child: 'bg-emerald-100 text-emerald-700',
 }
 
@@ -163,17 +163,17 @@ export function UsersTab({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500">{t('description')}</p>
+        <p className="text-sm text-muted-foreground">{t('description')}</p>
         <Button size="sm" onClick={() => { setShowAdd((v) => !v); setAddError('') }}>
           {showAdd ? tc('cancel') : t('addMember')}
         </Button>
       </div>
 
       {showAdd && (
-        <div className="bg-white rounded-xl p-4 shadow-sm space-y-3 border border-indigo-100">
+        <div className="bg-card rounded-xl p-4 shadow-sm space-y-3 border border-indigo-100">
           <p className="font-semibold text-sm">{t('newMember')}</p>
           <div>
-            <label className="text-xs text-slate-500">{t('nameLabel')}</label>
+            <label className="text-xs text-muted-foreground">{t('nameLabel')}</label>
             <Input
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
@@ -181,7 +181,7 @@ export function UsersTab({
             />
           </div>
           <div>
-            <label className="text-xs text-slate-500">{t('pinLabel')}</label>
+            <label className="text-xs text-muted-foreground">{t('pinLabel')}</label>
             <Input
               type="password"
               inputMode="numeric"
@@ -192,7 +192,7 @@ export function UsersTab({
             />
           </div>
           <div>
-            <label className="text-xs text-slate-500">{t('roleLabel')}</label>
+            <label className="text-xs text-muted-foreground">{t('roleLabel')}</label>
             <select
               value={newRole}
               onChange={(e) => setNewRole(e.target.value)}
@@ -213,13 +213,13 @@ export function UsersTab({
       {users.map((u) => {
         const isOwn = u.id === currentUserId
         return (
-          <div key={u.id} className="bg-white rounded-xl p-4 shadow-sm space-y-3">
+          <div key={u.id} className="bg-card rounded-xl p-4 shadow-sm space-y-3">
             {/* Header */}
             <div className="flex items-center gap-2">
               <span className="font-semibold">{u.name}</span>
-              {isOwn && <span className="text-xs text-slate-400">{t('you')}</span>}
+              {isOwn && <span className="text-xs text-muted-foreground">{t('you')}</span>}
               <span
-                className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_BADGE_CLASS[u.role] ?? 'bg-slate-100 text-slate-600'}`}
+                className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_BADGE_CLASS[u.role] ?? 'bg-muted text-muted-foreground'}`}
               >
                 {tr(u.role as 'admin' | 'member' | 'child')}
               </span>
@@ -227,7 +227,7 @@ export function UsersTab({
 
             {/* Edit name */}
             <div>
-              <label className="text-xs text-slate-500">{t('nameLabel')}</label>
+              <label className="text-xs text-muted-foreground">{t('nameLabel')}</label>
               <div className="flex gap-2">
                 <Input
                   value={editNames[u.id] ?? ''}
@@ -240,13 +240,13 @@ export function UsersTab({
                   {tc('save')}
                 </Button>
               </div>
-              {msg[u.id] && <p className="text-xs text-slate-500 mt-1">{msg[u.id]}</p>}
+              {msg[u.id] && <p className="text-xs text-muted-foreground mt-1">{msg[u.id]}</p>}
             </div>
 
             {/* Change role — hidden for own account */}
             {!isOwn && (
               <div>
-                <label className="text-xs text-slate-500">{t('roleLabel')}</label>
+                <label className="text-xs text-muted-foreground">{t('roleLabel')}</label>
                 <div className="flex gap-2">
                   <select
                     value={editRoles[u.id] ?? u.role}
@@ -264,13 +264,13 @@ export function UsersTab({
                     {tc('save')}
                   </Button>
                 </div>
-                {msg[`role-${u.id}`] && <p className="text-xs text-slate-500 mt-1">{msg[`role-${u.id}`]}</p>}
+                {msg[`role-${u.id}`] && <p className="text-xs text-muted-foreground mt-1">{msg[`role-${u.id}`]}</p>}
               </div>
             )}
 
             {/* Change PIN */}
             <div>
-              <label className="text-xs text-slate-500">{t('newPin')}</label>
+              <label className="text-xs text-muted-foreground">{t('newPin')}</label>
               <div className="flex gap-2">
                 <Input
                   type="password"
@@ -287,7 +287,7 @@ export function UsersTab({
                   {t('changePin')}
                 </Button>
               </div>
-              {msg[`pin-${u.id}`] && <p className="text-xs text-slate-500 mt-1">{msg[`pin-${u.id}`]}</p>}
+              {msg[`pin-${u.id}`] && <p className="text-xs text-muted-foreground mt-1">{msg[`pin-${u.id}`]}</p>}
             </div>
 
             {/* Delete — hidden for own account */}
@@ -295,7 +295,7 @@ export function UsersTab({
               <div>
                 {confirmDelete === u.id ? (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">{t('confirmDelete')}</span>
+                    <span className="text-xs text-muted-foreground">{t('confirmDelete')}</span>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -305,7 +305,7 @@ export function UsersTab({
                       {t('confirmDeleteYes')}
                     </Button>
                     <button
-                      className="text-xs text-slate-400 underline"
+                      className="text-xs text-muted-foreground underline"
                       onClick={() => setConfirmDelete(null)}
                     >
                       {tc('cancel')}

@@ -74,10 +74,10 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">{t('description')}</p>
+      <p className="text-sm text-muted-foreground">{t('description')}</p>
 
       {editId && (
-        <div className="bg-white rounded-xl p-4 shadow-sm space-y-3 border-2 border-indigo-200">
+        <div className="bg-card rounded-xl p-4 shadow-sm space-y-3 border-2 border-indigo-200">
           <h3 className="font-semibold text-sm">{editId === 'new' ? t('newHeading') : t('editHeading')}</h3>
           <div className="flex gap-2">
             <Input className="w-14 text-center text-lg" placeholder={t('emojiPlaceholder')} value={form.emoji ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, emoji: e.target.value }))} />
@@ -94,7 +94,7 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
                 <option key={ct} value={ct}>{t(`conditionTypes.${ct}` as Parameters<typeof t>[0])}</option>
               ))}
             </select>
-            <span className="text-sm text-slate-500">≥</span>
+            <span className="text-sm text-muted-foreground">≥</span>
             <Input type="number" className="w-20 text-center" value={form.conditionValue ?? 1} onChange={(e) => setForm((prev) => ({ ...prev, conditionValue: Number(e.target.value) }))} />
             {form.conditionType === 'category_count' && (
               <select
@@ -108,7 +108,7 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
                 ))}
               </select>
             )}
-            <label className="text-xs text-slate-500 ml-auto">{t('sortOrder')}</label>
+            <label className="text-xs text-muted-foreground ml-auto">{t('sortOrder')}</label>
             <Input type="number" className="w-14 text-center" value={form.sortOrder ?? 0} onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: Number(e.target.value) }))} />
           </div>
           <div className="flex gap-2 justify-end">
@@ -120,13 +120,13 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
 
       <div className="space-y-2">
         {achievements.map((ach) => (
-          <div key={ach.id} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center">
+          <div key={ach.id} className="bg-card rounded-lg p-3 shadow-sm flex gap-2 items-center">
             <span className="text-lg w-8 text-center">{ach.emoji}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{ach.title}</p>
-              <p className="text-xs text-slate-400">{t(`conditionTypes.${ach.conditionType}` as Parameters<typeof t>[0])} ≥ {ach.conditionValue}</p>
+              <p className="text-xs text-muted-foreground">{t(`conditionTypes.${ach.conditionType}` as Parameters<typeof t>[0])} ≥ {ach.conditionValue}</p>
             </div>
-            <button onClick={() => startEdit(ach)} className="text-slate-400 hover:text-slate-600 text-sm">✏️</button>
+            <button onClick={() => startEdit(ach)} className="text-muted-foreground hover:text-muted-foreground text-sm">✏️</button>
             <button onClick={() => deleteAch(ach.id)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
           </div>
         ))}
@@ -140,7 +140,7 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
         {t('info')}
       </div>
 
-      {msg && <p className="text-sm text-slate-500">{msg}</p>}
+      {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
     </div>
   )
 }

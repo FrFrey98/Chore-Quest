@@ -73,7 +73,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
           type="button"
           onClick={() => setTab('tasks')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            tab === 'tasks' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            tab === 'tasks' ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
           }`}
         >
           {t('tasksTab')}
@@ -82,7 +82,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
           type="button"
           onClick={() => setTab('rewards')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            tab === 'rewards' ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            tab === 'rewards' ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
           }`}
         >
           {t('rewardsTab')}
@@ -92,7 +92,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
       {tab === 'tasks' ? (
         <div className="space-y-2">
           {sortedTasks.length === 0 && (
-            <p className="text-center py-8 text-slate-400 text-sm">{t('noTasks')}</p>
+            <p className="text-center py-8 text-muted-foreground text-sm">{t('noTasks')}</p>
           )}
           {sortedTasks.map((task) => (
             <TaskRow
@@ -109,7 +109,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
       ) : (
         <div className="space-y-2">
           {sortedRewards.length === 0 && (
-            <p className="text-center py-8 text-slate-400 text-sm">{t('noRewards')}</p>
+            <p className="text-center py-8 text-muted-foreground text-sm">{t('noRewards')}</p>
           )}
           {sortedRewards.map((reward) => (
             <RewardRow

@@ -62,22 +62,22 @@ export function BonusTab({ config }: { config: GameConfig }) {
     <div className="space-y-6">
       <div>
         <h2 className="font-semibold mb-1">{t('teamworkHeading')}</h2>
-        <p className="text-sm text-slate-500 mb-3">{t('teamworkDescription')}</p>
+        <p className="text-sm text-muted-foreground mb-3">{t('teamworkDescription')}</p>
         <div className="flex items-center gap-2">
           <Input type="number" className="w-20 text-center" value={teamworkPercent} onChange={(e) => setTeamworkPercent(Number(e.target.value))} />
-          <span className="text-sm text-slate-500">%</span>
+          <span className="text-sm text-muted-foreground">%</span>
         </div>
       </div>
 
       <div className="border-t pt-4">
         <h2 className="font-semibold mb-1">{t('intervalsHeading')}</h2>
-        <p className="text-sm text-slate-500 mb-3">{t('intervalsDescription')}</p>
+        <p className="text-sm text-muted-foreground mb-3">{t('intervalsDescription')}</p>
         <div className="space-y-2">
           {intervals.map((item, i) => (
-            <div key={i} className="bg-white rounded-lg p-3 shadow-sm flex gap-2 items-center">
+            <div key={i} className="bg-card rounded-lg p-3 shadow-sm flex gap-2 items-center">
               <Input className="flex-1" placeholder={t('intervalNamePlaceholder')} value={item.name} onChange={(e) => updateInterval(i, 'name', e.target.value)} />
               <Input type="number" className="w-16 text-center" value={item.days} onChange={(e) => updateInterval(i, 'days', Number(e.target.value))} />
-              <span className="text-sm text-slate-400">{t('daysLabel')}</span>
+              <span className="text-sm text-muted-foreground">{t('daysLabel')}</span>
               <button onClick={() => removeInterval(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
             </div>
           ))}
@@ -86,7 +86,7 @@ export function BonusTab({ config }: { config: GameConfig }) {
       </div>
 
       <div className="flex items-center justify-between">
-        {msg && <p className="text-sm text-slate-500">{msg}</p>}
+        {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
         <Button onClick={save} disabled={saving} className="ml-auto">
           {saving ? tc('saving') : tc('save')}
         </Button>

@@ -106,23 +106,23 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
 
   if (isEditing) {
     return (
-      <div className="bg-white border border-indigo-200 rounded-xl p-4 space-y-3">
+      <div className="bg-card border border-indigo-200 rounded-xl p-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">{tStore('emoji')}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{tStore('emoji')}</label>
             <EmojiPicker value={form.emoji} onChange={(emoji) => setForm({ ...form, emoji })} />
           </div>
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">{tStore('price')}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{tStore('price')}</label>
             <Input type="number" value={form.pointCost} onChange={(e) => setForm({ ...form, pointCost: Number(e.target.value) })} />
           </div>
         </div>
         <div>
-          <label className="text-xs text-slate-500 mb-1 block">{tStore('titleLabel')}</label>
+          <label className="text-xs text-muted-foreground mb-1 block">{tStore('titleLabel')}</label>
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </div>
         <div>
-          <label className="text-xs text-slate-500 mb-1 block">{tStore('description')}</label>
+          <label className="text-xs text-muted-foreground mb-1 block">{tStore('description')}</label>
           <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
         <div className="flex items-center gap-3">
@@ -138,7 +138,7 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
           <button
             type="button"
             onClick={onCancelEdit}
-            className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"
+            className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
             disabled={saving}
           >
             <X size={16} />
@@ -162,16 +162,16 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
 
   return (
     <>
-      <div className={`flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 ${!reward.isActive ? 'opacity-50' : ''}`}>
+      <div className={`flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 ${!reward.isActive ? 'opacity-50' : ''}`}>
         <div className="flex items-center gap-3 min-w-0">
           <span className="text-lg">{reward.emoji}</span>
-          <span className="text-sm font-medium text-slate-700 truncate">{reward.title}</span>
+          <span className="text-sm font-medium text-foreground truncate">{reward.title}</span>
           {truncatedDesc && (
-            <span className="text-xs text-slate-400 truncate hidden sm:inline">{truncatedDesc}</span>
+            <span className="text-xs text-muted-foreground truncate hidden sm:inline">{truncatedDesc}</span>
           )}
-          <span className="text-xs text-slate-400 shrink-0">{reward.pointCost} {tc('points')}</span>
+          <span className="text-xs text-muted-foreground shrink-0">{reward.pointCost} {tc('points')}</span>
           {!reward.isActive && (
-            <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0">
+            <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full shrink-0">
               {tc('inactive')}
             </span>
           )}
@@ -180,7 +180,7 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
           <button
             type="button"
             onClick={onStartEdit}
-            className="p-2 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+            className="p-2 rounded-lg text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
           >
             <Pencil size={14} />
           </button>
@@ -188,7 +188,7 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
             <button
               type="button"
               onClick={handleReactivate}
-              className="p-2 rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 transition-colors"
+              className="p-2 rounded-lg text-muted-foreground hover:text-green-600 hover:bg-green-50 transition-colors"
               disabled={saving}
             >
               <RotateCcw size={14} />
@@ -197,7 +197,7 @@ export function RewardRow({ reward, isEditing, onStartEdit, onCancelEdit }: Rewa
             <button
               type="button"
               onClick={() => setConfirmOpen(true)}
-              className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="p-2 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors"
             >
               <Trash2 size={14} />
             </button>

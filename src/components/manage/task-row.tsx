@@ -49,7 +49,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
   const STATUS_BADGES: Record<string, { label: string; className: string }> = {
     pending_approval: { label: t('waiting'), className: 'bg-amber-100 text-amber-700' },
     rejected: { label: t('rejected'), className: 'bg-red-100 text-red-700' },
-    archived: { label: t('archived'), className: 'bg-slate-100 text-slate-500' },
+    archived: { label: t('archived'), className: 'bg-muted text-muted-foreground' },
   }
   const [form, setForm] = useState({
     title: task.title,
@@ -144,26 +144,26 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
 
   if (isEditing) {
     return (
-      <div className="bg-white border border-indigo-200 rounded-xl p-4 space-y-3">
+      <div className="bg-card border border-indigo-200 rounded-xl p-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">{tTasks('emoji')}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{tTasks('emoji')}</label>
             <EmojiPicker value={form.emoji} onChange={(emoji) => setForm({ ...form, emoji })} />
           </div>
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">{tTasks('pointsLabel')}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{tTasks('pointsLabel')}</label>
             <Input type="number" value={form.points} onChange={(e) => setForm({ ...form, points: Number(e.target.value) })} />
           </div>
         </div>
         <div>
-          <label className="text-xs text-slate-500 mb-1 block">{tTasks('titleLabel')}</label>
+          <label className="text-xs text-muted-foreground mb-1 block">{tTasks('titleLabel')}</label>
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">{tTasks('category')}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{tTasks('category')}</label>
             <select
-              className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm"
+              className="w-full border border-border rounded-md px-3 py-2 text-sm"
               value={form.categoryId}
               onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
             >
@@ -171,9 +171,9 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             </select>
           </div>
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">Status</label>
+            <label className="text-xs text-muted-foreground mb-1 block">Status</label>
             <select
-              className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm"
+              className="w-full border border-border rounded-md px-3 py-2 text-sm"
               value={form.status}
               onChange={(e) => setForm({ ...form, status: e.target.value })}
             >
@@ -184,7 +184,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
         </div>
         {users && users.length > 0 && (
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">{tTasks('assignedTo')}</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{tTasks('assignedTo')}</label>
             <div className="flex gap-1 flex-wrap">
               {users.map((u) => {
                 const active = form.assignedUserIds.includes(u.id)
@@ -201,7 +201,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
                       }))
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      active ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {u.name}
@@ -222,7 +222,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             <label htmlFor={`recurring-${task.id}`} className="text-sm">{tTasks('recurring')}</label>
             {form.isRecurring && !form.scheduleDays && (
               <select
-                className="border border-slate-200 rounded-md px-2 py-1 text-sm"
+                className="border border-border rounded-md px-2 py-1 text-sm"
                 value={form.recurringInterval}
                 onChange={(e) => setForm({ ...form, recurringInterval: e.target.value })}
               >
@@ -254,7 +254,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
                       setForm({ ...form, scheduleDays: newDays.join(',') })
                     }}
                     className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
-                      isActive ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      isActive ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {label}
@@ -271,7 +271,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
                 id={`schedule-time-${task.id}`}
                 value={form.scheduleTime}
                 onChange={(e) => setForm({ ...form, scheduleTime: e.target.value })}
-                className="border border-slate-200 rounded-md px-2 py-1 text-sm"
+                className="border border-border rounded-md px-2 py-1 text-sm"
               />
             </div>
           )}
@@ -286,7 +286,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
           <label htmlFor={`multi-${task.id}`} className="text-sm">{tTasks('multiplePerDay')}</label>
           {form.allowMultiple && (
             <div className="flex items-center gap-1">
-              <span className="text-xs text-slate-500">{tTasks('max')}</span>
+              <span className="text-xs text-muted-foreground">{tTasks('max')}</span>
               <Input
                 type="number"
                 min={2}
@@ -295,7 +295,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
                 value={form.dailyLimit}
                 onChange={(e) => setForm({ ...form, dailyLimit: Number(e.target.value) })}
               />
-              <span className="text-xs text-slate-500">{tTasks('perDay')}</span>
+              <span className="text-xs text-muted-foreground">{tTasks('perDay')}</span>
             </div>
           )}
         </div>
@@ -303,7 +303,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
           <button
             type="button"
             onClick={onCancelEdit}
-            className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 transition-colors"
+            className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
             disabled={saving}
           >
             <X size={16} />
@@ -323,13 +323,13 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
 
   return (
     <>
-      <div className={`flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 ${isInactive ? 'opacity-50' : ''}`}>
+      <div className={`flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 ${isInactive ? 'opacity-50' : ''}`}>
         <div className="flex items-center gap-3 min-w-0">
           <span className="text-lg">{task.emoji}</span>
-          <span className="text-sm font-medium text-slate-700 truncate">{task.title}</span>
-          <span className="text-xs text-slate-400 shrink-0">{task.points} {tc('points')}</span>
+          <span className="text-sm font-medium text-foreground truncate">{task.title}</span>
+          <span className="text-xs text-muted-foreground shrink-0">{task.points} {tc('points')}</span>
           {category && (
-            <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0">
+            <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full shrink-0">
               {category.emoji} {category.name}
             </span>
           )}
@@ -343,7 +343,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
           <button
             type="button"
             onClick={onStartEdit}
-            className="p-2 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+            className="p-2 rounded-lg text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
           >
             <Pencil size={14} />
           </button>
@@ -351,7 +351,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             <button
               type="button"
               onClick={handleRestore}
-              className="p-2 rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 transition-colors"
+              className="p-2 rounded-lg text-muted-foreground hover:text-green-600 hover:bg-green-50 transition-colors"
               disabled={saving}
             >
               <RotateCcw size={14} />
@@ -360,7 +360,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             <button
               type="button"
               onClick={() => setConfirmOpen(true)}
-              className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="p-2 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors"
             >
               <Trash2 size={14} />
             </button>
