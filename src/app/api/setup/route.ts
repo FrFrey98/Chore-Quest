@@ -9,16 +9,30 @@ type UserInput = {
   role: 'admin' | 'member' | 'child'
 }
 
+type SetupBody = {
+  users: UserInput[]
+  locale?: string
+  categories?: Array<{ name: string; emoji: string }>
+  tasks?: Array<{
+    title: string
+    emoji: string
+    points: number
+    categoryName: string
+    isRecurring: boolean
+    recurringInterval?: string
+  }>
+}
+
 export async function POST(request: Request) {
   // Parse input
-  let body: { users?: UserInput[] }
+  let body: SetupBody
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
-  const { users } = body
+  const { users, locale, categories, tasks } = body
 
   // Validate array
   if (!Array.isArray(users) || users.length < 2) {
@@ -105,7 +119,7 @@ export async function POST(request: Request) {
         createdIds.push(created.id)
       }
 
-      await seedDefaults(tx, createdIds)
+      await seedDefaults(tx, createdIds, { locale, categories, tasks })
     })
   } catch (error) {
     if (error instanceof Error && error.message === 'SETUP_ALREADY_DONE') {
