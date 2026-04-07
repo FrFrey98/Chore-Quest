@@ -423,7 +423,7 @@ export function SetupForm() {
                   {isDE ? cat.categoryDe : cat.category}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {cat.templates.length} {t('tasksSelected').split(' ').slice(-1)[0]}
+                  {cat.templates.length} {isDE ? 'Aufgaben' : 'tasks'}
                 </span>
               </button>
             )
