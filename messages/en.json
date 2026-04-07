@@ -1,13 +1,617 @@
 {
-  "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "loading": "Loading...",
-    "error": "Error",
-    "points": "Pts"
-  },
   "metadata": {
     "title": "Chore-Quest",
     "description": "Gamified household planner"
+  },
+  "common": {
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved ✓",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error",
+    "points": "Pts",
+    "pointsFull": "Points",
+    "networkError": "Network error — please try again",
+    "unknown": "Unknown",
+    "days": "{count, plural, one {# day} other {# days}}",
+    "tasks": "Tasks",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "create": "Create",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "active": "Active",
+    "inactive": "Inactive",
+    "saveFailed": "Failed to save"
+  },
+  "roles": {
+    "admin": "Admin",
+    "member": "Member",
+    "child": "Child"
+  },
+  "intervals": {
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "customDays": "Specific days…"
+  },
+  "weekdays": {
+    "mo": "Mo",
+    "tu": "Tu",
+    "we": "We",
+    "th": "Th",
+    "fr": "Fr",
+    "sa": "Sa",
+    "su": "Su"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "nav": {
+    "home": "Home",
+    "tasks": "Tasks",
+    "store": "Store",
+    "achievements": "Achievements",
+    "profile": "Profile",
+    "mainNav": "Main navigation",
+    "sidebar": "Sidebar",
+    "brand": "🏠 Chore-Quest",
+    "approvalCount": "{count, plural, one {# approval} other {# approvals}}"
+  },
+  "auth": {
+    "login": {
+      "heading": "🏠 Chore-Quest",
+      "subtitle": "Who are you?",
+      "pinPlaceholder": "Enter PIN",
+      "wrongPin": "Wrong PIN. Try again.",
+      "checking": "Checking…",
+      "submit": "Log in"
+    },
+    "setup": {
+      "welcome": "Welcome to Chore-Quest!",
+      "welcomeSubtitle": "Set up your family to get started.",
+      "letsGo": "Let's go",
+      "setupAdmin": "Set up admin",
+      "namePlaceholder": "Name",
+      "pinPlaceholder": "PIN (4-8 digits)",
+      "pinConfirmPlaceholder": "Confirm PIN",
+      "next": "Next",
+      "back": "Back",
+      "familyMembers": "Family members",
+      "memberN": "Member {n}",
+      "addMember": "Add member",
+      "summary": "Summary",
+      "settingUp": "Setting up...",
+      "finishSetup": "Finish setup",
+      "validation": {
+        "nameMin": "Name must be at least 2 characters.",
+        "nameMax": "Name must be at most 50 characters.",
+        "pinFormat": "PIN must be 4-8 digits.",
+        "pinMismatch": "PINs don't match.",
+        "memberError": "Member {n}: {error}",
+        "memberNameUnique": "Member {n}: Name must be unique.",
+        "genericError": "An error occurred."
+      }
+    }
+  },
+  "dashboard": {
+    "heading": "Dashboard",
+    "partner": "Partner",
+    "me": "Me",
+    "allStats": "All statistics →",
+    "achievements": "Achievements",
+    "today": "Today",
+    "doneOfTotal": "{done}/{total} completed",
+    "suggestion": "Suggestion",
+    "noTasksToday": "No tasks for today",
+    "together": "Together",
+    "checkOff": "Check off",
+    "togetherWith": "Together with {name}",
+    "undoConfirm": "Undo?",
+    "undone": "Completion undone",
+    "undoFailed": "Undo failed",
+    "syncing": "\"{title}\" is syncing",
+    "pointsEarned": "+{points} Pts for \"{title}\"",
+    "pointsEarnedTogether": "+{points} Pts for \"{title}\" 👫",
+    "achievementUnlocked": "{emoji} Achievement unlocked: {title}",
+    "completionFailed": "Failed to complete",
+    "weekOverview": "Week overview",
+    "yesterdayBackfill": "{count, plural, one {# task from yesterday to catch up} other {# tasks from yesterday to catch up}}",
+    "redeemed": "{emoji} {name} redeemed \"{title}\"",
+    "streakInDanger": "Your {days}-day streak is in danger!",
+    "restoreFor": "Restore for {points} points",
+    "ptsToNext": "{points} Pts to {title}",
+    "maxLevel": "Max level reached!",
+    "streak": "Streak",
+    "feed": {
+      "empty": "No activity yet",
+      "emptySubtitle": "Complete your first task and start the game!",
+      "heading": "Activity",
+      "tasksSummary": "{tasks} tasks · {points} Pts",
+      "reward": "Reward",
+      "completed": "completed",
+      "verb": "",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This week",
+      "lastWeek": "Last week"
+    }
+  },
+  "tasks": {
+    "heading": "Tasks",
+    "listView": "List view",
+    "calendarView": "Calendar view",
+    "monthOverview": "Month overview",
+    "openTasks": "{total} open tasks",
+    "allDone": "All done!",
+    "allDoneSubtitle": "Time for a break — or create new tasks right away.",
+    "manage": "Manage →",
+    "yesterday": {
+      "heading": "Yesterday",
+      "completed": "Completed",
+      "catchUp": "Catch up",
+      "catchUpAction": "Catch up",
+      "noTasks": "No tasks from yesterday",
+      "pointsEarned": "+{points} Pts for \"{title}\" (Yesterday)",
+      "catchUpFailed": "Failed to catch up"
+    },
+    "calendar": {
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "missed": "Missed",
+      "noTasks": "No tasks",
+      "addTask": "Add task",
+      "noTasksAvailable": "No tasks available",
+      "legend": {
+        "completed": "Completed",
+        "open": "Open",
+        "missed": "Missed"
+      },
+      "taskChecked": "Task checked off",
+      "taskAdded": "Task added",
+      "skipRemoved": "Skip removed",
+      "taskSkipped": "Task skipped"
+    },
+    "recurring": {
+      "daily": "🔄 Daily",
+      "weekly": "🔄 Weekly",
+      "monthly": "🔄 Monthly"
+    },
+    "undo": "Undo",
+    "createDialog": {
+      "title": "Suggest a new task",
+      "emoji": "Emoji",
+      "pointsLabel": "Points",
+      "titleLabel": "Title",
+      "category": "Category",
+      "assignedTo": "Assigned to (optional)",
+      "recurring": "Recurring",
+      "reminder": "Reminder",
+      "multiplePerDay": "Multiple per day",
+      "max": "Max",
+      "perDay": "×/day",
+      "submit": "Submit (→ needs approval)",
+      "submitted": "Task submitted — waiting for approval",
+      "createFailed": "Failed to create"
+    }
+  },
+  "store": {
+    "heading": "Store",
+    "rewards": "🎁 Rewards",
+    "noRewards": "No rewards available yet.",
+    "createHint": "Create some via the + button above.",
+    "manage": "Manage →",
+    "purchased": "✓ Purchased!",
+    "buy": "Buy",
+    "notEnoughPoints": "Not enough points",
+    "purchaseSuccess": "Purchased successfully!",
+    "purchaseFailed": "Failed to purchase",
+    "myRewards": "🎯 My rewards",
+    "redeem": "Redeem",
+    "redeemed": "Reward redeemed",
+    "redeemFailed": "Failed to redeem",
+    "createItem": {
+      "title": "New reward",
+      "emoji": "Emoji",
+      "price": "Price (Pts)",
+      "titleLabel": "Title",
+      "description": "Description",
+      "submit": "Create reward",
+      "success": "Reward created",
+      "failed": "Failed to create"
+    }
+  },
+  "achievements": {
+    "heading": "Achievements",
+    "unlockedCount": "{unlocked}/{total} unlocked",
+    "showcase": "Your showcase",
+    "nextGoals": "Next goals",
+    "almostDone": "almost done!",
+    "since": "Since {date}",
+    "unlocked": "Unlocked",
+    "locked": "Still locked"
+  },
+  "streak": {
+    "backToDashboard": "← Dashboard",
+    "counter": "{days} Days",
+    "noBonusActive": "No bonus active yet",
+    "inDanger": {
+      "heading": "Your streak is in danger!",
+      "body": "You didn't complete any task yesterday. Restore your {days}-day streak for {price} points. You'll still need to complete a task today to continue the streak.",
+      "restoring": "Restoring...",
+      "restoreButton": "Restore ({price} Pts)",
+      "balance": "Balance: {balance} Points",
+      "notEnough": "Not enough points!",
+      "failed": "Failed to restore"
+    },
+    "nextTier": "Next tier",
+    "nextTierBonus": "+{percent}%",
+    "daysRemaining": "{count, plural, one {# more day} other {# more days}}",
+    "tiers": {
+      "heading": "Bonus tiers",
+      "fromDays": "from {days} days"
+    },
+    "history": {
+      "heading": "Streak history",
+      "best": "Best streak",
+      "restoreCount": "Restorations",
+      "activityHeading": "Activity (12 weeks)",
+      "tooltip": "{date}: {value} Points"
+    },
+    "howItWorks": {
+      "heading": "How the streak works",
+      "body": "Complete at least one task per day to keep your streak alive. The longer the streak, the higher the bonus on all earned points. If you miss a day, you can restore it for points — but it gets more expensive the longer the streak."
+    }
+  },
+  "profile": {
+    "heading": "Profile",
+    "levelSubtitle": "Level {level} · {title}",
+    "stats": {
+      "heading": "Statistics",
+      "tasks": "Tasks",
+      "pointsEarned": "Points earned",
+      "streak": "🔥 Streak",
+      "streakValue": "{days} Days",
+      "level": "Level",
+      "levelValue": "{level} · {title}"
+    },
+    "heatmap": "Activity heatmap",
+    "topTasks": "Top tasks",
+    "noTasks": "No tasks completed yet.",
+    "purchaseHistory": "Reward history",
+    "noPurchases": "No purchases yet.",
+    "tableHeaders": {
+      "item": "Item",
+      "date": "Date",
+      "status": "Status"
+    },
+    "statusRedeemed": "Redeemed",
+    "statusPending": "Pending"
+  },
+  "approvals": {
+    "heading": "Approvals",
+    "openCount": "{count} open requests",
+    "allApproved": "All approved",
+    "allApprovedSubtitle": "No open requests — when someone suggests a new task, it will appear here.",
+    "actionFailed": "Action failed",
+    "card": {
+      "from": "From {name} ·",
+      "recurringDaily": "Recurring (daily)",
+      "recurringWeekly": "Recurring (weekly)",
+      "recurringMonthly": "Recurring (monthly)",
+      "recurringUnknown": "Recurring (unknown)",
+      "oneTime": "One-time",
+      "reject": "✗ Reject",
+      "approve": "✓ Approve"
+    }
+  },
+  "manage": {
+    "heading": "Manage",
+    "tasksTab": "Tasks",
+    "rewardsTab": "Rewards",
+    "noTasks": "No tasks.",
+    "noRewards": "No rewards.",
+    "taskRow": {
+      "waiting": "Waiting",
+      "rejected": "Rejected",
+      "archived": "Archived",
+      "active": "Active",
+      "saved": "Task saved",
+      "taskArchived": "Task archived",
+      "taskRestored": "Task restored",
+      "saveFailed": "Failed to save",
+      "archiveFailed": "Failed to archive",
+      "restoreFailed": "Failed to restore",
+      "archiveTitle": "Archive task",
+      "archiveDescription": "Really archive task \"{title}\"?",
+      "archiveConfirm": "Yes, archive"
+    },
+    "rewardRow": {
+      "saved": "Reward saved",
+      "deactivated": "Reward deactivated",
+      "reactivated": "Reward reactivated",
+      "saveFailed": "Failed to save",
+      "deactivateFailed": "Failed to deactivate",
+      "reactivateFailed": "Failed to reactivate",
+      "deactivateTitle": "Deactivate reward",
+      "deactivateDescription": "Really deactivate reward \"{title}\"?",
+      "deactivateConfirm": "Yes, deactivate"
+    }
+  },
+  "settings": {
+    "heading": "Settings",
+    "tabs": {
+      "users": "Users",
+      "streak": "Streak",
+      "levels": "Levels",
+      "bonus": "Bonus",
+      "categories": "Categories",
+      "achievements": "Achievements",
+      "tasks": "Tasks",
+      "store": "Store",
+      "notifications": "Notifications",
+      "backup": "Backup"
+    },
+    "users": {
+      "description": "Manage family members",
+      "addMember": "+ Member",
+      "newMember": "New member",
+      "nameLabel": "Name",
+      "pinLabel": "PIN (4–8 digits)",
+      "roleLabel": "Role",
+      "nameMin": "Name must be at least 2 characters",
+      "pinFormat": "PIN must be 4–8 digits",
+      "adding": "Adding...",
+      "addButton": "Add",
+      "addFailed": "Failed to add",
+      "you": "(you)",
+      "nameSaved": "Name saved",
+      "roleSaved": "Role saved",
+      "pinChanged": "PIN changed",
+      "newPin": "New PIN",
+      "newPinPlaceholder": "4–8 digits",
+      "changePin": "Change",
+      "confirmDelete": "Really delete?",
+      "confirmDeleteYes": "Yes, delete",
+      "removeMember": "Remove member",
+      "deleteFailed": "Failed to delete"
+    },
+    "streak": {
+      "heading": "Streak Tiers",
+      "description": "Bonus tiers based on consecutive days. Automatically sorted by days descending.",
+      "fromDay": "From day",
+      "bonus": "Bonus",
+      "name": "Name",
+      "addTier": "+ Add tier",
+      "restoreHeading": "Streak Restore Price Formula",
+      "restoreDescription": "Price = Base + (Per-day × current streak days)",
+      "basePrice": "Base price",
+      "perDay": "Per streak day"
+    },
+    "levels": {
+      "description": "Level definitions with point thresholds. Level 1 always starts at 0 points.",
+      "titlePlaceholder": "Title",
+      "fromZero": "from 0 Pts",
+      "from": "from",
+      "addLevel": "+ Add level"
+    },
+    "bonus": {
+      "teamworkHeading": "Teamwork Bonus",
+      "teamworkDescription": "Additional bonus when a task is completed together.",
+      "intervalsHeading": "Recurring Intervals",
+      "intervalsDescription": "Defines the available intervals for recurring tasks.",
+      "intervalNamePlaceholder": "Name (e.g. daily)",
+      "daysLabel": "Days",
+      "addInterval": "+ Add interval"
+    },
+    "categories": {
+      "description": "Categories for task grouping.",
+      "taskCount": "{count} Tasks",
+      "moveFirst": "Move tasks first",
+      "deleteTooltip": "Delete",
+      "newPlaceholder": "New category",
+      "createButton": "Create",
+      "warning": "⚠️ Categories with assigned tasks cannot be deleted. Move or archive all tasks first.",
+      "deleted": "Deleted ✓"
+    },
+    "achievements": {
+      "description": "Achievements are automatically unlocked when the condition is met.",
+      "newHeading": "New Achievement",
+      "editHeading": "Edit Achievement",
+      "emojiPlaceholder": "Emoji",
+      "titlePlaceholder": "Title",
+      "descriptionPlaceholder": "Description",
+      "categorySelect": "Select category",
+      "sortOrder": "Sort order:",
+      "addButton": "+ Add Achievement",
+      "info": "ℹ️ Already unlocked achievements are preserved, even if the condition is changed.",
+      "created": "Created ✓",
+      "deleted": "Deleted ✓",
+      "conditionTypes": {
+        "task_count": "Task count",
+        "category_count": "Category count",
+        "streak_days": "Streak days",
+        "total_points": "Total points",
+        "level": "Level"
+      }
+    },
+    "tasks": {
+      "newHeading": "Create new task",
+      "emoji": "Emoji",
+      "points": "Points",
+      "title": "Title",
+      "category": "Category",
+      "assignedTo": "Assigned to (optional)",
+      "recurring": "Recurring",
+      "reminder": "Reminder",
+      "multiplePerDay": "Multiple per day",
+      "max": "Max",
+      "perDay": "×/day",
+      "submitButton": "Create task (→ needs approval)",
+      "createFailed": "Failed to create",
+      "archiveFailed": "Failed to archive",
+      "activeCount": "Active tasks ({count})",
+      "editLink": "Edit → /manage",
+      "archive": "Archive"
+    },
+    "store": {
+      "newHeading": "Create new reward",
+      "emoji": "Emoji",
+      "price": "Price (Pts)",
+      "title": "Title",
+      "description": "Description",
+      "type": "Type",
+      "typeTrophy": "🏆 Trophy",
+      "typeReward": "🎁 Reward",
+      "submitButton": "Create item",
+      "createFailed": "Failed to create",
+      "existingHeading": "Existing rewards"
+    },
+    "notifications": {
+      "pushLabel": "Push notifications",
+      "pushDescription": "Reminder when tasks with a set time are due",
+      "notSupported": "Push notifications are not supported by this browser.",
+      "notConfigured": "Push is not configured server-side (VAPID keys missing).",
+      "permissionNeeded": "Browser permission for notifications needed",
+      "enabled": "Notifications enabled",
+      "disabled": "Notifications disabled"
+    },
+    "backup": {
+      "description": "Export all data as a JSON file or restore from a backup.",
+      "exporting": "Exporting...",
+      "exportButton": "Export backup",
+      "exported": "Backup downloaded",
+      "exportFailed": "Export failed",
+      "restoring": "Restoring...",
+      "restoreButton": "Restore backup",
+      "fileTooLarge": "File too large (max 5 MB)",
+      "fileUnreadable": "File could not be read",
+      "invalidFile": "Invalid backup file",
+      "restored": "Data restored. Page will reload.",
+      "confirmTitle": "Overwrite data?",
+      "confirmBody": "All current data will be overwritten. An automatic backup will be created first.",
+      "fileLabel": "File: {name}",
+      "exportedAt": "Exported on: {date}",
+      "restoreFailed": "Restore failed"
+    }
+  },
+  "stats": {
+    "heading": "Statistics",
+    "loading": "Loading statistics...",
+    "personalTab": "Personal",
+    "comparisonTab": "Comparison",
+    "activityChart": "Activity",
+    "metricsToggle": {
+      "tasks": "Tasks",
+      "points": "Points"
+    },
+    "categoryDistribution": "Category distribution",
+    "topTasks": "Top tasks",
+    "heatmap": "Heatmap",
+    "heatmaps": "Heatmaps",
+    "me": "Me",
+    "top5": "{name} Top 5",
+    "vs": "vs.",
+    "summary": {
+      "completedTasks": "Completed tasks",
+      "earnedPoints": "Earned points",
+      "tasksPerDay": "Tasks / day"
+    },
+    "scoreboard": {
+      "tasks": "Tasks",
+      "points": "Points"
+    }
+  },
+  "pwa": {
+    "installPrompt": "Install Chore-Quest as an app?",
+    "iosInstructions": "Tap {share} and then {addToHome}",
+    "share": "Share",
+    "addToHome": "Add to Home Screen",
+    "install": "Install",
+    "later": "Later",
+    "offline": "Offline — changes will be synced"
+  },
+  "api": {
+    "invalidJson": "Invalid JSON",
+    "unauthorized": "Unauthorized",
+    "noPermission": "No permission",
+    "notFound": "Not found",
+    "setup": {
+      "invalidRequest": "Invalid request",
+      "minTwoUsers": "At least 2 users required",
+      "minOneAdmin": "At least one admin is required",
+      "userNameLength": "User {n}: Name must be between 2 and 50 characters",
+      "userPinInvalid": "PIN for \"{name}\" is invalid",
+      "userPinFormat": "User {n}: PIN must be 4-8 digits",
+      "userRoleInvalid": "User {n}: Invalid role",
+      "namesUnique": "All names must be unique",
+      "alreadySetup": "Setup has already been completed"
+    },
+    "users": {
+      "nameTaken": "This name is already taken"
+    },
+    "tasks": {
+      "partnerNotFound": "Partner not found",
+      "invalidDate": "Invalid date",
+      "taskNotFound": "Task not found",
+      "alreadyCompletedYesterday": "Task already completed yesterday",
+      "alreadyCompletedToday": "Task already completed today",
+      "dailyLimitReached": "Daily limit reached ({limit}×)"
+    },
+    "undo": {
+      "invalidBody": "Invalid request body",
+      "completionIdRequired": "completionId required",
+      "completionNotFound": "Completion not found",
+      "notAuthorized": "Not authorized",
+      "windowExpired": "Time window expired"
+    },
+    "approvals": {
+      "invalidAction": "Invalid action",
+      "notFound": "Approval not found",
+      "cannotApproveOwn": "Cannot approve your own tasks"
+    },
+    "store": {
+      "itemNotFound": "Item not found",
+      "notEnoughPoints": "Not enough points",
+      "purchaseFailed": "Purchase failed",
+      "purchaseNotFound": "Purchase not found",
+      "onlyBuyerCanRedeem": "Only the buyer can redeem their own reward",
+      "alreadyRedeemed": "Already redeemed"
+    },
+    "schemas": {
+      "titleRequired": "Title is required",
+      "emojiRequired": "Emoji is required",
+      "pointsMustBeInt": "Points must be an integer",
+      "pointsMustBePositive": "Points must be positive",
+      "categoryRequired": "Category is required",
+      "invalidWeekdays": "Invalid weekdays",
+      "nameMin": "Name must be at least 2 characters",
+      "nameMax": "Name must be at most 50 characters",
+      "pinFormat": "PIN must be 4-8 digits",
+      "invalidRole": "Invalid role",
+      "costMustBeInt": "Cost must be an integer",
+      "costMustBePositive": "Cost must be positive"
+    }
+  },
+  "locale": {
+    "label": "Language",
+    "en": "English",
+    "de": "Deutsch"
   }
 }
