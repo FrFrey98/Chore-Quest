@@ -7,6 +7,7 @@ import { loadGameConfig } from '@/lib/config'
 import { getNextDueAt } from '@/lib/recurring'
 import { checkAndUnlockAchievements } from '@/lib/achievements'
 import { applyBonus, updateStreakOnCompletion, recalculateStreak, getOrCreateStreakState, getEffectiveStreak } from '@/lib/streak'
+import { calculateHealth, getDecayHours, applyPointDecay } from '@/lib/health'
 
 export async function POST(
   req: NextRequest,
@@ -119,6 +120,16 @@ export async function POST(
     }
   }
 
+  // Apply point decay if enabled for recurring tasks
+  let effectiveBasePoints = task.points
+  let health: number | undefined
+
+  if (config.pointDecayEnabled && task.isRecurring && task.nextDueAt) {
+    const decayHrs = getDecayHours(task.decayHours, task.recurringInterval, config.decayHoursByInterval)
+    health = calculateHealth(task.nextDueAt, decayHrs)
+    effectiveBasePoints = applyPointDecay(task.points, health)
+  }
+
   // Update streak and calculate bonus for current user
   let currentStreak: number
   if (dateParam === 'yesterday') {
@@ -129,7 +140,7 @@ export async function POST(
     const result = await updateStreakOnCompletion(userId, config.streakTiers)
     currentStreak = result.currentStreak
   }
-  const pointsWithBonus = applyBonus(task.points, currentStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
+  const pointsWithBonus = applyBonus(effectiveBasePoints, currentStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
 
   const completion = await prisma.taskCompletion.create({
     data: {
@@ -152,7 +163,7 @@ export async function POST(
       const result = await updateStreakOnCompletion(partnerId, config.streakTiers)
       partnerStreak = result.currentStreak
     }
-    const partnerPoints = applyBonus(task.points, partnerStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
+    const partnerPoints = applyBonus(effectiveBasePoints, partnerStreak, withUserIds.length, { tiers: config.streakTiers, teamworkPercent: config.teamworkBonusPercent })
     const partnerCompletion = await prisma.taskCompletion.create({
       data: {
         taskId: task.id,
@@ -227,11 +238,14 @@ export async function POST(
 
   return NextResponse.json({
     ...completion,
-    basePoints: task.points,
-    bonusPoints: pointsWithBonus - task.points,
+    basePoints: effectiveBasePoints,
+    bonusPoints: pointsWithBonus - effectiveBasePoints,
     streakDays: currentStreak,
     isShared: withUserIds.length > 0,
     partnerCount: withUserIds.length,
     newAchievements,
+    healthPercent: health !== undefined ? health : 1,
+    decayApplied: effectiveBasePoints < task.points,
+    originalBasePoints: task.points,
   }, { status: 201 })
 }
