@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import packageJson from '../../package.json'
 
 export const BACKUP_VERSION = 1
 
@@ -56,7 +57,7 @@ export async function exportAllData(): Promise<BackupData> {
     meta: {
       version: BACKUP_VERSION,
       exportedAt: new Date().toISOString(),
-      appVersion: '1.0.0',
+      appVersion: packageJson.version,
     },
     data: {
       users, categories, tasks, taskCompletions, taskApprovals,
@@ -80,6 +81,10 @@ export function validateBackup(data: unknown): { valid: true; backup: BackupData
   const meta = backup.meta as Record<string, unknown>
   if (meta.version !== BACKUP_VERSION) {
     return { valid: false, error: `Inkompatible Version: ${meta.version} (erwartet: ${BACKUP_VERSION})` }
+  }
+
+  if (typeof meta.exportedAt !== 'string') {
+    return { valid: false, error: 'Export-Zeitpunkt fehlt' }
   }
 
   if (!backup.data || typeof backup.data !== 'object') {
