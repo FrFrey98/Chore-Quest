@@ -96,6 +96,44 @@ export async function POST(request: Request) {
     )
   }
 
+  // Validate locale
+  if (locale !== undefined && !['en', 'de'].includes(locale)) {
+    return NextResponse.json({ error: 'Invalid locale' }, { status: 400 })
+  }
+
+  // Validate categories
+  if (categories !== undefined) {
+    if (!Array.isArray(categories) || categories.length > 20) {
+      return NextResponse.json({ error: 'Invalid categories' }, { status: 400 })
+    }
+    for (const cat of categories) {
+      if (typeof cat.name !== 'string' || cat.name.trim().length === 0 || cat.name.length > 50) {
+        return NextResponse.json({ error: 'Invalid category name' }, { status: 400 })
+      }
+      if (typeof cat.emoji !== 'string' || cat.emoji.length === 0) {
+        return NextResponse.json({ error: 'Invalid category emoji' }, { status: 400 })
+      }
+    }
+  }
+
+  // Validate tasks
+  if (tasks !== undefined) {
+    if (!Array.isArray(tasks) || tasks.length > 100) {
+      return NextResponse.json({ error: 'Invalid tasks' }, { status: 400 })
+    }
+    for (const task of tasks) {
+      if (typeof task.title !== 'string' || task.title.trim().length === 0 || task.title.length > 100) {
+        return NextResponse.json({ error: 'Invalid task title' }, { status: 400 })
+      }
+      if (typeof task.points !== 'number' || !Number.isInteger(task.points) || task.points < 1) {
+        return NextResponse.json({ error: 'Invalid task points' }, { status: 400 })
+      }
+      if (task.isRecurring && (!task.recurringInterval || typeof task.recurringInterval !== 'string')) {
+        return NextResponse.json({ error: 'Recurring tasks must have an interval' }, { status: 400 })
+      }
+    }
+  }
+
   // Hash all PINs
   const hashedPins = await Promise.all(users.map((u) => bcrypt.hash(u.pin, 10)))
 

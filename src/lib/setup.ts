@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
+type TransactionClient = Parameters<Parameters<(typeof prisma)['$transaction']>[0]>[0]
+
 /**
  * Returns true if at least one user exists in the database.
  * Used to determine if the setup wizard has already been completed.
@@ -62,11 +64,10 @@ interface SetupOptions {
  * within a Prisma transaction context.
  * Optionally accepts custom categories, tasks, and locale via SetupOptions.
  */
-export async function seedDefaults(tx: any, userIds: string[], options?: SetupOptions) { // eslint-disable-line
+export async function seedDefaults(tx: TransactionClient, userIds: string[], options?: SetupOptions) {
   // Use custom categories if provided, otherwise DEFAULT_CATEGORIES
   const categoriesToSeed = options?.categories?.length
-    ? options.categories.map((c, i) => ({
-        id: `cat-custom-${i}`,
+    ? options.categories.map((c) => ({
         name: c.name,
         emoji: c.emoji,
       }))
