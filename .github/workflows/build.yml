@@ -59,6 +59,9 @@ jobs:
 
       - name: Run E2E tests
         run: npm run test:e2e
+        env:
+          NEXTAUTH_SECRET: e2e-test-secret-not-for-production
+          NEXTAUTH_URL: http://localhost:3001
 
       - name: Upload report
         uses: actions/upload-artifact@v4
