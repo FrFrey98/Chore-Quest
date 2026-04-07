@@ -56,6 +56,7 @@ Screenshots will be added soon. To see the app in action, follow the [Quick Star
 | [Zod](https://zod.dev/) | Schema validation |
 | [OpenAPI](docs/openapi.json) | API documentation (generated from Zod schemas) |
 | [Vitest](https://vitest.dev/) | Unit and integration testing |
+| [Playwright](https://playwright.dev/) | End-to-end testing |
 
 ## Architecture
 
