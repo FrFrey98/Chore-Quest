@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
+type TransactionClient = Parameters<Parameters<(typeof prisma)['$transaction']>[0]>[0]
+
 /**
  * Returns true if at least one user exists in the database.
  * Used to determine if the setup wizard has already been completed.
@@ -44,15 +46,38 @@ export const DEFAULT_ACHIEVEMENTS = [
   { id: 'ach-level-6', title: 'Wohn-Meister', description: 'Level 6 erreicht', emoji: '👑', conditionType: 'level', conditionValue: 6, sortOrder: 13 },
 ]
 
+interface SetupOptions {
+  categories?: Array<{ name: string; emoji: string }>
+  tasks?: Array<{
+    title: string
+    emoji: string
+    points: number
+    categoryName: string
+    isRecurring: boolean
+    recurringInterval?: string
+  }>
+  locale?: string
+}
+
 /**
  * Seeds default categories, achievements, store items, and streak states
  * within a Prisma transaction context.
- * Note: Tasks are NOT seeded — users create their own via the task creation flow.
+ * Optionally accepts custom categories, tasks, and locale via SetupOptions.
  */
-export async function seedDefaults(tx: any, userIds: string[]) { // eslint-disable-line
-  // Seed categories
-  for (const cat of DEFAULT_CATEGORIES) {
-    await tx.category.create({ data: cat })
+export async function seedDefaults(tx: TransactionClient, userIds: string[], options?: SetupOptions) {
+  // Use custom categories if provided, otherwise DEFAULT_CATEGORIES
+  const categoriesToSeed = options?.categories?.length
+    ? options.categories.map((c) => ({
+        name: c.name,
+        emoji: c.emoji,
+      }))
+    : DEFAULT_CATEGORIES
+
+  // Seed categories and build a name->id map
+  const categoryMap: Record<string, string> = {}
+  for (const cat of categoriesToSeed) {
+    const created = await tx.category.create({ data: cat })
+    categoryMap[cat.name] = created.id
   }
 
   // Seed store items
@@ -70,5 +95,38 @@ export async function seedDefaults(tx: any, userIds: string[]) { // eslint-disab
   // Seed streak states for all users
   for (const userId of userIds) {
     await tx.streakState.create({ data: { userId } })
+  }
+
+  // Seed tasks if provided
+  if (options?.tasks?.length) {
+    const adminId = userIds[0]
+    for (const task of options.tasks) {
+      const categoryId = categoryMap[task.categoryName]
+      if (!categoryId) continue
+      await tx.task.create({
+        data: {
+          title: task.title,
+          emoji: task.emoji,
+          points: task.points,
+          categoryId,
+          isRecurring: task.isRecurring,
+          recurringInterval: task.recurringInterval || null,
+          status: 'active',
+          createdById: adminId,
+          approvedById: adminId,
+          nextDueAt: task.isRecurring ? new Date() : null,
+        },
+      })
+    }
+  }
+
+  // Set locale for all users if specified
+  if (options?.locale) {
+    for (const userId of userIds) {
+      await tx.user.update({
+        where: { id: userId },
+        data: { locale: options.locale },
+      })
+    }
   }
 }
