@@ -648,6 +648,12 @@
     "partnerOnVacation": "{name} ist im Urlaub",
     "partnerOnVacationUntil": "{name} ist im Urlaub bis {date}"
   },
+  "templates": {
+    "useTemplate": "Vorlage verwenden",
+    "searchPlaceholder": "Vorlagen durchsuchen...",
+    "allCategories": "Alle",
+    "selectTemplate": "Vorlage auswählen"
+  },
   "theme": {
     "light": "Hell",
     "dark": "Dunkel",

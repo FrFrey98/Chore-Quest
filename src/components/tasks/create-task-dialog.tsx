@@ -11,6 +11,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
+import { TemplatePicker } from '@/components/tasks/template-picker'
 
 type Category = { id: string; name: string; emoji: string }
 type UserItem = { id: string; name: string }
@@ -28,7 +29,9 @@ export function CreateTaskDialog({ categories, users, userRole }: {
   const tIntervals = useTranslations('intervals')
   const tWeekdays = useTranslations('weekdays')
   const tt = useTranslations('tasks')
+  const tTpl = useTranslations('templates')
   const [open, setOpen] = useState(false)
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({
@@ -82,8 +85,27 @@ export function CreateTaskDialog({ categories, users, userRole }: {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>{t('title')}</DialogTitle>
+            <Button type="button" variant="outline" size="sm" onClick={() => setTemplatePickerOpen(true)}>
+              {tTpl('useTemplate')}
+            </Button>
+          </div>
         </DialogHeader>
+        <TemplatePicker
+          open={templatePickerOpen}
+          onClose={() => setTemplatePickerOpen(false)}
+          onSelect={(tpl) => {
+            setForm((prev) => ({
+              ...prev,
+              title: tpl.title,
+              emoji: tpl.emoji,
+              points: tpl.points,
+              isRecurring: tpl.interval !== 'once',
+              recurringInterval: tpl.interval === 'once' ? 'weekly' : tpl.interval,
+            }))
+          }}
+        />
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>

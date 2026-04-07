@@ -1,0 +1,401 @@
+[
+  {
+    "category": "Kitchen",
+    "categoryDe": "Küche",
+    "emoji": "🍳",
+    "templates": [
+      {
+        "title": "Do the dishes",
+        "titleDe": "Abspülen",
+        "emoji": "🍽️",
+        "suggestedPoints": 5,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Clean countertops",
+        "titleDe": "Arbeitsflächen reinigen",
+        "emoji": "✨",
+        "suggestedPoints": 3,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Clean the stove",
+        "titleDe": "Herd reinigen",
+        "emoji": "🔥",
+        "suggestedPoints": 5,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Clean the fridge",
+        "titleDe": "Kühlschrank reinigen",
+        "emoji": "🧊",
+        "suggestedPoints": 8,
+        "suggestedInterval": "monthly"
+      },
+      {
+        "title": "Clean the microwave",
+        "titleDe": "Mikrowelle reinigen",
+        "emoji": "📡",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Take out trash",
+        "titleDe": "Müll rausbringen",
+        "emoji": "🗑️",
+        "suggestedPoints": 3,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Mop kitchen floor",
+        "titleDe": "Küchenboden wischen",
+        "emoji": "🧹",
+        "suggestedPoints": 6,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Empty dishwasher",
+        "titleDe": "Spülmaschine ausräumen",
+        "emoji": "🫧",
+        "suggestedPoints": 4,
+        "suggestedInterval": "daily"
+      }
+    ]
+  },
+  {
+    "category": "Bathroom",
+    "categoryDe": "Badezimmer",
+    "emoji": "🚿",
+    "templates": [
+      {
+        "title": "Clean the toilet",
+        "titleDe": "Toilette reinigen",
+        "emoji": "🚽",
+        "suggestedPoints": 5,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Clean shower / tub",
+        "titleDe": "Dusche / Badewanne reinigen",
+        "emoji": "🛁",
+        "suggestedPoints": 7,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Clean bathroom sink",
+        "titleDe": "Waschbecken reinigen",
+        "emoji": "🪥",
+        "suggestedPoints": 3,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Mop bathroom floor",
+        "titleDe": "Badezimmerboden wischen",
+        "emoji": "🧹",
+        "suggestedPoints": 5,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Replace towels",
+        "titleDe": "Handtücher wechseln",
+        "emoji": "🛁",
+        "suggestedPoints": 3,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Clean mirror",
+        "titleDe": "Spiegel putzen",
+        "emoji": "🪞",
+        "suggestedPoints": 2,
+        "suggestedInterval": "weekly"
+      }
+    ]
+  },
+  {
+    "category": "Living Room",
+    "categoryDe": "Wohnzimmer",
+    "emoji": "🛋️",
+    "templates": [
+      {
+        "title": "Vacuum living room",
+        "titleDe": "Wohnzimmer staubsaugen",
+        "emoji": "🧹",
+        "suggestedPoints": 6,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Dust surfaces",
+        "titleDe": "Oberflächen abstauben",
+        "emoji": "🧽",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Clean windows",
+        "titleDe": "Fenster putzen",
+        "emoji": "🪟",
+        "suggestedPoints": 8,
+        "suggestedInterval": "monthly"
+      },
+      {
+        "title": "Tidy up living room",
+        "titleDe": "Wohnzimmer aufräumen",
+        "emoji": "🧹",
+        "suggestedPoints": 4,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Water plants",
+        "titleDe": "Pflanzen gießen",
+        "emoji": "🌱",
+        "suggestedPoints": 2,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Organize shelves",
+        "titleDe": "Regale ordnen",
+        "emoji": "📚",
+        "suggestedPoints": 6,
+        "suggestedInterval": "monthly"
+      }
+    ]
+  },
+  {
+    "category": "Bedroom",
+    "categoryDe": "Schlafzimmer",
+    "emoji": "🛏️",
+    "templates": [
+      {
+        "title": "Make the bed",
+        "titleDe": "Bett machen",
+        "emoji": "🛏️",
+        "suggestedPoints": 2,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Change bed sheets",
+        "titleDe": "Bettwäsche wechseln",
+        "emoji": "🛌",
+        "suggestedPoints": 6,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Vacuum bedroom",
+        "titleDe": "Schlafzimmer staubsaugen",
+        "emoji": "🧹",
+        "suggestedPoints": 5,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Dust bedroom",
+        "titleDe": "Schlafzimmer abstauben",
+        "emoji": "🧽",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Organize closet",
+        "titleDe": "Kleiderschrank aufräumen",
+        "emoji": "👔",
+        "suggestedPoints": 8,
+        "suggestedInterval": "monthly"
+      },
+      {
+        "title": "Put laundry away",
+        "titleDe": "Wäsche einräumen",
+        "emoji": "👕",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      }
+    ]
+  },
+  {
+    "category": "Office",
+    "categoryDe": "Büro",
+    "emoji": "💻",
+    "templates": [
+      {
+        "title": "Tidy desk",
+        "titleDe": "Schreibtisch aufräumen",
+        "emoji": "🗂️",
+        "suggestedPoints": 3,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Organize cables",
+        "titleDe": "Kabel ordnen",
+        "emoji": "🔌",
+        "suggestedPoints": 5,
+        "suggestedInterval": "monthly"
+      },
+      {
+        "title": "Clean screen",
+        "titleDe": "Bildschirm reinigen",
+        "emoji": "🖥️",
+        "suggestedPoints": 3,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Empty office trash",
+        "titleDe": "Büro-Papierkorb leeren",
+        "emoji": "🗑️",
+        "suggestedPoints": 2,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "File papers",
+        "titleDe": "Unterlagen ablegen",
+        "emoji": "📁",
+        "suggestedPoints": 5,
+        "suggestedInterval": "weekly"
+      }
+    ]
+  },
+  {
+    "category": "Garden",
+    "categoryDe": "Garten",
+    "emoji": "🌿",
+    "templates": [
+      {
+        "title": "Mow the lawn",
+        "titleDe": "Rasen mähen",
+        "emoji": "🌾",
+        "suggestedPoints": 10,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Water garden plants",
+        "titleDe": "Gartenpflanzen gießen",
+        "emoji": "💧",
+        "suggestedPoints": 4,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Pull weeds",
+        "titleDe": "Unkraut jäten",
+        "emoji": "🌿",
+        "suggestedPoints": 7,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Rake leaves",
+        "titleDe": "Laub harken",
+        "emoji": "🍂",
+        "suggestedPoints": 6,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Trim hedges",
+        "titleDe": "Hecken schneiden",
+        "emoji": "✂️",
+        "suggestedPoints": 8,
+        "suggestedInterval": "monthly"
+      },
+      {
+        "title": "Sweep patio",
+        "titleDe": "Terrasse fegen",
+        "emoji": "🧹",
+        "suggestedPoints": 5,
+        "suggestedInterval": "weekly"
+      }
+    ]
+  },
+  {
+    "category": "Laundry",
+    "categoryDe": "Wäsche",
+    "emoji": "👕",
+    "templates": [
+      {
+        "title": "Wash clothes",
+        "titleDe": "Wäsche waschen",
+        "emoji": "🫧",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Hang / dry clothes",
+        "titleDe": "Wäsche aufhängen / trocknen",
+        "emoji": "👔",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Fold clothes",
+        "titleDe": "Wäsche zusammenlegen",
+        "emoji": "👕",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Iron clothes",
+        "titleDe": "Bügeln",
+        "emoji": "🔥",
+        "suggestedPoints": 6,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Sort laundry",
+        "titleDe": "Wäsche sortieren",
+        "emoji": "🧺",
+        "suggestedPoints": 3,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Clean washing machine",
+        "titleDe": "Waschmaschine reinigen",
+        "emoji": "🧼",
+        "suggestedPoints": 5,
+        "suggestedInterval": "monthly"
+      }
+    ]
+  },
+  {
+    "category": "General",
+    "categoryDe": "Allgemein",
+    "emoji": "🏠",
+    "templates": [
+      {
+        "title": "Take out recycling",
+        "titleDe": "Altpapier / Recycling rausbringen",
+        "emoji": "♻️",
+        "suggestedPoints": 3,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Check mailbox",
+        "titleDe": "Briefkasten leeren",
+        "emoji": "📬",
+        "suggestedPoints": 2,
+        "suggestedInterval": "daily"
+      },
+      {
+        "title": "Clean entrance",
+        "titleDe": "Eingangsbereich reinigen",
+        "emoji": "🚪",
+        "suggestedPoints": 4,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Wipe door handles",
+        "titleDe": "Türklinken abwischen",
+        "emoji": "🧴",
+        "suggestedPoints": 3,
+        "suggestedInterval": "weekly"
+      },
+      {
+        "title": "Replace light bulbs",
+        "titleDe": "Glühbirnen wechseln",
+        "emoji": "💡",
+        "suggestedPoints": 4,
+        "suggestedInterval": "monthly"
+      },
+      {
+        "title": "Check smoke detectors",
+        "titleDe": "Rauchmelder prüfen",
+        "emoji": "🔔",
+        "suggestedPoints": 3,
+        "suggestedInterval": "monthly"
+      }
+    ]
+  }
+]
