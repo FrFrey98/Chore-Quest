@@ -90,7 +90,7 @@ export default async function YesterdayPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-1">{t('heading')}</h1>
       <p className="text-sm text-muted-foreground mb-4">{dateLabel}</p>
 
       <YesterdaySection

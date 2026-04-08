@@ -41,7 +41,7 @@ export function StoreClient({
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold">{t('heading')}</h1>
+        <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight">{t('heading')}</h1>
         <div className="flex items-center gap-3">
           <span className="text-accent font-semibold">{balance.toLocaleString()} {tc('points')}</span>
           <CreateItemDialog />
@@ -50,7 +50,7 @@ export function StoreClient({
 
       <MyRewards purchases={myPendingPurchases} />
 
-      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
         {t('rewards')}
       </h2>
       <div className="space-y-3">

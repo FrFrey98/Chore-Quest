@@ -21,7 +21,7 @@ export function WeekChart({ days, userName, partnerName }: WeekChartProps) {
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
-      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
         {t('weekOverview')}
       </h2>
       <div className="flex items-end gap-1.5" style={{ height: '80px' }}>

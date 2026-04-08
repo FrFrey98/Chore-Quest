@@ -299,7 +299,7 @@ export default async function DashboardPage() {
     <div>
       <DashboardNotifications />
       <YesterdayBanner count={yesterdayUncompletedCount} />
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       {userOnVacation && (
         <div className="mb-4 p-3 bg-warning-muted border border-warning/20 rounded-xl flex items-center gap-2">

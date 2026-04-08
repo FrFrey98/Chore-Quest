@@ -24,7 +24,7 @@ export function ChallengesWidget({ challenges }: { challenges: ChallengeData[] }
   if (challenges.length === 0) {
     return (
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+        <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-2">
           {t('dashboardHeading')}
         </h2>
         <p className="text-sm text-muted-foreground text-center py-2">{t('noChallenges')}</p>
@@ -37,7 +37,7 @@ export function ChallengesWidget({ challenges }: { challenges: ChallengeData[] }
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+        <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">
           {t('dashboardHeading')}
         </h2>
         <Link href="/challenges" className="text-xs text-accent hover:text-accent-hover transition-colors">

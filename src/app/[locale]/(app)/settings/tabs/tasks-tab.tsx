@@ -219,7 +219,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('activeCount', { count: tasks.length })}</h2>
+        <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">{t('activeCount', { count: tasks.length })}</h2>
         <Link href="/manage" className="text-xs text-accent hover:text-accent-hover">{t('editLink')}</Link>
       </div>
       <div className="space-y-2">

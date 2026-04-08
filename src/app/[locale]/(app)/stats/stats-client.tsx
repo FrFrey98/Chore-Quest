@@ -148,7 +148,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       {/* Tab pills */}
       <div className="flex gap-2 mb-4">

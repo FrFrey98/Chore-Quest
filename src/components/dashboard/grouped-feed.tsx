@@ -64,7 +64,7 @@ export function GroupedFeed({ groups, currentUserId }: { groups: FeedGroup[]; cu
 
   return (
     <div className="mb-4">
-      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
         {t('feed.heading')}
       </h2>
       <div className="bg-card border border-border rounded-xl overflow-hidden">

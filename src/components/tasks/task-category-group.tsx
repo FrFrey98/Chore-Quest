@@ -27,7 +27,7 @@ export function TaskCategoryGroup({
   if (category.tasks.length === 0) return null
   return (
     <div className="mb-6">
-      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-2">
         {category.emoji} {category.name}
       </h2>
       <div className="space-y-2">

@@ -19,7 +19,7 @@ export default async function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-muted/50">
       <div className="w-full max-w-sm p-8 bg-card rounded-2xl shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-2">{t('heading')}</h1>
+        <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight text-center mb-2">{t('heading')}</h1>
         <p className="text-muted-foreground text-center text-sm mb-8">{t('subtitle')}</p>
         <LoginForm users={users} />
       </div>

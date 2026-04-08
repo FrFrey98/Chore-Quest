@@ -159,7 +159,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('today')}</h2>
+        <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">{t('today')}</h2>
         <span className="bg-success-muted text-success text-xs font-semibold rounded-full px-2 py-0.5">
           {t('doneOfTotal', { done: doneCount, total: totalTasks })}
         </span>

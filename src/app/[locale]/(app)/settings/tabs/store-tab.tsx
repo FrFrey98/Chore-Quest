@@ -72,7 +72,7 @@ export function StoreTab({ storeItems }: { storeItems: StoreItem[] }) {
         {error && <p className="text-danger text-xs">{error}</p>}
       </div>
 
-      <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('existingHeading')}</h2>
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">{t('existingHeading')}</h2>
       <div className="space-y-2">
         {storeItems.filter((i) => i.type !== 'streak_restore').map((item) => (
           <div key={item.id} className="flex items-center gap-3 bg-card rounded-xl p-3 shadow-sm">

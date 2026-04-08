@@ -66,7 +66,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       <div className="flex gap-2 mb-6">
         <button

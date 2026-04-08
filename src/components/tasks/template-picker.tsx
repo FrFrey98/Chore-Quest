@@ -98,7 +98,7 @@ export function TemplatePicker({ open, onClose, onSelect }: TemplatePickerProps)
         <div className="overflow-y-auto flex-1 space-y-4 min-h-0">
           {filtered.map((cat) => (
             <div key={cat.category}>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+              <h3 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-2">
                 {cat.emoji} {locale === 'de' ? cat.categoryDe : cat.category}
               </h3>
               <div className="grid grid-cols-1 gap-1">

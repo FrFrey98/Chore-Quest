@@ -24,12 +24,12 @@ export function AchievementsClient({
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold">{t('heading')}</h1>
+        <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight">{t('heading')}</h1>
         <span className="text-sm text-accent font-semibold">{t('unlockedCount', { unlocked: totalUnlocked, total })}</span>
       </div>
 
       {/* Trophy Shelf */}
-      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
         {t('showcase')}
       </h2>
       <div className="grid grid-cols-4 gap-2 mb-8">
@@ -64,7 +64,7 @@ export function AchievementsClient({
       {/* Next Goals */}
       {nextGoals.length > 0 && (
         <>
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+          <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
             {t('nextGoals')}
           </h2>
           <div className="space-y-3">

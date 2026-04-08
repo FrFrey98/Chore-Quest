@@ -91,7 +91,7 @@ function VacationToggle({
 
   return (
     <div className="bg-card rounded-xl p-4 shadow-sm">
-      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+      <p className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
         {tv('label')}
       </p>
       <div className="flex items-end gap-2">
@@ -210,7 +210,7 @@ export function ProfileClient({
 
       {/* Stats section */}
       <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('stats.heading')}</h2>
+        <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">{t('stats.heading')}</h2>
 
         <div className="grid grid-cols-2 gap-3">
           {[
@@ -227,14 +227,14 @@ export function ProfileClient({
         </div>
 
         <div className="bg-card rounded-xl p-4 shadow-sm">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+          <p className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
             {t('heatmap')}
           </p>
           <Heatmap data={personal.heatmap} />
         </div>
 
         <div className="bg-card rounded-xl p-4 shadow-sm">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+          <p className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
             {t('topTasks')}
           </p>
           <div className="space-y-2">
@@ -253,7 +253,7 @@ export function ProfileClient({
 
         {isOwnProfile && (
           <div className="bg-card rounded-xl p-4 shadow-sm">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+            <p className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
               {t('purchaseHistory')}
             </p>
             {personal.purchases.length === 0 ? (

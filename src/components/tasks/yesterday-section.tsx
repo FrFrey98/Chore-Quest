@@ -110,7 +110,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       {/* Completed yesterday */}
       {completed.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{ty('completed')}</h2>
+          <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">{ty('completed')}</h2>
           <div className="flex flex-col gap-2">
             {completed.map((c) => (
               <div key={c.id} className="flex items-center gap-3 p-2.5 bg-success-muted rounded-lg border-l-[3px] border-success">
@@ -151,7 +151,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       {/* Due yesterday — backfill */}
       {pendingDue.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{ty('catchUp')}</h2>
+          <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">{ty('catchUp')}</h2>
           <div className="flex flex-col gap-2">
             {pendingDue.map((task) => (
               <div key={task.id} className="flex items-center gap-3 p-2.5 bg-warning-muted rounded-lg border-l-[3px] border-warning">
