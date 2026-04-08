@@ -29,11 +29,11 @@ export function WeekChart({ days, userName, partnerName }: WeekChartProps) {
           <div key={i} className="flex-1 flex flex-col items-center gap-0.5 h-full justify-end">
             <div className="flex gap-[2px] w-full items-end" style={{ height: '60px' }}>
               <div
-                className={`flex-1 rounded-t-sm ${d.isFuture ? 'bg-muted' : 'bg-indigo-400'}`}
+                className={`flex-1 rounded-t-sm ${d.isFuture ? 'bg-muted' : 'bg-accent'}`}
                 style={{ height: `${d.isFuture ? 4 : Math.max(4, (d.userCount / max) * 60)}px` }}
               />
               <div
-                className={`flex-1 rounded-t-sm ${d.isFuture ? 'bg-muted' : 'bg-pink-400'}`}
+                className={`flex-1 rounded-t-sm ${d.isFuture ? 'bg-muted' : 'bg-partner'}`}
                 style={{ height: `${d.isFuture ? 4 : Math.max(4, (d.partnerCount / max) * 60)}px` }}
               />
             </div>
@@ -43,11 +43,11 @@ export function WeekChart({ days, userName, partnerName }: WeekChartProps) {
       </div>
       <div className="flex gap-4 mt-2">
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-indigo-400" />
+          <div className="w-2.5 h-2.5 rounded-sm bg-accent" />
           <span className="text-[10px] text-muted-foreground">{userName}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-pink-400" />
+          <div className="w-2.5 h-2.5 rounded-sm bg-partner" />
           <span className="text-[10px] text-muted-foreground">{partnerName}</span>
         </div>
       </div>
