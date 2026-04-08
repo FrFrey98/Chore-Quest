@@ -50,3 +50,6 @@ test.db-journal
 e2e/.auth/
 /test-results/
 /playwright-report/
+
+# worktrees
+.worktrees/
