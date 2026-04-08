@@ -120,17 +120,17 @@ describe('applyPointDecay', () => {
 })
 
 describe('getHealthColor', () => {
-  it('returns green above 50%', () => {
-    expect(getHealthColor(0.8)).toBe('bg-green-500')
+  it('returns success above 50%', () => {
+    expect(getHealthColor(0.8)).toBe('bg-success')
   })
-  it('returns yellow between 25-50%', () => {
-    expect(getHealthColor(0.3)).toBe('bg-yellow-500')
+  it('returns warning between 25-50%', () => {
+    expect(getHealthColor(0.3)).toBe('bg-warning')
   })
-  it('returns red below 25%', () => {
-    expect(getHealthColor(0.15)).toBe('bg-red-500')
+  it('returns danger below 25%', () => {
+    expect(getHealthColor(0.15)).toBe('bg-danger')
   })
-  it('returns dark red at 0', () => {
-    expect(getHealthColor(0)).toBe('bg-red-600')
+  it('returns danger at 0', () => {
+    expect(getHealthColor(0)).toBe('bg-danger')
   })
 })
 
