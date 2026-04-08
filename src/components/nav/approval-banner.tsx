@@ -29,7 +29,7 @@ export function ApprovalBanner() {
   return (
     <Link
       href="/approvals"
-      className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 px-4 py-2 rounded-lg text-sm font-medium mb-4 hover:bg-indigo-100 transition-colors"
+      className="flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent px-4 py-2 rounded-lg text-sm font-medium mb-4 hover:bg-accent/15 transition-colors"
     >
       <Shield size={16} />
       <span>{t('approvalCount', { count })}</span>

@@ -63,10 +63,10 @@ export function applyPointDecay(basePoints: number, healthPercent: number): numb
  * Get the color class for a health percentage.
  */
 export function getHealthColor(health: number): string {
-  if (health > 0.5) return 'bg-green-500'
-  if (health > 0.25) return 'bg-yellow-500'
-  if (health > 0) return 'bg-red-500'
-  return 'bg-red-600'
+  if (health > 0.5) return 'bg-success'
+  if (health > 0.25) return 'bg-warning'
+  if (health > 0) return 'bg-danger'
+  return 'bg-danger'
 }
 
 /**

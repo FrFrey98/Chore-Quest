@@ -72,8 +72,8 @@ export function EmojiPicker({
                       onChange(emoji)
                       setOpen(false)
                     }}
-                    className={`w-8 h-8 flex items-center justify-center rounded-md text-lg hover:bg-indigo-50 transition-colors ${
-                      value === emoji ? 'bg-indigo-100 ring-1 ring-indigo-300' : ''
+                    className={`w-8 h-8 flex items-center justify-center rounded-md text-lg hover:bg-accent/10 transition-colors ${
+                      value === emoji ? 'bg-accent/10 ring-1 ring-accent/30' : ''
                     }`}
                   >
                     {emoji}

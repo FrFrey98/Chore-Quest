@@ -36,7 +36,7 @@ export function OfflineIndicator() {
 
   return (
     <div
-      className={`bg-amber-100 text-amber-800 text-xs font-medium px-4 py-2 flex items-center justify-center gap-2 transition-opacity duration-500 ${
+      className={`bg-warning-muted text-warning text-xs font-medium px-4 py-2 flex items-center justify-center gap-2 transition-opacity duration-500 ${
         isOffline ? 'opacity-100' : 'opacity-0'
       }`}
     >

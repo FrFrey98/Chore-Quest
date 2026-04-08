@@ -47,11 +47,11 @@ export function SwRegister() {
   if (!updateAvailable) return null
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[200] bg-indigo-600 text-white text-center py-2 px-4 text-sm font-medium flex items-center justify-center gap-3">
+    <div className="fixed top-0 left-0 right-0 z-[200] bg-accent text-white text-center py-2 px-4 text-sm font-medium flex items-center justify-center gap-3">
       <span>Update verfügbar</span>
       <button
         onClick={handleUpdate}
-        className="bg-white text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-indigo-50 transition-colors"
+        className="bg-white text-accent px-3 py-1 rounded-lg text-xs font-bold hover:bg-accent/10 transition-colors"
       >
         Neu laden
       </button>
