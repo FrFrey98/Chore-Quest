@@ -62,7 +62,7 @@ export function SettingsClient({
             onClick={() => setTab(key)}
             className={`whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               tab === key
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-accent text-accent-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-accent'
             }`}
           >

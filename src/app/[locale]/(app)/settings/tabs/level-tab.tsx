@@ -56,7 +56,7 @@ export function LevelTab({ config }: { config: GameConfig }) {
       <div className="space-y-2">
         {levels.map((level, i) => (
           <div key={i} className="bg-card rounded-lg p-3 shadow-sm flex gap-2 items-center flex-wrap">
-            <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded">Lv.{level.level}</span>
+            <span className="bg-accent/10 text-accent text-xs font-bold px-2 py-0.5 rounded">Lv.{level.level}</span>
             <Input
               className="flex-1 min-w-[120px]"
               placeholder={t('titlePlaceholder')}
@@ -75,7 +75,7 @@ export function LevelTab({ config }: { config: GameConfig }) {
                   onChange={(e) => updateLevel(i, 'minPoints', Number(e.target.value))}
                 />
                 <span className="text-xs text-muted-foreground">{tc('points')}</span>
-                <button onClick={() => removeLevel(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
+                <button onClick={() => removeLevel(i)} className="text-danger hover:text-danger text-lg px-1">×</button>
               </>
             )}
           </div>
