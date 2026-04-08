@@ -105,7 +105,7 @@ export function BackupTab() {
         <button
           onClick={handleExport}
           disabled={exporting || restoring}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <Download size={16} />
           {exporting ? t('exporting') : t('exportButton')}
@@ -132,7 +132,7 @@ export function BackupTab() {
       {showConfirm && fileInfo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-card rounded-xl p-6 max-w-sm mx-4 space-y-4">
-            <div className="flex items-center gap-3 text-amber-600">
+            <div className="flex items-center gap-3 text-warning">
               <AlertTriangle size={24} />
               <h3 className="font-semibold text-lg text-foreground">{t('confirmTitle')}</h3>
             </div>
@@ -155,7 +155,7 @@ export function BackupTab() {
               </button>
               <button
                 onClick={handleRestore}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-danger hover:bg-danger rounded-lg transition-colors"
               >
                 {t('restoreButton')}
               </button>

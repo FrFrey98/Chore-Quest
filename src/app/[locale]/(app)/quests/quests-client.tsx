@@ -50,7 +50,7 @@ export function QuestsClient({ quests }: { quests: QuestData[] }) {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       <div className="flex gap-2 mb-4">
         {tabs.map((tab) => (
@@ -59,7 +59,7 @@ export function QuestsClient({ quests }: { quests: QuestData[] }) {
             onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
               activeTab === tab.key
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-accent text-accent-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
@@ -123,9 +123,9 @@ function QuestCard({
     <div
       className={`bg-card border border-border rounded-xl p-4 border-l-[3px] ${
         isCompleted
-          ? 'border-l-green-500'
+          ? 'border-l-success'
           : quest.userQuest
-          ? 'border-l-indigo-400'
+          ? 'border-l-accent'
           : 'border-l-muted-foreground/30'
       }`}
     >
@@ -134,7 +134,7 @@ function QuestCard({
         <span className="text-xl">{quest.emoji}</span>
         <span className="flex-1 font-medium text-foreground truncate">{title}</span>
         {isCompleted && (
-          <span className="flex items-center gap-1 text-xs font-semibold text-green-600">
+          <span className="flex items-center gap-1 text-xs font-semibold text-success">
             <CheckCircle2 size={14} /> {t('completed')}
           </span>
         )}
@@ -159,14 +159,14 @@ function QuestCard({
               key={step.id}
               className={`flex items-center gap-2 text-xs rounded-lg px-2 py-1.5 ${
                 isStepCompleted
-                  ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400'
+                  ? 'bg-success-muted text-success'
                   : isCurrent
-                  ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 ring-1 ring-indigo-200 dark:ring-indigo-800'
+                  ? 'bg-accent/10 text-accent ring-1 ring-accent/20'
                   : 'text-muted-foreground'
               }`}
             >
               {isStepCompleted ? (
-                <CheckCircle2 size={14} className="text-green-500 shrink-0" />
+                <CheckCircle2 size={14} className="text-success shrink-0" />
               ) : (
                 <span className="w-3.5 h-3.5 rounded-full border-2 border-current shrink-0" />
               )}
@@ -175,7 +175,7 @@ function QuestCard({
                 {step.task.emoji} {step.task.title} — {stepDesc}
               </span>
               {isCurrent && (
-                <span className="ml-auto text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 shrink-0">
+                <span className="ml-auto text-[10px] font-semibold text-accent shrink-0">
                   {t('currentStep')}
                 </span>
               )}
@@ -193,13 +193,13 @@ function QuestCard({
           <button
             onClick={handleAccept}
             disabled={accepting}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
+            className="bg-accent hover:bg-accent-hover text-accent-foreground text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
           >
             {accepting ? '...' : t('accept')}
           </button>
         )}
         {isCompleted && (
-          <span className="text-xs text-green-600 font-semibold">
+          <span className="text-xs text-success font-semibold">
             +{quest.bonusPoints} Pts ✓
           </span>
         )}
@@ -209,7 +209,7 @@ function QuestCard({
       {tab === 'active' && quest.userQuest && (
         <div className="ml-8 mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full rounded-full bg-indigo-500 transition-all"
+            className="h-full rounded-full bg-accent transition-all"
             style={{
               width: `${((quest.userQuest.completedStepIds.length) / quest.steps.length) * 100}%`,
             }}

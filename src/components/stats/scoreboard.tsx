@@ -19,7 +19,7 @@ export function Scoreboard({ entries }: ScoreboardProps) {
     <div className="bg-card border border-border rounded-xl p-4">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
         <div className="text-center">
-          <p className="text-sm font-semibold text-indigo-600">
+          <p className="text-sm font-semibold text-accent">
             {leftWins && '👑 '}{left.name}
           </p>
           <p className="text-2xl font-bold text-foreground mt-1">{left.taskCount}</p>
@@ -29,7 +29,7 @@ export function Scoreboard({ entries }: ScoreboardProps) {
         </div>
         <div className="text-muted-foreground/50 text-lg font-bold">{t('vs')}</div>
         <div className="text-center">
-          <p className="text-sm font-semibold text-pink-600">
+          <p className="text-sm font-semibold text-partner">
             {rightWins && '👑 '}{right.name}
           </p>
           <p className="text-2xl font-bold text-foreground mt-1">{right.taskCount}</p>

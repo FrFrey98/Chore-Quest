@@ -7,7 +7,7 @@ import type { FeedGroup, FeedEntry } from '@/lib/dashboard'
 function FeedRow({ entry, currentUserId }: { entry: FeedEntry; currentUserId: string }) {
   const t = useTranslations('dashboard')
   const isMe = entry.user.id === currentUserId
-  const nameColor = isMe ? 'text-indigo-600' : 'text-pink-600'
+  const nameColor = isMe ? 'text-accent' : 'text-partner'
   const emoji = entry.type === 'redemption' ? (entry.item?.emoji ?? '🎁') : (entry.task?.emoji ?? '✅')
   const title = entry.type === 'redemption' ? (entry.item?.title ?? '') : (entry.task?.title ?? '')
   const isShared = entry.type === 'completion' && !!entry.withUser
@@ -20,14 +20,14 @@ function FeedRow({ entry, currentUserId }: { entry: FeedEntry; currentUserId: st
         <span className="text-muted-foreground">&amp;</span>
       )}
       {isShared && (
-        <span className={`font-semibold ${entry.withUser!.id === currentUserId ? 'text-indigo-600' : 'text-pink-600'}`}>
+        <span className={`font-semibold ${entry.withUser!.id === currentUserId ? 'text-accent' : 'text-partner'}`}>
           {entry.withUser!.name}
         </span>
       )}
       <span className="text-muted-foreground truncate flex-1">{title}</span>
       {isShared && <span className="text-xs">👫</span>}
       {entry.type === 'redemption' ? (
-        <span className="text-xs font-semibold text-amber-600 whitespace-nowrap">{t('feed.reward')}</span>
+        <span className="text-xs font-semibold text-warning whitespace-nowrap">{t('feed.reward')}</span>
       ) : (
         <span className={`text-xs font-semibold whitespace-nowrap ${nameColor}`}>+{entry.points}</span>
       )}
@@ -64,7 +64,7 @@ export function GroupedFeed({ groups, currentUserId }: { groups: FeedGroup[]; cu
 
   return (
     <div className="mb-4">
-      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">
         {t('feed.heading')}
       </h2>
       <div className="bg-card border border-border rounded-xl overflow-hidden">

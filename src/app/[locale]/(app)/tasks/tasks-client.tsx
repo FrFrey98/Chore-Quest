@@ -50,19 +50,19 @@ export function TasksClient({ grouped, categories, users, userRole, partnerId, p
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <h1 className="text-xl font-bold">{t('heading')}</h1>
+        <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight">{t('heading')}</h1>
         <div className="flex items-center gap-2">
           <div className="flex bg-muted rounded-lg p-0.5">
             <button
               onClick={() => router.push('/tasks?view=list')}
-              className={`p-1.5 rounded-md transition-colors ${!isCalendar ? 'bg-card shadow-sm text-indigo-600' : 'text-muted-foreground hover:text-muted-foreground'}`}
+              className={`p-1.5 rounded-md transition-colors ${!isCalendar ? 'bg-card shadow-sm text-accent' : 'text-muted-foreground hover:text-muted-foreground'}`}
               title={t('listView')}
             >
               <List size={16} />
             </button>
             <button
               onClick={() => router.push(`/tasks?view=calendar&year=${calYear}&month=${calMonth}`)}
-              className={`p-1.5 rounded-md transition-colors ${isCalendar ? 'bg-card shadow-sm text-indigo-600' : 'text-muted-foreground hover:text-muted-foreground'}`}
+              className={`p-1.5 rounded-md transition-colors ${isCalendar ? 'bg-card shadow-sm text-accent' : 'text-muted-foreground hover:text-muted-foreground'}`}
               title={t('calendarView')}
             >
               <Calendar size={16} />
@@ -101,7 +101,7 @@ export function TasksClient({ grouped, categories, users, userRole, partnerId, p
             <TaskCategoryGroup key={cat.id} category={cat} onComplete={handleComplete} partnerId={partnerId} partnerName={partnerName} decayHoursByInterval={decayHoursByInterval} vacationStart={vacationStart} vacationEnd={vacationEnd} />
           ))}
           <div className="flex justify-end mt-4">
-            <Link href="/manage?tab=tasks" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
+            <Link href="/manage?tab=tasks" className="text-xs text-accent hover:text-accent-hover transition-colors">
               {t('manage')}
             </Link>
           </div>

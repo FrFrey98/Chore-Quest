@@ -150,7 +150,7 @@ export function CreateTaskDialog({ categories, users, userRole }: {
                         }))
                       }}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                        active ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+                        active ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
                       }`}
                     >
                       {u.name}
@@ -194,7 +194,7 @@ export function CreateTaskDialog({ categories, users, userRole }: {
                         setForm({ ...form, scheduleDays: newDays.join(',') })
                       }}
                       className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
-                        isActive ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+                        isActive ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
                       }`}
                     >
                       {tWeekdays(WEEKDAY_KEYS[idx])}
@@ -235,7 +235,7 @@ export function CreateTaskDialog({ categories, users, userRole }: {
               </div>
             )}
           </div>
-          {error && <p className="text-red-500 text-xs">{error}</p>}
+          {error && <p className="text-danger text-xs">{error}</p>}
           <Button onClick={handleSubmit} disabled={submitting || !form.title || !form.categoryId} className="w-full">
             {t('submit')}
           </Button>

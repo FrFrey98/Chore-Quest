@@ -77,7 +77,7 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
       <p className="text-sm text-muted-foreground">{t('description')}</p>
 
       {editId && (
-        <div className="bg-card rounded-xl p-4 shadow-sm space-y-3 border-2 border-indigo-200">
+        <div className="bg-card rounded-xl p-4 shadow-sm space-y-3 border-2 border-accent/20">
           <h3 className="font-semibold text-sm">{editId === 'new' ? t('newHeading') : t('editHeading')}</h3>
           <div className="flex gap-2">
             <Input className="w-14 text-center text-lg" placeholder={t('emojiPlaceholder')} value={form.emoji ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, emoji: e.target.value }))} />
@@ -127,7 +127,7 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
               <p className="text-xs text-muted-foreground">{t(`conditionTypes.${ach.conditionType}` as Parameters<typeof t>[0])} ≥ {ach.conditionValue}</p>
             </div>
             <button onClick={() => startEdit(ach)} className="text-muted-foreground hover:text-muted-foreground text-sm">✏️</button>
-            <button onClick={() => deleteAch(ach.id)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
+            <button onClick={() => deleteAch(ach.id)} className="text-danger hover:text-danger text-lg px-1">×</button>
           </div>
         ))}
       </div>
@@ -136,7 +136,7 @@ export function AchievementsTab({ achievements: initial, categories }: { achieve
         <Button variant="outline" className="w-full" onClick={startCreate}>{t('addButton')}</Button>
       )}
 
-      <div className="p-3 bg-blue-50 rounded-lg text-xs text-blue-700">
+      <div className="p-3 bg-accent/10 rounded-lg text-xs text-accent">
         {t('info')}
       </div>
 

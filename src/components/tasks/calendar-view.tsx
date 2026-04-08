@@ -225,12 +225,12 @@ export function CalendarView({
               key={date}
               onClick={() => toggleDay(date)}
               className={`min-h-[52px] rounded-lg bg-card p-1 flex flex-col items-center gap-0.5 transition-all
-                ${isToday ? 'ring-2 ring-indigo-400' : ''}
-                ${isSelected ? 'ring-2 ring-indigo-500' : ''}
+                ${isToday ? 'ring-2 ring-accent' : ''}
+                ${isSelected ? 'ring-2 ring-accent' : ''}
                 ${!isToday && !isSelected ? 'hover:bg-muted/50' : ''}
               `}
             >
-              <span className={`text-xs font-medium leading-none ${isToday ? 'text-indigo-600' : 'text-foreground'}`}>
+              <span className={`text-xs font-medium leading-none ${isToday ? 'text-accent' : 'text-foreground'}`}>
                 {dayNum}
               </span>
               {/* Emoji badges */}
@@ -248,10 +248,10 @@ export function CalendarView({
               {tasks.length > 0 && (
                 <div className="flex gap-0.5 flex-wrap justify-center">
                   {completedTasks.map((_, i) => (
-                    <span key={`c-${i}`} className="w-[5px] h-[5px] rounded-full bg-green-500 inline-block" />
+                    <span key={`c-${i}`} className="w-[5px] h-[5px] rounded-full bg-success inline-block" />
                   ))}
                   {missedTasks.map((_, i) => (
-                    <span key={`m-${i}`} className="w-[5px] h-[5px] rounded-full bg-red-400 inline-block" />
+                    <span key={`m-${i}`} className="w-[5px] h-[5px] rounded-full bg-danger inline-block" />
                   ))}
                   {pendingTasks.map((_, i) => (
                     <span key={`p-${i}`} className="w-[5px] h-[5px] rounded-full bg-muted-foreground/40 inline-block" />
@@ -266,7 +266,7 @@ export function CalendarView({
       {/* Legend */}
       <div className="flex items-center gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <span className="w-[5px] h-[5px] rounded-full bg-green-500 inline-block" />
+          <span className="w-[5px] h-[5px] rounded-full bg-success inline-block" />
           {t('legend.completed')}
         </span>
         <span className="flex items-center gap-1">
@@ -274,7 +274,7 @@ export function CalendarView({
           {t('legend.open')}
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-[5px] h-[5px] rounded-full bg-red-400 inline-block" />
+          <span className="w-[5px] h-[5px] rounded-full bg-danger inline-block" />
           {t('legend.missed')}
         </span>
       </div>
@@ -306,26 +306,26 @@ export function CalendarView({
                   key={task.taskId}
                   className={`flex items-center gap-3 p-2.5 rounded-lg ${
                     task.status === 'completed'
-                      ? 'bg-green-50'
+                      ? 'bg-success-muted'
                       : task.status === 'missed'
-                      ? 'bg-red-50'
+                      ? 'bg-danger-muted'
                       : 'bg-muted/50'
                   }`}
                 >
                   <span className="text-lg">{task.emoji}</span>
                   <span className="flex-1 text-sm text-foreground truncate">{task.title}</span>
                   {task.status === 'completed' && (
-                    <span className="text-xs text-green-600 font-semibold">✓ +{task.points}</span>
+                    <span className="text-xs text-success font-semibold">✓ +{task.points}</span>
                   )}
                   {task.status === 'missed' && (
-                    <span className="text-xs text-red-400 font-medium">{t('missed')}</span>
+                    <span className="text-xs text-danger font-medium">{t('missed')}</span>
                   )}
                   {/* Actions for today/yesterday */}
                   {isTodayOrYesterday(selectedDate) && task.status === 'pending' && (
                     <button
                       onClick={() => handleComplete(task.taskId)}
                       disabled={loadingId === task.taskId}
-                      className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1 bg-accent hover:bg-accent-hover text-accent-foreground text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
                     >
                       {loadingId === task.taskId ? '…' : <><Check size={12} /> {tt('checkOff')}</>}
                     </button>
@@ -335,7 +335,7 @@ export function CalendarView({
                     <button
                       onClick={() => handleToggleSkip(task.taskId, false)}
                       disabled={loadingId === task.taskId}
-                      className="flex items-center gap-1 text-muted-foreground hover:text-red-500 hover:bg-red-50 text-xs font-semibold rounded-lg px-2 py-1.5 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1 text-muted-foreground hover:text-danger hover:bg-danger-muted text-xs font-semibold rounded-lg px-2 py-1.5 transition-colors disabled:opacity-50"
                       title={t('taskSkipped')}
                     >
                       {loadingId === task.taskId ? '…' : <X size={14} />}
@@ -354,7 +354,7 @@ export function CalendarView({
               {!showAddTask ? (
                 <button
                   onClick={() => setShowAddTask(true)}
-                  className="flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-xs font-semibold"
+                  className="flex items-center gap-1 text-accent hover:text-accent-hover text-xs font-semibold"
                 >
                   <Plus size={14} /> {t('addTask')}
                 </button>
@@ -375,7 +375,7 @@ export function CalendarView({
                         key={tk.id}
                         onClick={() => handleAddOverride(tk.id)}
                         disabled={loadingId === tk.id}
-                        className="flex items-center gap-2 p-2 bg-muted/50 hover:bg-indigo-50 rounded-lg text-sm text-left transition-colors disabled:opacity-50"
+                        className="flex items-center gap-2 p-2 bg-muted/50 hover:bg-accent/10 rounded-lg text-sm text-left transition-colors disabled:opacity-50"
                       >
                         <span>{tk.emoji}</span>
                         <span className="flex-1 text-foreground">{tk.title}</span>

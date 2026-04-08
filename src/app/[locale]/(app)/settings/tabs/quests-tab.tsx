@@ -69,7 +69,7 @@ export function QuestsTab({ quests, tasks }: { quests: QuestData[]; tasks: TaskO
         <p className="text-sm text-muted-foreground">Manage quest chains for all users.</p>
         <button
           onClick={() => { setShowCreate(true); setEditingId(null) }}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1"
+          className="bg-accent hover:bg-accent-hover text-accent-foreground text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1"
         >
           <Plus size={14} /> {t('create')}
         </button>
@@ -108,7 +108,7 @@ export function QuestsTab({ quests, tasks }: { quests: QuestData[]; tasks: TaskO
                   onClick={() => handleToggle(quest)}
                   className={`text-xs px-2 py-1 rounded-full font-medium ${
                     quest.isActive
-                      ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400'
+                      ? 'bg-success-muted text-success'
                       : 'bg-muted text-muted-foreground'
                   }`}
                 >
@@ -117,7 +117,7 @@ export function QuestsTab({ quests, tasks }: { quests: QuestData[]; tasks: TaskO
                 <button onClick={() => setEditingId(quest.id)} className="text-muted-foreground hover:text-foreground p-1">
                   <Pencil size={14} />
                 </button>
-                <button onClick={() => handleDelete(quest.id)} className="text-muted-foreground hover:text-red-600 p-1">
+                <button onClick={() => handleDelete(quest.id)} className="text-muted-foreground hover:text-danger p-1">
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -205,7 +205,7 @@ function QuestForm({
     }
   }
 
-  const inputCls = 'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500'
+  const inputCls = 'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring'
 
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-4 flex flex-col gap-3">
@@ -245,7 +245,7 @@ function QuestForm({
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs text-muted-foreground font-semibold">Steps</label>
-          <button type="button" onClick={addStep} className="text-xs text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+          <button type="button" onClick={addStep} className="text-xs text-accent hover:text-accent-hover flex items-center gap-1">
             <Plus size={12} /> {t('add')}
           </button>
         </div>
@@ -287,7 +287,7 @@ function QuestForm({
                 </div>
               </div>
               {steps.length > 1 && (
-                <button type="button" onClick={() => removeStep(idx)} className="text-muted-foreground hover:text-red-600 p-1 mt-1">
+                <button type="button" onClick={() => removeStep(idx)} className="text-muted-foreground hover:text-danger p-1 mt-1">
                   <Trash2 size={14} />
                 </button>
               )}
@@ -303,7 +303,7 @@ function QuestForm({
         <button
           type="submit"
           disabled={saving}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg px-4 py-1.5 transition-colors disabled:opacity-50"
+          className="bg-accent hover:bg-accent-hover text-accent-foreground text-sm font-semibold rounded-lg px-4 py-1.5 transition-colors disabled:opacity-50"
         >
           {saving ? t('saving') : t('save')}
         </button>

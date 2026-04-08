@@ -74,25 +74,25 @@ export function InstallPrompt() {
   if (!show) return null
 
   return (
-    <div className="mx-4 mt-3 bg-indigo-600 text-white rounded-xl p-4 flex items-start gap-3 shadow-lg">
+    <div className="mx-4 mt-3 bg-accent text-white rounded-xl p-4 flex items-start gap-3 shadow-lg">
       <Download size={24} className="shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0">
         <div className="text-sm font-bold">{t('installPrompt')}</div>
         {isIOS ? (
-          <p className="text-xs text-indigo-200 mt-1">
+          <p className="text-xs text-accent-foreground/70 mt-1">
             {t('iosInstructions', { share: t('share'), addToHome: t('addToHome') })}
           </p>
         ) : (
           <div className="flex gap-2 mt-2">
             <button
               onClick={handleInstall}
-              className="bg-white text-indigo-600 text-xs font-bold px-4 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
+              className="bg-white text-accent text-xs font-bold px-4 py-1.5 rounded-lg hover:bg-accent/10 transition-colors"
             >
               {t('install')}
             </button>
             <button
               onClick={handleDismiss}
-              className="text-indigo-200 text-xs font-medium px-3 py-1.5 hover:text-white transition-colors"
+              className="text-accent-foreground/70 text-xs font-medium px-3 py-1.5 hover:text-white transition-colors"
             >
               {t('later')}
             </button>
@@ -100,7 +100,7 @@ export function InstallPrompt() {
         )}
       </div>
       {isIOS && (
-        <button onClick={handleDismiss} className="text-indigo-200 hover:text-white">
+        <button onClick={handleDismiss} className="text-accent-foreground/70 hover:text-white">
           <X size={18} />
         </button>
       )}

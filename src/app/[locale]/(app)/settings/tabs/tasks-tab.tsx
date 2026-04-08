@@ -128,7 +128,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
                       }))
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      active ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+                      active ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {u.name}
@@ -177,7 +177,7 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
                       setForm({ ...form, scheduleDays: newDays.join(',') })
                     }}
                     className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
-                      isActive ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+                      isActive ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {label}
@@ -215,12 +215,12 @@ export function TasksTab({ tasks, categories, users, userId }: { tasks: Task[]; 
         <Button onClick={createTask} disabled={!form.title || !form.categoryId}>
           {t('submitButton')}
         </Button>
-        {error && <p className="text-red-500 text-xs">{error}</p>}
+        {error && <p className="text-danger text-xs">{error}</p>}
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('activeCount', { count: tasks.length })}</h2>
-        <Link href="/manage" className="text-xs text-indigo-500 hover:text-indigo-700">{t('editLink')}</Link>
+        <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">{t('activeCount', { count: tasks.length })}</h2>
+        <Link href="/manage" className="text-xs text-accent hover:text-accent-hover">{t('editLink')}</Link>
       </div>
       <div className="space-y-2">
         {tasks.map((tk) => (

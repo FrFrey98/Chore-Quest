@@ -299,12 +299,12 @@ export default async function DashboardPage() {
     <div>
       <DashboardNotifications />
       <YesterdayBanner count={yesterdayUncompletedCount} />
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       {userOnVacation && (
-        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center gap-2">
+        <div className="mb-4 p-3 bg-warning-muted border border-warning/20 rounded-xl flex items-center gap-2">
           <span>🏖️</span>
-          <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+          <span className="text-sm font-medium text-warning">
             {vacationEnd
               ? tv('activeUntil', { date: new Date(vacationEnd).toLocaleDateString() })
               : tv('active')}
@@ -336,7 +336,7 @@ export default async function DashboardPage() {
               <p className="text-sm font-semibold text-foreground truncate">{partner.name ?? tc('unknown')}</p>
               <p className="text-xs text-muted-foreground">{partnerLevel.title} · {partnerAchievementCount} {t('achievements')}</p>
               {partnerOnVacation && (
-                <p className="text-xs text-amber-600 dark:text-amber-400">
+                <p className="text-xs text-warning">
                   🏖️ {partner.vacationEnd
                     ? tv('partnerOnVacationUntil', { name: partner.name ?? tc('unknown'), date: new Date(partner.vacationEnd).toLocaleDateString() })
                     : tv('partnerOnVacation', { name: partner.name ?? tc('unknown') })}
@@ -366,7 +366,7 @@ export default async function DashboardPage() {
       />
 
       <div className="flex justify-end -mt-2 mb-4">
-        <Link href="/stats" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
+        <Link href="/stats" className="text-xs text-accent hover:text-accent-hover transition-colors">
           {t('allStats')}
         </Link>
       </div>

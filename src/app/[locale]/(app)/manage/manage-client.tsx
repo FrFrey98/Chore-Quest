@@ -66,14 +66,14 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       <div className="flex gap-2 mb-6">
         <button
           type="button"
           onClick={() => setTab('tasks')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            tab === 'tasks' ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+            tab === 'tasks' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
           }`}
         >
           {t('tasksTab')}
@@ -82,7 +82,7 @@ export function ManageClient({ tasks, categories, rewards, users, initialTab }: 
           type="button"
           onClick={() => setTab('rewards')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            tab === 'rewards' ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+            tab === 'rewards' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
           }`}
         >
           {t('rewardsTab')}

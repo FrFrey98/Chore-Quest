@@ -85,7 +85,7 @@ export function StreakTab({ config }: { config: GameConfig }) {
                 value={tier.name}
                 onChange={(e) => updateTier(i, 'name', e.target.value)}
               />
-              <button onClick={() => removeTier(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
+              <button onClick={() => removeTier(i)} className="text-danger hover:text-danger text-lg px-1">×</button>
             </div>
           ))}
         </div>

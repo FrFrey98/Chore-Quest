@@ -159,24 +159,24 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('today')}</h2>
-        <span className="bg-green-50 text-green-700 text-xs font-semibold rounded-full px-2 py-0.5">
+        <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">{t('today')}</h2>
+        <span className="bg-success-muted text-success text-xs font-semibold rounded-full px-2 py-0.5">
           {t('doneOfTotal', { done: doneCount, total: totalTasks })}
         </span>
       </div>
       <div className="flex flex-col gap-2">
         {/* Completed tasks */}
         {completed.map((task) => (
-          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
+          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-success-muted rounded-lg border-l-[3px] border-success">
             <span className="text-lg">{task.emoji}</span>
             <span className="flex-1 text-sm text-muted-foreground line-through truncate">{task.title}</span>
-            <span className="text-xs text-green-600 font-semibold">✓ +{task.points}</span>
+            <span className="text-xs text-success font-semibold">✓ +{task.points}</span>
             {confirmUndoId === task.id ? (
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleUndo(task)}
                   disabled={undoingId === task.id}
-                  className="text-xs text-red-600 font-semibold hover:text-red-700"
+                  className="text-xs text-danger font-semibold hover:text-danger"
                 >
                   {undoingId === task.id ? '…' : tc('yes')}
                 </button>
@@ -221,7 +221,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
                 onClick={() => setSharedTaskId(sharedTaskId === task.id ? null : task.id)}
                 className={`p-1.5 rounded-lg transition-colors ${
                   sharedTaskId === task.id
-                    ? 'bg-amber-100 text-amber-700'
+                    ? 'bg-warning-muted text-warning'
                     : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted'
                 }`}
                 title={t('togetherWith', { name: partnerName ?? '' })}
@@ -232,7 +232,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
             <button
               onClick={() => handleComplete(task)}
               disabled={loadingId === task.id}
-              className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1 bg-accent hover:bg-accent-hover text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
             >
               {loadingId === task.id ? '…' : <><Check size={14} /> {sharedTaskId === task.id ? `👫 ${t('together')}` : t('checkOff')}</>}
             </button>
@@ -240,10 +240,10 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
         ))}
         {/* Suggested tasks */}
         {suggestions.map((task) => (
-          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400 opacity-70">
+          <div key={task.id} className="flex items-center gap-3 p-2.5 bg-warning-muted rounded-lg border-l-[3px] border-warning opacity-70">
             <span className="text-lg">{task.emoji}</span>
-            <span className="flex-1 text-sm text-amber-900 truncate">{task.title}</span>
-            <span className="text-[10px] text-amber-600 font-semibold">{t('suggestion')}</span>
+            <span className="flex-1 text-sm text-warning truncate">{task.title}</span>
+            <span className="text-[10px] text-warning font-semibold">{t('suggestion')}</span>
           </div>
         ))}
         {/* Empty state */}

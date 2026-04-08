@@ -51,21 +51,21 @@ export function ApprovalCard({
               : t('oneTime')}
           </p>
         </div>
-        <span className="text-xs font-medium bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded shrink-0">
+        <span className="text-xs font-medium bg-accent/10 text-accent px-2 py-0.5 rounded shrink-0">
           +{approval.task.points} {tc('points')}
         </span>
       </div>
       <div className="flex gap-2">
         <Button
           variant="outline"
-          className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+          className="flex-1 border-danger/20 text-danger hover:bg-danger-muted"
           onClick={() => handle('reject')}
           disabled={loading !== null}
         >
           {loading === 'reject' ? '…' : t('reject')}
         </Button>
         <Button
-          className="flex-1 bg-green-600 hover:bg-green-700"
+          className="flex-1 bg-success hover:bg-success"
           onClick={() => handle('approve')}
           disabled={loading !== null}
         >

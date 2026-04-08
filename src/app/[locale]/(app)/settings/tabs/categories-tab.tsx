@@ -98,7 +98,7 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
                   <button
                     onClick={() => deleteCat(cat.id)}
                     disabled={cat.taskCount > 0}
-                    className={`text-lg px-1 ${cat.taskCount > 0 ? 'text-muted-foreground/50 cursor-not-allowed' : 'text-red-400 hover:text-red-600'}`}
+                    className={`text-lg px-1 ${cat.taskCount > 0 ? 'text-muted-foreground/50 cursor-not-allowed' : 'text-danger hover:text-danger'}`}
                     title={cat.taskCount > 0 ? t('moveFirst') : t('deleteTooltip')}
                   >×</button>
                 </>
@@ -115,7 +115,7 @@ export function CategoriesTab({ categories: initial }: { categories: Category[] 
       </div>
 
       {categories.some((c) => c.taskCount > 0) && (
-        <div className="p-3 bg-amber-50 rounded-lg text-xs text-amber-700">
+        <div className="p-3 bg-warning-muted rounded-lg text-xs text-warning">
           {t('warning')}
         </div>
       )}

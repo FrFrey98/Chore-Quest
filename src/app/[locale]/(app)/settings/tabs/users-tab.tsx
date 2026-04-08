@@ -9,7 +9,7 @@ import { isOnVacation } from '@/lib/vacation'
 type UserItem = { id: string; name: string; role: string; createdAt: string; vacationStart: string | null; vacationEnd: string | null }
 
 const ROLE_BADGE_CLASS: Record<string, string> = {
-  admin: 'bg-indigo-100 text-indigo-700',
+  admin: 'bg-accent/10 text-accent',
   member: 'bg-muted text-muted-foreground',
   child: 'bg-emerald-100 text-emerald-700',
 }
@@ -188,7 +188,7 @@ export function UsersTab({
       </div>
 
       {showAdd && (
-        <div className="bg-card rounded-xl p-4 shadow-sm space-y-3 border border-indigo-100">
+        <div className="bg-card rounded-xl p-4 shadow-sm space-y-3 border border-accent/10">
           <p className="font-semibold text-sm">{t('newMember')}</p>
           <div>
             <label className="text-xs text-muted-foreground">{t('nameLabel')}</label>
@@ -221,7 +221,7 @@ export function UsersTab({
               <option value="child">{tr('child')}</option>
             </select>
           </div>
-          {addError && <p className="text-xs text-red-500">{addError}</p>}
+          {addError && <p className="text-xs text-danger">{addError}</p>}
           <Button onClick={handleAdd} disabled={addLoading} className="w-full">
             {addLoading ? t('adding') : t('addButton')}
           </Button>
@@ -314,7 +314,7 @@ export function UsersTab({
               <div className="flex items-center gap-2 mt-1">
                 {isOnVacation(u.vacationStart, u.vacationEnd) ? (
                   <>
-                    <span className="text-sm text-amber-600 dark:text-amber-400">
+                    <span className="text-sm text-warning">
                       🏖️ {u.vacationEnd
                         ? tv('activeUntil', { date: new Date(u.vacationEnd).toLocaleDateString(locale) })
                         : tv('active')}
@@ -364,13 +364,13 @@ export function UsersTab({
                   </div>
                 ) : (
                   <button
-                    className="text-xs text-red-500 underline"
+                    className="text-xs text-danger underline"
                     onClick={() => setConfirmDelete(u.id)}
                   >
                     {t('removeMember')}
                   </button>
                 )}
-                {msg[`del-${u.id}`] && <p className="text-xs text-red-500 mt-1">{msg[`del-${u.id}`]}</p>}
+                {msg[`del-${u.id}`] && <p className="text-xs text-danger mt-1">{msg[`del-${u.id}`]}</p>}
               </div>
             )}
           </div>

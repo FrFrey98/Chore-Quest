@@ -69,10 +69,10 @@ export function StoreTab({ storeItems }: { storeItems: StoreItem[] }) {
         <Button onClick={createItem} disabled={!form.title || !form.description}>
           {t('submitButton')}
         </Button>
-        {error && <p className="text-red-500 text-xs">{error}</p>}
+        {error && <p className="text-danger text-xs">{error}</p>}
       </div>
 
-      <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('existingHeading')}</h2>
+      <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground">{t('existingHeading')}</h2>
       <div className="space-y-2">
         {storeItems.filter((i) => i.type !== 'streak_restore').map((item) => (
           <div key={item.id} className="flex items-center gap-3 bg-card rounded-xl p-3 shadow-sm">
@@ -81,7 +81,7 @@ export function StoreTab({ storeItems }: { storeItems: StoreItem[] }) {
               <p className="text-sm font-medium truncate">{item.title}</p>
               <p className="text-xs text-muted-foreground">{item.pointCost} {tc('points')} · {item.type}</p>
             </div>
-            <span className={`text-xs px-2 py-0.5 rounded ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground'}`}>
+            <span className={`text-xs px-2 py-0.5 rounded ${item.isActive ? 'bg-success-muted text-success' : 'bg-muted text-muted-foreground'}`}>
               {item.isActive ? tc('active') : tc('inactive')}
             </span>
           </div>

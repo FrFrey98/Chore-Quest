@@ -43,7 +43,7 @@ export function ChallengesClient({
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-4">
@@ -51,7 +51,7 @@ export function ChallengesClient({
           onClick={() => setActiveTab('current')}
           className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
             activeTab === 'current'
-              ? 'bg-indigo-600 text-white'
+              ? 'bg-accent text-accent-foreground'
               : 'bg-muted text-muted-foreground hover:bg-muted/80'
           }`}
         >
@@ -61,7 +61,7 @@ export function ChallengesClient({
           onClick={() => setActiveTab('history')}
           className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
             activeTab === 'history'
-              ? 'bg-indigo-600 text-white'
+              ? 'bg-accent text-accent-foreground'
               : 'bg-muted text-muted-foreground hover:bg-muted/80'
           }`}
         >
@@ -138,7 +138,7 @@ function ChallengeCard({
   return (
     <div
       className={`bg-card border border-border rounded-xl ${compact ? 'p-3' : 'p-4'} border-l-[3px] ${
-        isCompleted ? 'border-l-green-500' : 'border-l-indigo-400'
+        isCompleted ? 'border-l-success' : 'border-l-accent'
       }`}
     >
       <div className="flex items-center gap-2 mb-1">
@@ -147,7 +147,7 @@ function ChallengeCard({
           {title}
         </span>
         {isCompleted ? (
-          <span className="flex items-center gap-1 text-xs font-semibold text-green-600">
+          <span className="flex items-center gap-1 text-xs font-semibold text-success">
             <CheckCircle2 size={14} /> {t('completed')}
           </span>
         ) : (
@@ -162,13 +162,13 @@ function ChallengeCard({
       <div className={`h-1.5 bg-muted rounded-full overflow-hidden ${compact ? '' : 'ml-8'}`}>
         <div
           className={`h-full rounded-full transition-all ${
-            isCompleted ? 'bg-green-500' : 'bg-indigo-500'
+            isCompleted ? 'bg-success' : 'bg-accent'
           }`}
           style={{ width: `${Math.min(100, percent)}%` }}
         />
       </div>
       {isCompleted && (
-        <p className={`text-xs text-green-600 font-semibold mt-1 ${compact ? '' : 'ml-8'}`}>
+        <p className={`text-xs text-success font-semibold mt-1 ${compact ? '' : 'ml-8'}`}>
           {t('bonusPoints', { points: ch.bonusPoints })}
         </p>
       )}

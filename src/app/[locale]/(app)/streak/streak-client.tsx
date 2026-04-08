@@ -70,16 +70,16 @@ export function StreakClient({
 
   function heatColor(value: number): string {
     if (value === 0) return 'bg-muted'
-    if (value < 20) return 'bg-indigo-200'
-    if (value < 50) return 'bg-indigo-300'
-    if (value < 100) return 'bg-indigo-400'
-    return 'bg-indigo-500'
+    if (value < 20) return 'bg-accent/20'
+    if (value < 50) return 'bg-accent/40'
+    if (value < 100) return 'bg-accent/60'
+    return 'bg-accent'
   }
 
   return (
     <div className="space-y-6">
       {/* Back link */}
-      <Link href="/" className="text-sm text-indigo-500 hover:text-indigo-700">
+      <Link href="/" className="text-sm text-accent hover:text-accent-hover">
         {t('backToDashboard')}
       </Link>
 
@@ -88,7 +88,7 @@ export function StreakClient({
         <span className="text-5xl">🔥</span>
         <p className="text-4xl font-bold text-foreground mt-2">{t('counter', { days: currentStreak })}</p>
         {tierPercent > 0 ? (
-          <p className="text-indigo-600 font-medium mt-1">{tierName} · {t('nextTierBonus', { percent: tierPercent })}</p>
+          <p className="text-accent font-medium mt-1">{tierName} · {t('nextTierBonus', { percent: tierPercent })}</p>
         ) : (
           <p className="text-muted-foreground mt-1">{t('noBonusActive')}</p>
         )}
@@ -96,30 +96,30 @@ export function StreakClient({
 
       {/* Restore Alert */}
       {restore.available && (
-        <div className="bg-amber-50 border border-amber-300 rounded-xl p-4">
-          <p className="text-sm font-semibold text-amber-800 mb-1">
+        <div className="bg-warning-muted border border-warning/30 rounded-xl p-4">
+          <p className="text-sm font-semibold text-warning mb-1">
             {t('inDanger.heading')}
           </p>
-          <p className="text-xs text-amber-600 mb-3">
+          <p className="text-xs text-warning mb-3">
             {t('inDanger.body', { days: currentStreak, price: restore.price })}
           </p>
           <div className="flex items-center gap-3">
             <button
               onClick={handleRestore}
               disabled={restoring || balance < restore.price}
-              className="bg-amber-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-warning text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-warning disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {restoring ? t('inDanger.restoring') : t('inDanger.restoreButton', { price: restore.price })}
             </button>
-            <span className="text-xs text-amber-600">
+            <span className="text-xs text-warning">
               {t('inDanger.balance', { balance })}
             </span>
           </div>
           {balance < restore.price && (
-            <p className="text-xs text-red-600 mt-2">{t('inDanger.notEnough')}</p>
+            <p className="text-xs text-danger mt-2">{t('inDanger.notEnough')}</p>
           )}
           {restoreError && (
-            <p className="text-xs text-red-600 mt-2">{restoreError}</p>
+            <p className="text-xs text-danger mt-2">{restoreError}</p>
           )}
         </div>
       )}
@@ -129,11 +129,11 @@ export function StreakClient({
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-semibold text-foreground">{t('nextTier')}</span>
-            <span className="text-xs text-indigo-600 font-medium">{nextTier.name} ({t('nextTierBonus', { percent: nextTier.percent })})</span>
+            <span className="text-xs text-accent font-medium">{nextTier.name} ({t('nextTierBonus', { percent: nextTier.percent })})</span>
           </div>
           <div className="bg-accent rounded-full h-2.5 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-full rounded-full transition-all"
+              className="bg-accent h-full rounded-full transition-all"
               style={{
                 width: `${Math.round(
                   ((currentStreak - (tiers.find((ti) => ti.percent < nextTier.percent && ti.minDays <= currentStreak)?.minDays ?? 0)) /
@@ -159,7 +159,7 @@ export function StreakClient({
               <div
                 key={tier.minDays}
                 className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm ${
-                  isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-muted-foreground'
+                  isActive ? 'bg-accent/10 text-accent font-medium' : 'text-muted-foreground'
                 }`}
               >
                 <span>
@@ -167,7 +167,7 @@ export function StreakClient({
                 </span>
                 <span className="flex items-center gap-3">
                   <span className="text-xs text-muted-foreground">{t('tiers.fromDays', { days: tier.minDays })}</span>
-                  <span className={`font-medium ${isActive ? 'text-indigo-600' : ''}`}>
+                  <span className={`font-medium ${isActive ? 'text-accent' : ''}`}>
                     +{tier.percent}%
                   </span>
                 </span>

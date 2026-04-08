@@ -53,7 +53,7 @@ export function SettingsClient({
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">{t('heading')}</h1>
+      <h1 className="text-[1.75rem] font-light uppercase tracking-wide leading-tight mb-4">{t('heading')}</h1>
 
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-1 px-1">
         {TAB_KEYS.map((key) => (
@@ -62,7 +62,7 @@ export function SettingsClient({
             onClick={() => setTab(key)}
             className={`whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               tab === key
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-accent text-accent-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-accent'
             }`}
           >

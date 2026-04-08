@@ -89,7 +89,7 @@ export function BonusTab({ config }: { config: GameConfig }) {
               <Input className="flex-1" placeholder={t('intervalNamePlaceholder')} value={item.name} onChange={(e) => updateInterval(i, 'name', e.target.value)} />
               <Input type="number" className="w-16 text-center" value={item.days} onChange={(e) => updateInterval(i, 'days', Number(e.target.value))} />
               <span className="text-sm text-muted-foreground">{t('daysLabel')}</span>
-              <button onClick={() => removeInterval(i)} className="text-red-400 hover:text-red-600 text-lg px-1">×</button>
+              <button onClick={() => removeInterval(i)} className="text-danger hover:text-danger text-lg px-1">×</button>
             </div>
           ))}
         </div>

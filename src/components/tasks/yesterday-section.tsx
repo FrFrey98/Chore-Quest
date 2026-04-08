@@ -110,19 +110,19 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       {/* Completed yesterday */}
       {completed.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{ty('completed')}</h2>
+          <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">{ty('completed')}</h2>
           <div className="flex flex-col gap-2">
             {completed.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 p-2.5 bg-green-50 rounded-lg border-l-[3px] border-green-500">
+              <div key={c.id} className="flex items-center gap-3 p-2.5 bg-success-muted rounded-lg border-l-[3px] border-success">
                 <span className="text-lg">{c.emoji}</span>
                 <span className="flex-1 text-sm text-muted-foreground line-through truncate">{c.title}</span>
-                <span className="text-xs text-green-600 font-semibold">✓ +{c.points}</span>
+                <span className="text-xs text-success font-semibold">✓ +{c.points}</span>
                 {confirmUndoId === c.id ? (
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleUndo(c)}
                       disabled={undoingId === c.id}
-                      className="text-xs text-red-600 font-semibold hover:text-red-700"
+                      className="text-xs text-danger font-semibold hover:text-danger"
                     >
                       {undoingId === c.id ? '…' : tc('yes')}
                     </button>
@@ -151,10 +151,10 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
       {/* Due yesterday — backfill */}
       {pendingDue.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{ty('catchUp')}</h2>
+          <h2 className="text-[0.6875rem] font-normal uppercase tracking-wider text-muted-foreground mb-3">{ty('catchUp')}</h2>
           <div className="flex flex-col gap-2">
             {pendingDue.map((task) => (
-              <div key={task.id} className="flex items-center gap-3 p-2.5 bg-amber-50 rounded-lg border-l-[3px] border-amber-400">
+              <div key={task.id} className="flex items-center gap-3 p-2.5 bg-warning-muted rounded-lg border-l-[3px] border-warning">
                 <span className="text-lg">{task.emoji}</span>
                 <div className="flex-1 min-w-0">
                   <span className="text-sm text-foreground truncate block">{task.title}</span>
@@ -164,7 +164,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
                     onClick={() => setSharedTaskId(sharedTaskId === task.id ? null : task.id)}
                     className={`p-1.5 rounded-lg transition-colors ${
                       sharedTaskId === task.id
-                        ? 'bg-amber-100 text-amber-700'
+                        ? 'bg-warning-muted text-warning'
                         : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted'
                     }`}
                     title={t('togetherWith', { name: partnerName ?? '' })}
@@ -175,7 +175,7 @@ export function YesterdaySection({ completed, due, partnerId, partnerName }: Yes
                 <button
                   onClick={() => handleComplete(task)}
                   disabled={loadingId === task.id}
-                  className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1 bg-warning hover:bg-warning text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
                 >
                   {loadingId === task.id ? '…' : <><Check size={14} /> {sharedTaskId === task.id ? `👫 ${t('together')}` : ty('catchUpAction')}</>}
                 </button>

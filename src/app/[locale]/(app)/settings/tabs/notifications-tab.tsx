@@ -166,7 +166,7 @@ export function NotificationsTab({
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {enabled ? <Bell size={20} className="text-indigo-600" /> : <BellOff size={20} className="text-muted-foreground" />}
+            {enabled ? <Bell size={20} className="text-accent" /> : <BellOff size={20} className="text-muted-foreground" />}
             <div>
               <div className="text-sm font-semibold text-foreground">{t('pushLabel')}</div>
               <div className="text-xs text-muted-foreground">{t('pushDescription')}</div>
@@ -176,7 +176,7 @@ export function NotificationsTab({
             onClick={handleToggle}
             disabled={loading || !pushSupported || !configured}
             className={`relative w-12 h-7 rounded-full transition-colors ${
-              enabled ? 'bg-indigo-600' : 'bg-muted-foreground/40'
+              enabled ? 'bg-accent' : 'bg-muted-foreground/40'
             } ${loading || !pushSupported || !configured ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-card rounded-full shadow transition-transform ${
@@ -185,10 +185,10 @@ export function NotificationsTab({
           </button>
         </div>
         {!pushSupported && (
-          <p className="text-xs text-amber-600 mt-2">{t('notSupported')}</p>
+          <p className="text-xs text-warning mt-2">{t('notSupported')}</p>
         )}
         {pushSupported && !configured && (
-          <p className="text-xs text-amber-600 mt-2">{t('notConfigured')}</p>
+          <p className="text-xs text-warning mt-2">{t('notConfigured')}</p>
         )}
       </div>
 
@@ -202,16 +202,16 @@ export function NotificationsTab({
           </div>
         </div>
         {!telegramConfigured ? (
-          <p className="text-xs text-amber-600 mt-2">{t('telegramNotConfigured')}</p>
+          <p className="text-xs text-warning mt-2">{t('telegramNotConfigured')}</p>
         ) : tgConnected ? (
           <div className="flex items-center gap-3 mt-3">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium dark:bg-green-900/30 dark:text-green-400">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-muted text-success text-xs font-medium">
               {t('telegramConnected')}
             </span>
             <button
               onClick={handleTelegramDisconnect}
               disabled={tgLoading}
-              className="text-xs text-red-600 hover:underline disabled:opacity-50"
+              className="text-xs text-danger hover:underline disabled:opacity-50"
             >
               {t('telegramDisconnect')}
             </button>
@@ -248,7 +248,7 @@ export function NotificationsTab({
           </div>
         </div>
         {!ntfyConfigured ? (
-          <p className="text-xs text-amber-600 mt-2">{t('ntfyNotConfigured')}</p>
+          <p className="text-xs text-warning mt-2">{t('ntfyNotConfigured')}</p>
         ) : (
           <div className="mt-3 space-y-3">
             <div className="flex items-center justify-between">
