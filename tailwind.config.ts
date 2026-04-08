@@ -46,7 +46,7 @@ const config: Config = {
         "nav-muted": "var(--nav-muted)",
       },
       borderRadius: {
-        lg: "var(--radius)",
+        lg: "calc(var(--radius) + 3px)",
         md: "var(--radius)",
         sm: "2px",
       },
