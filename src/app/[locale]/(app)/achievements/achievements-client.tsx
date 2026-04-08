@@ -25,7 +25,7 @@ export function AchievementsClient({
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold">{t('heading')}</h1>
-        <span className="text-sm text-indigo-600 font-semibold">{t('unlockedCount', { unlocked: totalUnlocked, total })}</span>
+        <span className="text-sm text-accent font-semibold">{t('unlockedCount', { unlocked: totalUnlocked, total })}</span>
       </div>
 
       {/* Trophy Shelf */}
@@ -52,7 +52,7 @@ export function AchievementsClient({
               <p className="font-semibold">{a.title}</p>
               <p className="text-muted-foreground/50 mt-0.5">{a.description}</p>
               <div className="mt-1.5 bg-slate-600 rounded-full h-1 overflow-hidden">
-                <div className="bg-indigo-400 h-full rounded-full" style={{ width: `${a.progressMax > 0 ? Math.round((a.progress / a.progressMax) * 100) : 0}%` }} />
+                <div className="bg-accent h-full rounded-full" style={{ width: `${a.progressMax > 0 ? Math.round((a.progress / a.progressMax) * 100) : 0}%` }} />
               </div>
               <p className="text-muted-foreground mt-1">{a.progress}/{a.progressMax}</p>
               <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
@@ -76,11 +76,11 @@ export function AchievementsClient({
                   <p className="text-xs text-muted-foreground">{a.description}</p>
                   <div className="mt-2 bg-muted rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="bg-indigo-500 h-full rounded-full transition-all"
+                      className="bg-accent h-full rounded-full transition-all"
                       style={{ width: `${Math.round(a.percent * 100)}%` }}
                     />
                   </div>
-                  <p className="text-[10px] text-indigo-600 mt-1">
+                  <p className="text-[10px] text-accent mt-1">
                     {a.progress}/{a.progressMax}
                     {a.percent >= 0.7 && ` — ${t('almostDone')}`}
                   </p>

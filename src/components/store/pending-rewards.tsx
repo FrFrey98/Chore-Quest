@@ -44,7 +44,7 @@ export function MyRewards({ purchases }: { purchases: PendingPurchase[] }) {
       </h2>
       <div className="space-y-2">
         {purchases.map((p) => (
-          <div key={p.id} className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+          <div key={p.id} className="flex items-center gap-3 bg-warning-muted border border-warning/20 rounded-xl p-3">
             <span className="text-2xl">{p.item.emoji}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{p.item.title}</p>

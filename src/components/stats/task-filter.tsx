@@ -12,7 +12,7 @@ type TaskFilterProps = {
 export function TaskFilter({ tasks, value, onChange, allLabel = 'All tasks' }: TaskFilterProps) {
   return (
     <select
-      className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-300"
+      className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value || null)}
     >

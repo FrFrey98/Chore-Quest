@@ -44,13 +44,13 @@ export function StoreItemCard({
           <p className="font-semibold">{item.title}</p>
           <p className="text-sm text-muted-foreground">{item.description}</p>
         </div>
-        <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded shrink-0">
+        <span className="text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded shrink-0">
           {item.pointCost} {tc('points')}
         </span>
       </div>
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
       {purchased ? (
-        <p className="text-green-600 text-sm font-medium">{t('purchased')}</p>
+        <p className="text-success text-sm font-medium">{t('purchased')}</p>
       ) : (
         <Button
           className="w-full"

@@ -5,7 +5,7 @@ type TopTasksProps = {
   emptyLabel?: string
 }
 
-export function TopTasks({ tasks, barColor = 'bg-indigo-400', label, emptyLabel = 'No tasks in period' }: TopTasksProps) {
+export function TopTasks({ tasks, barColor = 'bg-accent', label, emptyLabel = 'No tasks in period' }: TopTasksProps) {
   const max = Math.max(1, ...tasks.map((t) => t.count))
 
   return (

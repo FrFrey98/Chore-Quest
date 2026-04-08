@@ -43,7 +43,7 @@ export function StoreClient({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold">{t('heading')}</h1>
         <div className="flex items-center gap-3">
-          <span className="text-indigo-600 font-semibold">{balance.toLocaleString()} {tc('points')}</span>
+          <span className="text-accent font-semibold">{balance.toLocaleString()} {tc('points')}</span>
           <CreateItemDialog />
         </div>
       </div>
@@ -66,7 +66,7 @@ export function StoreClient({
         ))}
       </div>
       <div className="flex justify-end mt-4">
-        <Link href="/manage?tab=rewards" className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors">
+        <Link href="/manage?tab=rewards" className="text-xs text-accent hover:text-accent-hover transition-colors">
           {t('manage')}
         </Link>
       </div>

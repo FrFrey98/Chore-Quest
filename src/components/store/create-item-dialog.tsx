@@ -80,7 +80,7 @@ export function CreateItemDialog() {
             <Label>{t('createItem.description')}</Label>
             <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
-          {error && <p className="text-red-500 text-xs">{error}</p>}
+          {error && <p className="text-danger text-xs">{error}</p>}
           <Button onClick={handleSubmit} disabled={submitting || !form.title || !form.description} className="w-full">
             {t('createItem.submit')}
           </Button>

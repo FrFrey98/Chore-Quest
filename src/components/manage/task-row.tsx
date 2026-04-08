@@ -48,8 +48,8 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
   const tTasks = useTranslations('tasks.createDialog')
 
   const STATUS_BADGES: Record<string, { label: string; className: string }> = {
-    pending_approval: { label: t('waiting'), className: 'bg-amber-100 text-amber-700' },
-    rejected: { label: t('rejected'), className: 'bg-red-100 text-red-700' },
+    pending_approval: { label: t('waiting'), className: 'bg-warning-muted text-warning' },
+    rejected: { label: t('rejected'), className: 'bg-danger-muted text-danger' },
     archived: { label: t('archived'), className: 'bg-muted text-muted-foreground' },
   }
   const [form, setForm] = useState({
@@ -147,7 +147,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
 
   if (isEditing) {
     return (
-      <div className="bg-card border border-indigo-200 rounded-xl p-4 space-y-3">
+      <div className="bg-card border border-accent/20 rounded-xl p-4 space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">{tTasks('emoji')}</label>
@@ -204,7 +204,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
                       }))
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      active ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+                      active ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {u.name}
@@ -257,7 +257,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
                       setForm({ ...form, scheduleDays: newDays.join(',') })
                     }}
                     className={`w-9 h-9 rounded-lg text-xs font-semibold transition-colors ${
-                      isActive ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+                      isActive ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
                     }`}
                   >
                     {label}
@@ -337,7 +337,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
           <button
             type="button"
             onClick={handleSave}
-            className="p-2 rounded-lg text-green-600 hover:bg-green-50 transition-colors"
+            className="p-2 rounded-lg text-success hover:bg-success-muted transition-colors"
             disabled={saving || !form.title}
           >
             <Check size={16} />
@@ -369,7 +369,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
           <button
             type="button"
             onClick={onStartEdit}
-            className="p-2 rounded-lg text-muted-foreground hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+            className="p-2 rounded-lg text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors"
           >
             <Pencil size={14} />
           </button>
@@ -377,7 +377,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             <button
               type="button"
               onClick={handleRestore}
-              className="p-2 rounded-lg text-muted-foreground hover:text-green-600 hover:bg-green-50 transition-colors"
+              className="p-2 rounded-lg text-muted-foreground hover:text-success hover:bg-success-muted transition-colors"
               disabled={saving}
             >
               <RotateCcw size={14} />
@@ -386,7 +386,7 @@ export function TaskRow({ task, categories, users, isEditing, onStartEdit, onCan
             <button
               type="button"
               onClick={() => setConfirmOpen(true)}
-              className="p-2 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="p-2 rounded-lg text-muted-foreground hover:text-danger hover:bg-danger-muted transition-colors"
             >
               <Trash2 size={14} />
             </button>
