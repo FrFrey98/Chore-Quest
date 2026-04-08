@@ -71,16 +71,16 @@ function VacationToggle({
       ? tv('activeUntil', { date: new Date(vacationEnd).toLocaleDateString(locale) })
       : tv('active')
     return (
-      <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-4 shadow-sm">
+      <div className="bg-warning-muted border border-warning/20 rounded-xl p-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span>🏖️</span>
-            <span className="text-sm font-medium text-amber-800 dark:text-amber-200">{statusText}</span>
+            <span className="text-sm font-medium text-warning">{statusText}</span>
           </div>
           <button
             onClick={endVacation}
             disabled={loading}
-            className="text-sm px-3 py-1.5 rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50 transition-colors"
+            className="text-sm px-3 py-1.5 rounded-lg bg-warning text-white hover:bg-warning disabled:opacity-50 transition-colors"
           >
             {tv('end')}
           </button>
@@ -111,7 +111,7 @@ function VacationToggle({
         <button
           onClick={startVacation}
           disabled={loading}
-          className="text-sm px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="text-sm px-3 py-1.5 rounded-lg bg-accent text-accent-foreground hover:bg-accent-hover disabled:opacity-50 transition-colors"
         >
           {tv('start')}
         </button>
@@ -147,7 +147,7 @@ export function ProfileClient({
       {/* Header card */}
       <div className="bg-card rounded-xl p-4 shadow-sm">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-xl font-bold text-indigo-700">
+          <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center text-xl font-bold text-accent">
             {userName.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -158,7 +158,7 @@ export function ProfileClient({
           </div>
           <div className="ml-auto text-right">
             <p className="text-xs text-muted-foreground">{tc('pointsFull')}</p>
-            <p className="font-bold text-indigo-700">{personal.totalPointsEarned.toLocaleString()}</p>
+            <p className="font-bold text-accent">{personal.totalPointsEarned.toLocaleString()}</p>
           </div>
           {isOwnProfile && (
             <Link href="/settings" className="ml-2 text-muted-foreground hover:text-muted-foreground transition-colors">
@@ -196,7 +196,7 @@ export function ProfileClient({
           </div>
           <Link
             href="/achievements"
-            className="text-xs text-indigo-600 ml-auto hover:underline"
+            className="text-xs text-accent ml-auto hover:underline"
           >
             {achievementsSummary.unlocked}/{achievementsSummary.total} →
           </Link>
@@ -221,7 +221,7 @@ export function ProfileClient({
           ].map(({ label, value }) => (
             <div key={label} className="bg-card rounded-xl p-4 shadow-sm">
               <p className="text-xs text-muted-foreground mb-1">{label}</p>
-              <p className="font-bold text-indigo-700">{value}</p>
+              <p className="font-bold text-accent">{value}</p>
             </div>
           ))}
         </div>
@@ -245,7 +245,7 @@ export function ProfileClient({
               <div key={t.id} className="flex items-center gap-2">
                 <span>{t.emoji}</span>
                 <span className="text-sm flex-1">{t.title}</span>
-                <span className="text-sm font-bold text-indigo-600">{t.count}×</span>
+                <span className="text-sm font-bold text-accent">{t.count}×</span>
               </div>
             ))}
           </div>
@@ -278,11 +278,11 @@ export function ProfileClient({
                       </td>
                       <td className="py-2 text-right">
                         {p.redeemedAt ? (
-                          <span className="text-green-600 text-xs">{t('statusRedeemed')}</span>
+                          <span className="text-success text-xs">{t('statusRedeemed')}</span>
                         ) : p.item.type === 'real_reward' ? (
-                          <span className="text-amber-500 text-xs">{t('statusPending')}</span>
+                          <span className="text-warning text-xs">{t('statusPending')}</span>
                         ) : (
-                          <span className="text-indigo-600 text-xs">✓</span>
+                          <span className="text-accent text-xs">✓</span>
                         )}
                       </td>
                     </tr>

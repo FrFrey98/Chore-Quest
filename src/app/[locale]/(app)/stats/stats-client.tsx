@@ -156,7 +156,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
           type="button"
           onClick={() => setTab('personal')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            tab === 'personal' ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+            tab === 'personal' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
           }`}
         >
           {t('personalTab')}
@@ -165,7 +165,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
           type="button"
           onClick={() => setTab('comparison')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            tab === 'comparison' ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+            tab === 'comparison' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
           }`}
         >
           {t('comparisonTab')}
@@ -179,7 +179,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
           value={from}
           max={to}
           onChange={(e) => setDateRange(e.target.value, to)}
-          className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <span className="text-muted-foreground self-center">—</span>
         <input
@@ -187,7 +187,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
           value={to}
           min={from}
           onChange={(e) => setDateRange(from, e.target.value)}
-          className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          className="text-sm border border-border rounded-lg px-3 py-1.5 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
@@ -203,13 +203,13 @@ export function StatsClient({ completions, users, currentUserId, categories, all
               <div className="flex gap-1">
                 <button
                   onClick={() => setMetric('count')}
-                  className={`px-2 py-0.5 rounded text-xs ${metric === 'count' ? 'bg-indigo-100 text-indigo-700' : 'text-muted-foreground hover:bg-muted'}`}
+                  className={`px-2 py-0.5 rounded text-xs ${metric === 'count' ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-muted'}`}
                 >
                   {t('metricsToggle.tasks')}
                 </button>
                 <button
                   onClick={() => setMetric('points')}
-                  className={`px-2 py-0.5 rounded text-xs ${metric === 'points' ? 'bg-indigo-100 text-indigo-700' : 'text-muted-foreground hover:bg-muted'}`}
+                  className={`px-2 py-0.5 rounded text-xs ${metric === 'points' ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-muted'}`}
                 >
                   {t('metricsToggle.points')}
                 </button>
@@ -260,13 +260,13 @@ export function StatsClient({ completions, users, currentUserId, categories, all
               <div className="flex gap-1">
                 <button
                   onClick={() => setMetric('count')}
-                  className={`px-2 py-0.5 rounded text-xs ${metric === 'count' ? 'bg-indigo-100 text-indigo-700' : 'text-muted-foreground hover:bg-muted'}`}
+                  className={`px-2 py-0.5 rounded text-xs ${metric === 'count' ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-muted'}`}
                 >
                   {t('metricsToggle.tasks')}
                 </button>
                 <button
                   onClick={() => setMetric('points')}
-                  className={`px-2 py-0.5 rounded text-xs ${metric === 'points' ? 'bg-indigo-100 text-indigo-700' : 'text-muted-foreground hover:bg-muted'}`}
+                  className={`px-2 py-0.5 rounded text-xs ${metric === 'points' ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-muted'}`}
                 >
                   {t('metricsToggle.points')}
                 </button>
@@ -289,7 +289,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
               <h2 className="text-sm font-semibold text-foreground mb-3">{t('categoryDistribution')}</h2>
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-semibold text-indigo-600 mb-1">{me?.name ?? t('me')}</p>
+                  <p className="text-xs font-semibold text-accent mb-1">{me?.name ?? t('me')}</p>
                   <CategoryPieChart
                     byCategory={Object.fromEntries(userCategoryData.map((c) => [c.categoryId, { [me?.name ?? t('me')]: c.count }]))}
                     categories={categories}
@@ -297,7 +297,7 @@ export function StatsClient({ completions, users, currentUserId, categories, all
                 </div>
                 {partner && (
                   <div>
-                    <p className="text-xs font-semibold text-pink-600 mb-1">{partner.name}</p>
+                    <p className="text-xs font-semibold text-partner mb-1">{partner.name}</p>
                     <CategoryPieChart
                       byCategory={Object.fromEntries(partnerCategoryData.map((c) => [c.categoryId, { [partner.name]: c.count }]))}
                       categories={categories}
@@ -309,9 +309,9 @@ export function StatsClient({ completions, users, currentUserId, categories, all
             <div className="bg-card border border-border rounded-xl p-4">
               <h2 className="text-sm font-semibold text-foreground mb-3">{t('topTasks')}</h2>
               <div className="space-y-4">
-                <TopTasks tasks={myTopTasksComparison} barColor="bg-indigo-400" label={t('top5', { name: me?.name ?? t('me') })} emptyLabel={t('noTasksInPeriod')} />
+                <TopTasks tasks={myTopTasksComparison} barColor="bg-accent" label={t('top5', { name: me?.name ?? t('me') })} emptyLabel={t('noTasksInPeriod')} />
                 {partner && (
-                  <TopTasks tasks={partnerTopTasks} barColor="bg-pink-400" label={t('top5', { name: partner.name })} emptyLabel={t('noTasksInPeriod')} />
+                  <TopTasks tasks={partnerTopTasks} barColor="bg-partner" label={t('top5', { name: partner.name })} emptyLabel={t('noTasksInPeriod')} />
                 )}
               </div>
             </div>
@@ -322,12 +322,12 @@ export function StatsClient({ completions, users, currentUserId, categories, all
             <h2 className="text-sm font-semibold text-foreground mb-3">{t('heatmaps')}</h2>
             <div className="space-y-4">
               <div>
-                <p className="text-xs font-semibold text-indigo-600 mb-1">{me?.name ?? t('me')}</p>
+                <p className="text-xs font-semibold text-accent mb-1">{me?.name ?? t('me')}</p>
                 <Heatmap data={userHeatmap} from={from} to={to} />
               </div>
               {partner && (
                 <div>
-                  <p className="text-xs font-semibold text-pink-600 mb-1">{partner.name}</p>
+                  <p className="text-xs font-semibold text-partner mb-1">{partner.name}</p>
                   <Heatmap data={partnerHeatmap} from={from} to={to} />
                 </div>
               )}
