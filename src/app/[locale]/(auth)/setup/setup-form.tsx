@@ -320,7 +320,7 @@ export function SetupForm() {
           onChange={(e) => setAdminPinConfirm(e.target.value.replace(/\D/g, ''))}
           maxLength={8}
         />
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-danger text-sm">{error}</p>}
         <Button variant="outline" className="w-full" onClick={() => setStep(2)}>
           {t('back')}
         </Button>
@@ -343,7 +343,7 @@ export function SetupForm() {
               {members.length > 1 && (
                 <button
                   type="button"
-                  className="text-red-500 text-sm hover:underline"
+                  className="text-danger text-sm hover:underline"
                   onClick={() => removeMember(i)}
                 >
                   {tCommon('remove')}
@@ -385,7 +385,7 @@ export function SetupForm() {
             </select>
           </div>
         ))}
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-danger text-sm">{error}</p>}
         <Button variant="outline" className="w-full" onClick={addMember}>
           {t('addMember')}
         </Button>
@@ -430,7 +430,7 @@ export function SetupForm() {
             )
           })}
         </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-danger text-sm">{error}</p>}
         <Button variant="outline" className="w-full" onClick={() => setStep(4)}>
           {t('back')}
         </Button>
@@ -583,7 +583,7 @@ export function SetupForm() {
           <span className="font-medium">{totalTaskCount}</span>
         </div>
       </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-danger text-sm">{error}</p>}
       <Button variant="outline" className="w-full" onClick={() => setStep(6)}>
         {t('back')}
       </Button>

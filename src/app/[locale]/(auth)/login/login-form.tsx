@@ -47,7 +47,7 @@ export function LoginForm({ users }: { users: User[] }) {
             onClick={() => { setSelectedId(u.id); setError(''); setPin('') }}
             className={`p-4 rounded-xl border-2 text-center transition-colors ${
               selectedId === u.id
-                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                ? 'border-accent bg-accent/10 text-accent'
                 : 'border-border hover:border-border'
             }`}
           >
@@ -69,7 +69,7 @@ export function LoginForm({ users }: { users: User[] }) {
             maxLength={8}
             autoFocus
           />
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
           <Button type="submit" className="w-full" disabled={loading || !pin}>
             {loading ? t('checking') : t('submit')}
           </Button>
