@@ -130,21 +130,21 @@ export function TaskCard({ task, onComplete, partnerId, partnerName, decayHoursB
           />
         )}
       </div>
-      <Badge variant="secondary" className="text-indigo-700 bg-indigo-50 shrink-0">
+      <Badge variant="secondary" className="text-accent bg-accent/10 shrink-0">
         +{task.points} {tc('points')}
       </Badge>
       {partnerId && (
         <button
           onClick={() => setShared(!shared)}
           className={`p-1.5 rounded-lg transition-colors ${
-            shared ? 'bg-amber-100 text-amber-700' : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted'
+            shared ? 'bg-warning-muted text-warning' : 'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted'
           }`}
           title={t('togetherWith', { name: partnerName ?? '' })}
         >
           <Users size={16} />
         </button>
       )}
-      <Button size="sm" onClick={handleComplete} disabled={loading} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-1">
+      <Button size="sm" onClick={handleComplete} disabled={loading} className="bg-accent hover:bg-accent-hover text-accent-foreground gap-1">
         {loading ? '…' : <><Check size={16} /> {shared ? `👫 ${t('together')}` : t('checkOff')}</>}
       </Button>
     </div>

@@ -76,7 +76,7 @@ export function TemplatePicker({ open, onClose, onSelect }: TemplatePickerProps)
             type="button"
             onClick={() => setActiveCategory(null)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              !activeCategory ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+              !activeCategory ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
             }`}
           >
             {t('allCategories')}
@@ -87,7 +87,7 @@ export function TemplatePicker({ open, onClose, onSelect }: TemplatePickerProps)
               type="button"
               onClick={() => setActiveCategory(cat.category === activeCategory ? null : cat.category)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                activeCategory === cat.category ? 'bg-indigo-600 text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
+                activeCategory === cat.category ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground hover:bg-accent'
               }`}
             >
               {cat.emoji} {locale === 'de' ? cat.categoryDe : cat.category}
