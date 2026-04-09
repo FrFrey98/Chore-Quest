@@ -714,5 +714,11 @@
     "noQuestsSubtitle": "Quests erscheinen hier, wenn ein Admin sie erstellt.",
     "progress": "Schritt {current} von {total}",
     "dashboardHeading": "Aktive Quests"
+  },
+  "goals": {
+    "heading": "Ziele",
+    "subtitle": "Challenges & Quests",
+    "challengesTab": "Challenges",
+    "questsTab": "Quests"
   }
 }
