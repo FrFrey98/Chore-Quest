@@ -1,5 +1,5 @@
 // prisma/seed/dog-training/skills/scent-work.ts
-import type { SkillSeed } from "../index"
+import type { SkillSeed } from "../types"
 
 export const SCENT_WORK_SKILLS: SkillSeed[] = [
   {

@@ -1,5 +1,5 @@
 // prisma/seed/dog-training/skills/recall.ts
-import type { SkillSeed } from "../index"
+import type { SkillSeed } from "../types"
 
 export const RECALL_SKILLS: SkillSeed[] = [
   {

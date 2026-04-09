@@ -1,5 +1,5 @@
 // prisma/seed/dog-training/skills/basic-obedience.ts
-import type { SkillSeed } from "../index"
+import type { SkillSeed } from "../types"
 
 export const BASIC_OBEDIENCE_SKILLS: SkillSeed[] = [
   {
