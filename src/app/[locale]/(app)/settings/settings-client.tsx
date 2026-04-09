@@ -13,6 +13,7 @@ import { StoreTab } from './tabs/store-tab'
 import { NotificationsTab } from './tabs/notifications-tab'
 import { BackupTab } from './tabs/backup-tab'
 import { QuestsTab } from './tabs/quests-tab'
+import { DogsTab } from './tabs/dogs-tab'
 
 type Category = { id: string; name: string; emoji: string; taskCount: number }
 type Achievement = {
@@ -24,13 +25,13 @@ type Task = { id: string; title: string; emoji: string; points: number; status: 
 type QuestStepData = { id: string; stepOrder: number; description: string; descriptionDe: string; task: { id: string; title: string; emoji: string } }
 type QuestData = { id: string; title: string; titleDe: string; description: string; descriptionDe: string; emoji: string; bonusPoints: number; isActive: boolean; steps: QuestStepData[] }
 
-const TAB_KEYS = ['users', 'streak', 'level', 'bonus', 'categories', 'achievements', 'tasks', 'store', 'quests', 'notifications', 'backup'] as const
+const TAB_KEYS = ['users', 'streak', 'level', 'bonus', 'categories', 'achievements', 'tasks', 'store', 'quests', 'notifications', 'backup', 'dogs'] as const
 
 type TabKey = (typeof TAB_KEYS)[number]
 
 export function SettingsClient({
   config, users, categories, achievements, storeItems, tasks, quests, userId, notificationsEnabled, vapidPublicKey,
-  telegramConfigured, telegramChatId, ntfyConfigured, ntfyEnabled, ntfyTopicUrl,
+  telegramConfigured, telegramChatId, ntfyConfigured, ntfyEnabled, ntfyTopicUrl, dogTrainingEnabled, isAdmin,
 }: {
   config: GameConfig
   users: { id: string; name: string; role: string; createdAt: string; vacationStart: string | null; vacationEnd: string | null }[]
@@ -47,6 +48,8 @@ export function SettingsClient({
   ntfyConfigured: boolean
   ntfyEnabled: boolean
   ntfyTopicUrl: string | null
+  dogTrainingEnabled: boolean
+  isAdmin: boolean
 }) {
   const t = useTranslations('settings')
   const [tab, setTab] = useState<TabKey>('users')
@@ -82,6 +85,7 @@ export function SettingsClient({
       {tab === 'quests' && <QuestsTab quests={quests} tasks={tasks.map((t) => ({ id: t.id, title: t.title, emoji: t.emoji }))} />}
       {tab === 'notifications' && <NotificationsTab userId={userId} notificationsEnabled={notificationsEnabled} vapidPublicKey={vapidPublicKey} telegramConfigured={telegramConfigured} telegramChatId={telegramChatId} ntfyConfigured={ntfyConfigured} ntfyEnabled={ntfyEnabled} ntfyTopicUrl={ntfyTopicUrl} />}
       {tab === 'backup' && <BackupTab />}
+      {tab === 'dogs' && <DogsTab initialEnabled={dogTrainingEnabled} isAdmin={isAdmin} />}
     </div>
   )
 }

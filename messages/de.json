@@ -396,7 +396,8 @@
       "store": "Store",
       "notifications": "Benachrichtigungen",
       "backup": "Backup",
-      "quests": "Quests"
+      "quests": "Quests",
+      "dogs": "Hunde"
     },
     "users": {
       "description": "Familienmitglieder verwalten",
@@ -722,5 +723,16 @@
     "subtitle": "Challenges & Quests",
     "challengesTab": "Challenges",
     "questsTab": "Quests"
+  },
+  "dogTraining": {
+    "settings": {
+      "title": "Hundetraining",
+      "description": "Ein optionales Subsystem für Hundetraining mit 75 vorgefertigten Skills und KI-Erweiterung.",
+      "toggle": "Hundetraining aktivieren",
+      "adminOnly": "Nur Admins können das Feature aktivieren",
+      "managedInHundeTab": "Hunde werden im Hunde-Tab verwaltet",
+      "enabledToast": "Hundetraining aktiviert",
+      "disabledToast": "Hundetraining deaktiviert"
+    }
   }
 }
