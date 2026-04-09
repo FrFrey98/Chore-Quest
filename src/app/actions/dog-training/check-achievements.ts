@@ -3,24 +3,31 @@ import { evaluateAchievementCondition } from "@/lib/dog-training/achievements"
 import { calculatePillarHealth } from "@/lib/dog-training/pillar-health"
 import type { SkillStatus } from "@/lib/dog-training/types"
 import { SKILL_STATUSES } from "@/lib/dog-training/types"
+import { Prisma } from "@/generated/prisma/client"
+import type {
+  DogTrainingSession,
+  DogSkillProgress,
+  DogSkillDefinition,
+  DogAchievement,
+  UserDogAchievement,
+} from "@/generated/prisma/client"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type TxClient = any
+type TxClient = Prisma.TransactionClient
 
 export async function checkAndUnlockDogAchievements(
   tx: TxClient,
   userId: string,
   dogId: string,
 ) {
-  const sessions = await tx.dogTrainingSession.findMany({ where: { dogId } })
+  const sessions: DogTrainingSession[] = await tx.dogTrainingSession.findMany({ where: { dogId } })
   const sessionCount = sessions.length
   const teamSessionCount = sessions.filter(
-    (s: any) => s.withUserId === userId || (s.userId === userId && s.withUserId),
+    (s) => s.withUserId === userId || (s.userId === userId && s.withUserId),
   ).length
 
   // training streak (consecutive days with at least 1 session for this dog)
   const dayStrings = new Set(
-    sessions.map((s: any) => {
+    sessions.map((s) => {
       const d = new Date(s.completedAt)
       return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
     }),
@@ -39,7 +46,7 @@ export async function checkAndUnlockDogAchievements(
   }
 
   // skill status counts (by bestStatus to respect Relearning Savings)
-  const progresses = await tx.dogSkillProgress.findMany({ where: { dogId } })
+  const progresses: DogSkillProgress[] = await tx.dogSkillProgress.findMany({ where: { dogId } })
   const skillStatusCounts: Record<SkillStatus, number> = {
     new: 0,
     acquisition: 0,
@@ -49,17 +56,17 @@ export async function checkAndUnlockDogAchievements(
     mastery: 0,
   }
   for (const s of SKILL_STATUSES) {
-    skillStatusCounts[s] = progresses.filter((p: any) => p.bestStatus === s).length
+    skillStatusCounts[s] = progresses.filter((p) => p.bestStatus === s).length
   }
 
   // pillar health per category
-  const defs = await tx.dogSkillDefinition.findMany()
+  const defs: DogSkillDefinition[] = await tx.dogSkillDefinition.findMany()
   const pillarHealth: Record<string, number> = {}
-  const categoryIds: string[] = Array.from(new Set(defs.map((d: any) => d.categoryId as string)))
+  const categoryIds: string[] = Array.from(new Set(defs.map((d) => d.categoryId)))
   for (const catId of categoryIds) {
-    const catDefs = defs.filter((d: any) => d.categoryId === catId)
-    const catProgresses = catDefs.map((d: any) => {
-      const p = progresses.find((x: any) => x.skillDefinitionId === d.id)
+    const catDefs = defs.filter((d) => d.categoryId === catId)
+    const catProgresses = catDefs.map((d) => {
+      const p = progresses.find((x) => x.skillDefinitionId === d.id)
       return {
         status: (p?.bestStatus ?? "new") as SkillStatus,
         progress: p?.progress ?? 0,
@@ -70,13 +77,13 @@ export async function checkAndUnlockDogAchievements(
   }
 
   // Evaluate achievements
-  const achievements = await tx.dogAchievement.findMany()
-  const existing = await tx.userDogAchievement.findMany({
+  const achievements: DogAchievement[] = await tx.dogAchievement.findMany()
+  const existing: UserDogAchievement[] = await tx.userDogAchievement.findMany({
     where: { userId, dogId },
   })
-  const existingIds = new Set(existing.map((x: any) => x.achievementId as string))
+  const existingIds = new Set(existing.map((x) => x.achievementId))
 
-  const newlyUnlocked = []
+  const newlyUnlocked: DogAchievement[] = []
   for (const ach of achievements) {
     if (existingIds.has(ach.id)) continue
     const match = evaluateAchievementCondition(
