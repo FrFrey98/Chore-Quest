@@ -127,6 +127,7 @@ export function TrainingLogModal({
           sessionType,
           notes: notes || null,
           withUserId,
+          recommendedSkillIds,
         })
         toast(t("saved"), "success")
         onOpenChange(false)
