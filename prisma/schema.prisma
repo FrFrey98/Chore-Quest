@@ -39,13 +39,18 @@ model User {
   assignedTasks      Task[]           @relation("TaskAssignments")
   userChallenges     UserChallenge[]
   userQuests         UserQuest[]
-  createdQuests      Quest[]          @relation("QuestCreatedBy")
+  createdQuests        Quest[]          @relation("QuestCreatedBy")
+  dogSessions          DogTrainingSession[] @relation("DogSessionUser")
+  dogSessionsWith      DogTrainingSession[] @relation("DogSessionWithUser")
+  createdDogSkills     DogSkillDefinition[] @relation("DogSkillCreatedBy")
+  dogUserAchievements  UserDogAchievement[] @relation("DogUserAchievement")
 }
 
 model Category {
   id         String      @id @default(cuid())
   name       String
   emoji      String
+  isSystem   Boolean     @default(false)
   tasks      Task[]
   challenges Challenge[]
 }
@@ -69,6 +74,7 @@ model Task {
   scheduleTime      String?
   decayHours        Int?
   lastNotifiedAt    DateTime?
+  isSystem          Boolean   @default(false)
 
   category          Category               @relation(fields: [categoryId], references: [id])
   createdBy         User                   @relation("CreatedBy", fields: [createdById], references: [id])
@@ -102,6 +108,7 @@ model TaskCompletion {
   task     Task  @relation(fields: [taskId], references: [id])
   user     User  @relation(fields: [userId], references: [id])
   withUser User? @relation("sharedCompletions", fields: [withUserId], references: [id])
+  dogSessions DogTrainingSession[]
 
   @@index([withUserId])
 }
@@ -294,4 +301,145 @@ model UserQuestStep {
   questStep QuestStep @relation(fields: [questStepId], references: [id], onDelete: Cascade)
 
   @@unique([userQuestId, questStepId])
+}
+
+model Dog {
+  id             String    @id @default(cuid())
+  name           String
+  emoji          String    @default("🐕")
+  photoBase64    String?
+  breed          String?
+  gender         String?
+  birthDate      DateTime?
+  phase          String    @default("adult")
+  notes          String?
+  vacationStart  DateTime?
+  vacationEnd    DateTime?
+  archivedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  skills           DogSkillProgress[]
+  sessions         DogTrainingSession[]
+  userAchievements UserDogAchievement[]
+}
+
+model DogSkillCategory {
+  id        String @id
+  nameDe    String
+  nameEn    String
+  emoji     String
+  sortOrder Int    @default(0)
+
+  skills DogSkillDefinition[]
+}
+
+model DogSkillDefinition {
+  id               String  @id
+  categoryId       String
+  nameDe           String
+  nameEn           String
+  descriptionDe    String
+  descriptionEn    String
+  difficulty       String
+  phase            String
+  prerequisiteIds  String?
+  isSystem         Boolean @default(false)
+  createdById      String?
+  sortOrder        Int     @default(0)
+  createdAt        DateTime @default(now())
+
+  category      DogSkillCategory     @relation(fields: [categoryId], references: [id])
+  createdBy     User?                @relation("DogSkillCreatedBy", fields: [createdById], references: [id])
+  progresses    DogSkillProgress[]
+  sessionSkills DogSessionSkill[]
+
+  @@index([categoryId])
+}
+
+model DogSkillProgress {
+  id                String    @id @default(cuid())
+  dogId             String
+  skillDefinitionId String
+  status            String    @default("new")
+  progress          Float     @default(0)
+  bestStatus        String    @default("new")
+  trainedCount      Int       @default(0)
+  firstTrainedAt    DateTime?
+  lastTrainedAt     DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  dog             Dog                @relation(fields: [dogId], references: [id], onDelete: Cascade)
+  skillDefinition DogSkillDefinition @relation(fields: [skillDefinitionId], references: [id])
+
+  @@unique([dogId, skillDefinitionId])
+  @@index([dogId])
+}
+
+model DogTrainingSession {
+  id               String    @id @default(cuid())
+  dogId            String
+  userId           String
+  withUserId       String?
+  durationMinutes  Int
+  moodLevel        String?
+  sessionType      String?
+  notes            String?
+  pointsAwarded    Int
+  taskCompletionId String?
+  completedAt      DateTime  @default(now())
+
+  dog            Dog              @relation(fields: [dogId], references: [id], onDelete: Cascade)
+  user           User             @relation("DogSessionUser", fields: [userId], references: [id])
+  withUser       User?            @relation("DogSessionWithUser", fields: [withUserId], references: [id])
+  taskCompletion TaskCompletion?  @relation(fields: [taskCompletionId], references: [id])
+  skillsTrained  DogSessionSkill[]
+
+  @@index([dogId])
+  @@index([userId])
+  @@index([completedAt])
+}
+
+model DogSessionSkill {
+  id                String @id @default(cuid())
+  sessionId         String
+  skillDefinitionId String
+  rating            String
+
+  session         DogTrainingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  skillDefinition DogSkillDefinition @relation(fields: [skillDefinitionId], references: [id])
+
+  @@unique([sessionId, skillDefinitionId])
+  @@index([sessionId])
+}
+
+model DogAchievement {
+  id             String @id
+  titleDe        String
+  titleEn        String
+  descriptionDe  String
+  descriptionEn  String
+  emoji          String
+  conditionType  String
+  conditionValue Int
+  conditionMeta  String?
+  sortOrder      Int    @default(0)
+
+  userDogAchievements UserDogAchievement[]
+}
+
+model UserDogAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  dogId         String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User           @relation("DogUserAchievement", fields: [userId], references: [id], onDelete: Cascade)
+  dog         Dog            @relation(fields: [dogId], references: [id], onDelete: Cascade)
+  achievement DogAchievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dogId, achievementId])
+  @@index([dogId])
 }
