@@ -38,6 +38,7 @@ type Props = {
   }>
   dogTrainingCategories: ExtensionCategory[]
   currentUserId: string
+  pointsEarnedTodayForDog?: number
 }
 
 export function DogsClient({
@@ -49,6 +50,7 @@ export function DogsClient({
   allSkills,
   dogTrainingCategories,
   currentUserId,
+  pointsEarnedTodayForDog = 0,
 }: Props) {
   const t = useTranslations("dogTraining")
   const [activeDogId, setActiveDogId] = useState<string | null>(initialActiveDogId)
@@ -222,7 +224,7 @@ export function DogsClient({
           allSkills={allSkills}
           recommendedSkillIds={recommendedIds}
           householdUsers={householdUsers}
-          pointsEarnedTodayForDog={0}
+          pointsEarnedTodayForDog={pointsEarnedTodayForDog}
           currentUserId={currentUserId}
         />
       )}
