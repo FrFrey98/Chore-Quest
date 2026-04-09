@@ -761,6 +761,33 @@
         "senior": "Senior",
         "advanced": "Advanced"
       }
+    },
+    "modal": {
+      "title": "Log training session",
+      "dog": "Dog",
+      "skills": "Skills",
+      "searchPlaceholder": "Search skills...",
+      "recommended": "Recommended today",
+      "duration": "Duration",
+      "moreDetails": "More details",
+      "lessDetails": "Less details",
+      "withUser": "Together with",
+      "notes": "Notes",
+      "mood": "Mood",
+      "sessionType": "Type",
+      "sessionTypes": {
+        "daily": "Daily routine",
+        "focused": "Focused",
+        "walk": "Walk",
+        "scent": "Scent work"
+      },
+      "preview": "Preview",
+      "points": "points",
+      "cap": "Daily cap reached — still counts for skills",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saved": "Training saved",
+      "noSkillsError": "Select at least one skill"
     }
   }
 }

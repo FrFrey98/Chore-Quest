@@ -761,6 +761,33 @@
         "senior": "Senior",
         "advanced": "Fortgeschritten"
       }
+    },
+    "modal": {
+      "title": "Training protokollieren",
+      "dog": "Hund",
+      "skills": "Skills",
+      "searchPlaceholder": "Skill suchen...",
+      "recommended": "Heute empfohlen",
+      "duration": "Dauer",
+      "moreDetails": "Mehr Details",
+      "lessDetails": "Weniger Details",
+      "withUser": "Gemeinsam mit",
+      "notes": "Notizen",
+      "mood": "Stimmung",
+      "sessionType": "Typ",
+      "sessionTypes": {
+        "daily": "Alltag",
+        "focused": "Gezielt",
+        "walk": "Spaziergang",
+        "scent": "Nasenarbeit"
+      },
+      "preview": "Vorschau",
+      "points": "Punkte",
+      "cap": "Tageslimit erreicht — zählt trotzdem für Skills",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "saved": "Training gespeichert",
+      "noSkillsError": "Mindestens einen Skill auswählen"
     }
   }
 }
