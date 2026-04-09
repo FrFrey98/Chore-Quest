@@ -780,7 +780,19 @@
       }
     },
     "pillars": {
-      "title": "Skill Overview"
+      "title": "Skill Overview",
+      "health": "health"
+    },
+    "statusLabel": "Status",
+    "skillInstructions": "Training instructions",
+    "recentTraining": "Recent training",
+    "statuses": {
+      "new": "New",
+      "acquisition": "Learning",
+      "fluency": "Fluent",
+      "proficiency": "Proficient",
+      "maintenance": "Maintained",
+      "mastery": "Mastered"
     },
     "history": {
       "title": "History"
