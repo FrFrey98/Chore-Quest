@@ -55,7 +55,7 @@ export async function checkAndUnlockDogAchievements(
   // pillar health per category
   const defs = await tx.dogSkillDefinition.findMany()
   const pillarHealth: Record<string, number> = {}
-  const categoryIds = Array.from(new Set(defs.map((d: any) => d.categoryId as string)))
+  const categoryIds: string[] = Array.from(new Set(defs.map((d: any) => d.categoryId as string)))
   for (const catId of categoryIds) {
     const catDefs = defs.filter((d: any) => d.categoryId === catId)
     const catProgresses = catDefs.map((d: any) => {

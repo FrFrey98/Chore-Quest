@@ -1,5 +1,5 @@
 // prisma/seed-dog-training.ts
-import { PrismaClient } from "../src/generated/prisma"
+import { PrismaClient } from "../src/generated/prisma/client"
 import {
   DOG_TRAINING_CATEGORIES,
   DOG_TRAINING_ACHIEVEMENTS,

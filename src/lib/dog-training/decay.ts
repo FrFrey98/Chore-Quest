@@ -75,7 +75,7 @@ export function applyDecay(input: ApplyDecayInput): EffectiveState {
     return { status: input.status, progress: input.progress }
   }
 
-  let status = input.status
+  let status: SkillStatus = input.status as SkillStatus
   let progress = input.progress
   let remainingDays = activeDays
 

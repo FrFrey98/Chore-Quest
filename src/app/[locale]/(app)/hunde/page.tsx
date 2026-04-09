@@ -38,7 +38,10 @@ export default async function HundePage() {
         emoji: d.emoji,
         photoBase64: d.photoBase64,
         breed: d.breed,
+        gender: d.gender,
+        birthDate: d.birthDate,
         phase: d.phase,
+        notes: d.notes,
       }))}
       initialActiveDogId={activeDogId}
       initialOverview={overview}

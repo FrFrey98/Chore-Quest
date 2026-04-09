@@ -16,7 +16,10 @@ type Dog = {
   emoji: string
   photoBase64: string | null
   breed: string | null
+  gender: string | null
+  birthDate: Date | null
   phase: string
+  notes: string | null
 }
 
 type Props = {
