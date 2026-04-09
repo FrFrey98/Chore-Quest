@@ -3,8 +3,10 @@
 import { prisma } from "@/lib/prisma"
 import { pickDailyChallenge } from "@/lib/dog-training/daily-challenge"
 import type { SkillStatus } from "@/lib/dog-training/types"
+import { requireDogTrainingAccess } from "./_require-access"
 
 export async function getDailyChallenge(dogId: string) {
+  await requireDogTrainingAccess()
   const dog = await prisma.dog.findUnique({ where: { id: dogId } })
   if (!dog) return null
 

@@ -4,8 +4,10 @@ import { prisma } from "@/lib/prisma"
 import { applyDecay } from "@/lib/dog-training/decay"
 import { calculatePillarHealth } from "@/lib/dog-training/pillar-health"
 import type { SkillStatus } from "@/lib/dog-training/types"
+import { requireDogTrainingAccess } from "./_require-access"
 
 export async function getDogOverview(dogId: string) {
+  await requireDogTrainingAccess()
   const dog = await prisma.dog.findUnique({ where: { id: dogId } })
   if (!dog) return null
 

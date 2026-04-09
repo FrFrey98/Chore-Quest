@@ -1,8 +1,10 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
+import { requireDogTrainingAccess } from "./_require-access"
 
 export async function getDogTeamStats(dogId: string) {
+  await requireDogTrainingAccess()
   const users = await prisma.user.findMany({ select: { id: true, name: true } })
   const sessions = await prisma.dogTrainingSession.findMany({
     where: { dogId },
