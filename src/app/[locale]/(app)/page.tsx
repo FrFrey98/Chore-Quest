@@ -18,6 +18,8 @@ import { DashboardNotifications } from '@/components/dashboard/dashboard-notific
 import { YesterdayBanner } from '@/components/dashboard/yesterday-banner'
 import { ChallengesWidget } from '@/components/dashboard/challenges-widget'
 import { QuestsWidget } from '@/components/dashboard/quests-widget'
+import { getDailyChallenge } from '@/app/actions/dog-training/get-daily-challenge'
+import type { DogTrainingContext } from '@/components/dashboard/today-section'
 
 const WEEKDAY_KEYS = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'] as const
 
@@ -152,7 +154,7 @@ export default async function DashboardPage() {
           { nextDueAt: { lte: now } },
         ],
       },
-      select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true, nextDueAt: true, decayHours: true, recurringInterval: true },
+      select: { id: true, emoji: true, title: true, points: true, allowMultiple: true, dailyLimit: true, nextDueAt: true, decayHours: true, recurringInterval: true, categoryId: true, isSystem: true },
     }),
     prisma.taskCompletion.findMany({
       where: { userId, completedAt: { gte: yesterdayStart, lt: todayStart } },
@@ -193,6 +195,37 @@ export default async function DashboardPage() {
       nextDueAt: t.nextDueAt?.toISOString() ?? null,
       todayCount: completionCountByTask.get(t.id) ?? 0,
     }))
+
+  // --- Dog Training Context ---
+  const dogTrainingCfg = await prisma.appConfig.findUnique({ where: { key: 'dog_training_enabled' } })
+  const dogTrainingEnabled = dogTrainingCfg?.value === 'true'
+
+  let dogTrainingContext: DogTrainingContext | null = null
+  if (dogTrainingEnabled) {
+    const [dogs, allSkillsRaw, householdUsers] = await Promise.all([
+      prisma.dog.findMany({
+        where: { archivedAt: null },
+        select: { id: true, name: true },
+      }),
+      prisma.dogSkillDefinition.findMany({
+        orderBy: { sortOrder: 'asc' },
+        include: { category: { select: { nameDe: true } } },
+      }),
+      prisma.user.findMany({ select: { id: true, name: true } }),
+    ])
+    const allSkills = allSkillsRaw.map((s) => ({
+      id: s.id,
+      nameDe: s.nameDe,
+      nameEn: s.nameEn,
+      categoryId: s.categoryId,
+      categoryNameDe: s.category.nameDe,
+    }))
+    const dailyChallengesByDogId: Record<string, { maintenance: any; progression: any; discovery: any } | null> = {}
+    for (const dog of dogs) {
+      dailyChallengesByDogId[dog.id] = await getDailyChallenge(dog.id)
+    }
+    dogTrainingContext = { dogs, allSkills, householdUsers, dailyChallengesByDogId }
+  }
 
   let suggestions: { id: string; emoji: string; title: string }[] = []
   if (dueTasks.length < 3) {
@@ -357,6 +390,8 @@ export default async function DashboardPage() {
         decayHoursByInterval={config.decayHoursByInterval}
         vacationStart={vacationStart}
         vacationEnd={vacationEnd}
+        dogTrainingContext={dogTrainingContext}
+        currentUserId={userId}
       />
 
       <WeekChart

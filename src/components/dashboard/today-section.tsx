@@ -6,6 +6,20 @@ import { useToast } from '@/components/toast-provider'
 import { Check, Users, Undo2 } from 'lucide-react'
 import { HealthBar } from '@/components/tasks/health-bar'
 import { getDecayHours } from '@/lib/health'
+import { TrainingLogModal } from '@/components/dogs/training-log-modal'
+
+export type DogTrainingContext = {
+  dogs: Array<{ id: string; name: string }>
+  allSkills: Array<{
+    id: string
+    nameDe: string
+    nameEn: string
+    categoryId: string
+    categoryNameDe: string
+  }>
+  householdUsers: Array<{ id: string; name: string }>
+  dailyChallengesByDogId: Record<string, { maintenance: { skillDefinitionId: string } | null; progression: { skillDefinitionId: string } | null; discovery: { skillDefinitionId: string } | null } | null>
+}
 
 type CompletedTask = {
   id: string
@@ -26,6 +40,8 @@ type DueTask = {
   nextDueAt?: string | null
   decayHours?: number | null
   recurringInterval?: string | null
+  categoryId?: string | null
+  isSystem?: boolean
 }
 
 type SuggestedTask = {
@@ -43,9 +59,11 @@ type TodaySectionProps = {
   decayHoursByInterval?: Record<string, number>
   vacationStart?: string | null
   vacationEnd?: string | null
+  dogTrainingContext?: DogTrainingContext | null
+  currentUserId?: string
 }
 
-export function TodaySection({ completed, due, suggestions, partnerId, partnerName, decayHoursByInterval, vacationStart, vacationEnd }: TodaySectionProps) {
+export function TodaySection({ completed, due, suggestions, partnerId, partnerName, decayHoursByInterval, vacationStart, vacationEnd, dogTrainingContext, currentUserId }: TodaySectionProps) {
   const router = useRouter()
   const { toast } = useToast()
   const t = useTranslations('dashboard')
@@ -58,6 +76,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
   const [sharedTaskId, setSharedTaskId] = useState<string | null>(null)
   const [undoingId, setUndoingId] = useState<string | null>(null)
   const [confirmUndoId, setConfirmUndoId] = useState<string | null>(null)
+  const [trainingModal, setTrainingModal] = useState<{ dogId: string; dogName: string } | null>(null)
 
   async function handleUndo(completion: CompletedTask) {
     setUndoingId(completion.id)
@@ -84,6 +103,19 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
 
   const totalTasks = completed.length + due.length
   const doneCount = completed.length + doneIds.size
+
+  function isDogTrainingTask(task: DueTask): boolean {
+    return task.categoryId === 'dog_training' && task.isSystem === true
+  }
+
+  function handleDogTrainingClick(task: DueTask) {
+    if (!dogTrainingContext) return
+    const match = task.title.match(/^🐕 (.+) trainieren$/)
+    const dogName = match?.[1] ?? null
+    const dog = dogName ? dogTrainingContext.dogs.find((d) => d.name === dogName) : null
+    if (!dog) return
+    setTrainingModal({ dogId: dog.id, dogName: dog.name })
+  }
 
   async function handleComplete(task: DueTask) {
     setLoadingId(task.id)
@@ -230,7 +262,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
               </button>
             )}
             <button
-              onClick={() => handleComplete(task)}
+              onClick={() => isDogTrainingTask(task) ? handleDogTrainingClick(task) : handleComplete(task)}
               disabled={loadingId === task.id}
               className="flex items-center gap-1 bg-accent hover:bg-accent-hover text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
             >
@@ -251,6 +283,25 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
           <p className="text-sm text-muted-foreground text-center py-4">{t('noTasksToday')}</p>
         )}
       </div>
+
+      {dogTrainingContext && trainingModal && currentUserId && (
+        <TrainingLogModal
+          open={!!trainingModal}
+          onOpenChange={(open) => { if (!open) setTrainingModal(null) }}
+          dogId={trainingModal.dogId}
+          dogName={trainingModal.dogName}
+          allDogs={dogTrainingContext.dogs}
+          allSkills={dogTrainingContext.allSkills}
+          recommendedSkillIds={[
+            dogTrainingContext.dailyChallengesByDogId[trainingModal.dogId]?.maintenance?.skillDefinitionId,
+            dogTrainingContext.dailyChallengesByDogId[trainingModal.dogId]?.progression?.skillDefinitionId,
+            dogTrainingContext.dailyChallengesByDogId[trainingModal.dogId]?.discovery?.skillDefinitionId,
+          ].filter((id): id is string => !!id)}
+          householdUsers={dogTrainingContext.householdUsers}
+          pointsEarnedTodayForDog={0}
+          currentUserId={currentUserId}
+        />
+      )}
     </div>
   )
 }
