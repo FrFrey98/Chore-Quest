@@ -795,7 +795,11 @@
       "mastery": "Mastered"
     },
     "history": {
-      "title": "History"
+      "title": "History",
+      "team": "Team overview",
+      "empty": "No training sessions logged yet",
+      "sessions": "sessions",
+      "thisMonth": "this month"
     },
     "phases": {
       "puppy": "Puppy",

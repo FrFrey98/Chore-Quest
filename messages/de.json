@@ -795,7 +795,11 @@
       "mastery": "Überlernt"
     },
     "history": {
-      "title": "Historie"
+      "title": "Historie",
+      "team": "Team-Übersicht",
+      "empty": "Noch keine Trainings protokolliert",
+      "sessions": "Sessions",
+      "thisMonth": "diesen Monat"
     },
     "phases": {
       "puppy": "Welpe",
