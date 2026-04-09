@@ -733,6 +733,34 @@
       "managedInHundeTab": "Hunde werden im Hunde-Tab verwaltet",
       "enabledToast": "Hundetraining aktiviert",
       "disabledToast": "Hundetraining deaktiviert"
+    },
+    "dogForm": {
+      "createTitle": "Hund hinzufügen",
+      "editTitle": "Hund bearbeiten",
+      "name": "Name",
+      "photo": "Foto",
+      "emoji": "Emoji",
+      "breed": "Rasse",
+      "gender": "Geschlecht",
+      "genderMale": "Männlich",
+      "genderFemale": "Weiblich",
+      "genderOther": "Divers",
+      "birthDate": "Geburtsdatum",
+      "phase": "Phase",
+      "notes": "Notizen",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "archive": "Archivieren",
+      "saved": "Gespeichert",
+      "archived": "Archiviert",
+      "archiveConfirm": "Diesen Hund archivieren? Das kann nicht rückgängig gemacht werden.",
+      "phases": {
+        "puppy": "Welpe",
+        "adolescent": "Junghund",
+        "adult": "Erwachsen",
+        "senior": "Senior",
+        "advanced": "Fortgeschritten"
+      }
     }
   }
 }

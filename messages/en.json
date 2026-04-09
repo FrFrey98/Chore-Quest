@@ -733,6 +733,34 @@
       "managedInHundeTab": "Dogs are managed in the Dogs tab",
       "enabledToast": "Dog training enabled",
       "disabledToast": "Dog training disabled"
+    },
+    "dogForm": {
+      "createTitle": "Add Dog",
+      "editTitle": "Edit Dog",
+      "name": "Name",
+      "photo": "Photo",
+      "emoji": "Emoji",
+      "breed": "Breed",
+      "gender": "Gender",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "genderOther": "Other",
+      "birthDate": "Date of Birth",
+      "phase": "Phase",
+      "notes": "Notes",
+      "save": "Save",
+      "cancel": "Cancel",
+      "archive": "Archive",
+      "saved": "Saved",
+      "archived": "Archived",
+      "archiveConfirm": "Archive this dog? This cannot be undone.",
+      "phases": {
+        "puppy": "Puppy",
+        "adolescent": "Adolescent",
+        "adult": "Adult",
+        "senior": "Senior",
+        "advanced": "Advanced"
+      }
     }
   }
 }
