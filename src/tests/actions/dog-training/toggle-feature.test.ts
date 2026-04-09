@@ -127,16 +127,17 @@ describe("toggleDogTrainingFeature", () => {
       txCallCount++
       return cb(makeTx())
     })
-    vi.mocked(prisma.appConfig.findUnique).mockImplementation(async ({ where }: any) =>
-      store.appConfig.get(where.key) ?? null,
+    vi.mocked(prisma.appConfig.findUnique).mockImplementation(
+      (async ({ where }: any) => store.appConfig.get(where.key) ?? null) as any,
     )
-    vi.mocked(prisma.category.findUnique).mockImplementation(async ({ where }: any) =>
-      store.categories.get(where.id) ?? null,
+    vi.mocked(prisma.category.findUnique).mockImplementation(
+      (async ({ where }: any) => store.categories.get(where.id) ?? null) as any,
     )
-    vi.mocked(prisma.task.findMany).mockImplementation(async ({ where }: any) =>
-      store.tasks.filter(
-        (t) => t.categoryId === where.categoryId && t.isSystem === where.isSystem,
-      ),
+    vi.mocked(prisma.task.findMany).mockImplementation(
+      (async ({ where }: any) =>
+        store.tasks.filter(
+          (t) => t.categoryId === where.categoryId && t.isSystem === where.isSystem,
+        )) as any,
     )
   })
 

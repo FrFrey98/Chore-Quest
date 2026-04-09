@@ -42,6 +42,7 @@ const store = {
     pointsAwarded: number
     completedAt?: Date
     withUserId?: string | null
+    taskCompletionId?: string | null
   }>,
   tasks: [] as Array<{
     id: string

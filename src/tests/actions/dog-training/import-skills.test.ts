@@ -83,11 +83,11 @@ describe("importDogSkills", () => {
     vi.clearAllMocks()
     vi.mocked(getCurrentUser).mockResolvedValue({ id: "user-1", role: "admin" } as any)
     vi.mocked(prisma.$transaction).mockImplementation(async (cb: any) => cb(makeTx()))
-    vi.mocked(prisma.dogSkillCategory.findMany).mockImplementation(async () =>
-      Array.from(store.categories.values()),
+    vi.mocked(prisma.dogSkillCategory.findMany).mockImplementation(
+      (async () => Array.from(store.categories.values())) as any,
     )
-    vi.mocked(prisma.dogSkillDefinition.findMany).mockImplementation(async () =>
-      Array.from(store.skills.values()),
+    vi.mocked(prisma.dogSkillDefinition.findMany).mockImplementation(
+      (async () => Array.from(store.skills.values())) as any,
     )
     // seed the known category
     store.categories.set("tricks", { id: "tricks" })
