@@ -834,6 +834,36 @@
       "cancel": "Abbrechen",
       "saved": "Training gespeichert",
       "noSkillsError": "Mindestens einen Skill auswählen"
+    },
+    "skillExtensionOpen": "Skills per KI erweitern",
+    "skillExtension": {
+      "title": "Skills per KI erweitern",
+      "step1": "Prompt erzeugen",
+      "step2": "Antwort importieren",
+      "categories": "Kategorien",
+      "count": "Anzahl",
+      "difficulty": "Schwierigkeit",
+      "difficulties": {
+        "any": "egal",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced",
+        "mixed": "gemischt"
+      },
+      "focus": "Fokus (optional)",
+      "preview": "Prompt-Vorschau",
+      "copyPrompt": "Prompt kopieren",
+      "copied": "Kopiert",
+      "copyFailed": "Konnte nicht kopieren",
+      "goToImport": "Zum Import",
+      "helperText": "Füge den Prompt in ChatGPT, Claude oder ein anderes LLM ein und kopiere die Antwort zurück in Schritt 2.",
+      "pasteResponse": "Antwort einfügen",
+      "validateAndImport": "Validieren und Importieren",
+      "close": "Schließen",
+      "errors": "Fehler",
+      "warnings": "Hinweise",
+      "imported": "Importiert",
+      "importedCount": "{count} neue Skills importiert"
     }
   }
 }

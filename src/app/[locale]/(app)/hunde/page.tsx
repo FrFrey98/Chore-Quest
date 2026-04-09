@@ -21,12 +21,13 @@ export default async function HundePage() {
   const overview = activeDogId ? await getDogOverview(activeDogId) : null
   const dailyChallenge = activeDogId ? await getDailyChallenge(activeDogId) : null
 
-  const [users, allSkills] = await Promise.all([
+  const [users, allSkills, categories] = await Promise.all([
     prisma.user.findMany({ select: { id: true, name: true } }),
     prisma.dogSkillDefinition.findMany({
       orderBy: { sortOrder: "asc" },
       include: { category: { select: { nameDe: true } } },
     }),
+    prisma.dogSkillCategory.findMany({ orderBy: { sortOrder: "asc" } }),
   ])
 
   return (
@@ -49,6 +50,12 @@ export default async function HundePage() {
         nameEn: s.nameEn,
         categoryId: s.categoryId,
         categoryNameDe: s.category.nameDe,
+        difficulty: s.difficulty,
+      }))}
+      dogTrainingCategories={categories.map((c) => ({
+        id: c.id,
+        nameDe: c.nameDe,
+        nameEn: c.nameEn,
       }))}
       currentUserId={user.id}
     />

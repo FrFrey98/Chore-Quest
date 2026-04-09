@@ -834,6 +834,36 @@
       "cancel": "Cancel",
       "saved": "Training saved",
       "noSkillsError": "Select at least one skill"
+    },
+    "skillExtensionOpen": "Extend skills via AI",
+    "skillExtension": {
+      "title": "Extend skills via AI",
+      "step1": "Generate prompt",
+      "step2": "Import response",
+      "categories": "Categories",
+      "count": "Count",
+      "difficulty": "Difficulty",
+      "difficulties": {
+        "any": "any",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced",
+        "mixed": "mixed"
+      },
+      "focus": "Focus (optional)",
+      "preview": "Prompt preview",
+      "copyPrompt": "Copy prompt",
+      "copied": "Copied",
+      "copyFailed": "Could not copy",
+      "goToImport": "Go to import",
+      "helperText": "Paste the prompt into ChatGPT, Claude, or another LLM and copy the response back into step 2.",
+      "pasteResponse": "Paste response",
+      "validateAndImport": "Validate and import",
+      "close": "Close",
+      "errors": "Errors",
+      "warnings": "Warnings",
+      "imported": "Imported",
+      "importedCount": "{count} new skills imported"
     }
   }
 }

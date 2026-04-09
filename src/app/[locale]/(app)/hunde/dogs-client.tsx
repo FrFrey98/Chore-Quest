@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { useTranslations } from "next-intl"
 import { DogFormSheet } from "@/components/dogs/dog-form-sheet"
 import { TrainingLogModal } from "@/components/dogs/training-log-modal"
+import { SkillExtensionSheet, type ExtensionCategory } from "@/components/dogs/skill-extension-sheet"
 
 type Dog = {
   id: string
@@ -30,7 +31,9 @@ type Props = {
     nameEn: string
     categoryId: string
     categoryNameDe: string
+    difficulty: string
   }>
+  dogTrainingCategories: ExtensionCategory[]
   currentUserId: string
 }
 
@@ -41,6 +44,7 @@ export function DogsClient({
   initialDailyChallenge,
   householdUsers,
   allSkills,
+  dogTrainingCategories,
   currentUserId,
 }: Props) {
   const t = useTranslations("dogTraining")
@@ -48,6 +52,7 @@ export function DogsClient({
   const [formOpen, setFormOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingDog, setEditingDog] = useState<Dog | null>(null)
+  const [extensionOpen, setExtensionOpen] = useState(false)
 
   const activeDog = dogs.find((d) => d.id === activeDogId) ?? null
   const overview = initialOverview
@@ -192,6 +197,9 @@ export function DogsClient({
             <Button variant="outline" asChild>
               <Link href={`/hunde/${activeDog.id}/historie`}>{t("history.title")}</Link>
             </Button>
+            <Button variant="outline" onClick={() => setExtensionOpen(true)}>
+              {t("skillExtensionOpen")}
+            </Button>
           </div>
         </>
       )}
@@ -213,6 +221,21 @@ export function DogsClient({
           householdUsers={householdUsers}
           pointsEarnedTodayForDog={0}
           currentUserId={currentUserId}
+        />
+      )}
+      {activeDog && (
+        <SkillExtensionSheet
+          open={extensionOpen}
+          onOpenChange={setExtensionOpen}
+          dog={{ name: activeDog.name, breed: activeDog.breed, phase: activeDog.phase }}
+          categories={dogTrainingCategories}
+          existingSkills={allSkills.map((s) => ({
+            id: s.id,
+            categoryId: s.categoryId,
+            nameDe: s.nameDe,
+            nameEn: s.nameEn,
+            difficulty: s.difficulty,
+          }))}
         />
       )}
     </div>
