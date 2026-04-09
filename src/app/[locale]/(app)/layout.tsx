@@ -5,12 +5,18 @@ import { SwRegister } from '@/components/pwa/sw-register'
 import { OfflineIndicator } from '@/components/pwa/offline-indicator'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
 import { AuthProvider } from '@/components/auth-provider'
+import { prisma } from '@/lib/prisma'
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const featureConfig = await prisma.appConfig.findUnique({
+    where: { key: 'dog_training_enabled' },
+  })
+  const dogTrainingEnabled = featureConfig?.value === 'true'
+
   return (
     <AuthProvider>
       <div className="flex flex-col md:flex-row min-h-screen bg-background">
-        <Navigation />
+        <Navigation dogTrainingEnabled={dogTrainingEnabled} />
         <ToastProvider>
           <SwRegister />
           <div className="flex-1 flex flex-col">

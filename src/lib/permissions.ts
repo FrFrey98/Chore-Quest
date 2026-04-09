@@ -16,6 +16,7 @@ export interface NavItem {
   href: string
   labelKey: string
   icon: string
+  emoji?: string
   minPermission?: Permission
   minRole?: Role[]
 }
@@ -39,10 +40,17 @@ const ALL_NAV_ITEMS: NavItem[] = [
   { href: '/tasks', labelKey: 'tasks', icon: 'CheckSquare' },
   { href: '/store', labelKey: 'store', icon: 'ShoppingBag' },
   { href: '/achievements', labelKey: 'achievements', icon: 'Trophy' },
-  { href: '/challenges', labelKey: 'challenges', icon: 'Swords', minPermission: 'completeTasks' },
-  { href: '/quests', labelKey: 'quests', icon: 'Scroll', minPermission: 'completeTasks' },
+  { href: '/challenges', labelKey: 'goals', icon: 'Swords', minPermission: 'completeTasks' },
   { href: '/profile', labelKey: 'profile', icon: 'User' },
 ]
+
+export const DOG_NAV_ITEM: NavItem = {
+  href: '/hunde',
+  labelKey: 'dogs',
+  icon: '',
+  emoji: '🐕',
+  minPermission: 'completeTasks',
+}
 
 export function hasPermission(role: Role, permission: Permission): boolean {
   return PERMISSION_MAP[role]?.has(permission) ?? false
@@ -68,8 +76,16 @@ export function requireRole(
   return null
 }
 
-export function getVisibleNavItems(role: Role): NavItem[] {
-  return ALL_NAV_ITEMS.filter((item) => {
+export function getVisibleNavItems(role: Role, dogTrainingEnabled = false): NavItem[] {
+  const items = dogTrainingEnabled
+    ? [
+        ...ALL_NAV_ITEMS.slice(0, ALL_NAV_ITEMS.findIndex((i) => i.href === '/profile')),
+        DOG_NAV_ITEM,
+        ...ALL_NAV_ITEMS.slice(ALL_NAV_ITEMS.findIndex((i) => i.href === '/profile')),
+      ]
+    : ALL_NAV_ITEMS
+
+  return items.filter((item) => {
     if (item.minRole && !item.minRole.includes(role)) {
       return false
     }
