@@ -48,6 +48,7 @@ const store = {
     title: string
     categoryId: string
     isSystem: boolean
+    dogId?: string | null
   }>,
   taskCompletions: [] as Array<{ id: string; taskId: string; userId: string; points: number }>,
   achievements: [] as Array<{ id: string; conditionType: string; conditionValue: number; conditionMeta: any }>,
@@ -129,7 +130,10 @@ const makeTx = () => ({
   task: {
     findFirst: vi.fn(async ({ where }: any) =>
       store.tasks.find(
-        (t) => t.categoryId === where.categoryId && t.isSystem === where.isSystem && t.title === where.title,
+        (t) =>
+          t.categoryId === where.categoryId &&
+          t.isSystem === where.isSystem &&
+          (where.dogId !== undefined ? t.dogId === where.dogId : t.title === where.title),
       ) ?? null,
     ),
   },
@@ -265,6 +269,7 @@ describe("logDogTrainingSession", () => {
       title: "🐕 Bello trainieren",
       categoryId: "dog_training",
       isSystem: true,
+      dogId: "dog1",
     })
     await logDogTrainingSession(VALID_INPUT)
     expect(store.taskCompletions).toHaveLength(1)

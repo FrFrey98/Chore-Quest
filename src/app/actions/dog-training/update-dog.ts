@@ -4,7 +4,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
-import { DOG_PHASES } from "@/lib/dog-training/types"
+import { DOG_PHASES, DOG_TRAINING_CATEGORY_ID } from "@/lib/dog-training/types"
 
 const updateDogSchema = z.object({
   id: z.string().min(1),
@@ -31,6 +31,13 @@ export async function updateDog(input: UpdateDogInput) {
     where: { id },
     data: rest,
   })
+
+  if (rest.name) {
+    await prisma.task.updateMany({
+      where: { dogId: id, isSystem: true, categoryId: DOG_TRAINING_CATEGORY_ID },
+      data: { title: `🐕 ${rest.name} trainieren` },
+    })
+  }
 
   revalidatePath("/hunde")
   return dog

@@ -47,7 +47,7 @@ type TxClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
 
 export async function ensureDogSystemTask(
   tx: TxClient,
-  _dogId: string,
+  dogId: string,
   dogName: string,
   createdById: string,
 ): Promise<void> {
@@ -55,7 +55,7 @@ export async function ensureDogSystemTask(
     where: {
       categoryId: DOG_TRAINING_CATEGORY_ID,
       isSystem: true,
-      title: `🐕 ${dogName} trainieren`,
+      dogId,
     },
   })
   if (existing) return
@@ -72,6 +72,7 @@ export async function ensureDogSystemTask(
       createdById,
       allowMultiple: true,
       isSystem: true,
+      dogId,
     },
   })
 }

@@ -19,6 +19,7 @@ export type DogTrainingContext = {
   }>
   householdUsers: Array<{ id: string; name: string }>
   dailyChallengesByDogId: Record<string, { maintenance: { skillDefinitionId: string } | null; progression: { skillDefinitionId: string } | null; discovery: { skillDefinitionId: string } | null } | null>
+  pointsEarnedTodayByDogId?: Record<string, number>
 }
 
 type CompletedTask = {
@@ -42,6 +43,7 @@ type DueTask = {
   recurringInterval?: string | null
   categoryId?: string | null
   isSystem?: boolean
+  dogId?: string | null
 }
 
 type SuggestedTask = {
@@ -110,9 +112,15 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
 
   function handleDogTrainingClick(task: DueTask) {
     if (!dogTrainingContext) return
-    const match = task.title.match(/^🐕 (.+) trainieren$/)
-    const dogName = match?.[1] ?? null
-    const dog = dogName ? dogTrainingContext.dogs.find((d) => d.name === dogName) : null
+    // Prefer dogId field; fall back to parsing title for older tasks without dogId
+    let dog = task.dogId
+      ? dogTrainingContext.dogs.find((d) => d.id === task.dogId)
+      : null
+    if (!dog) {
+      const match = task.title.match(/^🐕 (.+) trainieren$/)
+      const dogName = match?.[1] ?? null
+      dog = dogName ? dogTrainingContext.dogs.find((d) => d.name === dogName) : null
+    }
     if (!dog) return
     setTrainingModal({ dogId: dog.id, dogName: dog.name })
   }
@@ -298,7 +306,7 @@ export function TodaySection({ completed, due, suggestions, partnerId, partnerNa
             dogTrainingContext.dailyChallengesByDogId[trainingModal.dogId]?.discovery?.skillDefinitionId,
           ].filter((id): id is string => !!id)}
           householdUsers={dogTrainingContext.householdUsers}
-          pointsEarnedTodayForDog={0}
+          pointsEarnedTodayForDog={dogTrainingContext.pointsEarnedTodayByDogId?.[trainingModal.dogId] ?? 0}
           currentUserId={currentUserId}
         />
       )}

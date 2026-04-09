@@ -20,7 +20,7 @@ export async function archiveDog(dogId: string) {
       where: {
         categoryId: DOG_TRAINING_CATEGORY_ID,
         isSystem: true,
-        title: `🐕 ${dog.name} trainieren`,
+        dogId,
       },
       data: { status: "archived" },
     })

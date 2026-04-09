@@ -75,6 +75,7 @@ model Task {
   decayHours        Int?
   lastNotifiedAt    DateTime?
   isSystem          Boolean   @default(false)
+  dogId             String?
 
   category          Category               @relation(fields: [categoryId], references: [id])
   createdBy         User                   @relation("CreatedBy", fields: [createdById], references: [id])

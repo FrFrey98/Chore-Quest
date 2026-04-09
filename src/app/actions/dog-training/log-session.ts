@@ -14,7 +14,6 @@ import {
 import { applyDecay } from "@/lib/dog-training/decay"
 import { applyTrainingBoost } from "@/lib/dog-training/progress"
 import { calculateSessionPoints } from "@/lib/dog-training/points"
-import { pickDailyChallenge } from "@/lib/dog-training/daily-challenge"
 import { checkAndUnlockDogAchievements } from "./check-achievements"
 import { ALLOWED_DURATIONS } from "@/lib/dog-training/constants"
 
@@ -35,9 +34,10 @@ const logSessionSchema = z.object({
   sessionType: z.enum(SESSION_TYPES as unknown as [string, ...string[]]).nullable().optional(),
   notes: z.string().max(2000).nullable().optional(),
   withUserId: z.string().nullable().optional(),
+  recommendedSkillIds: z.array(z.string()).default([]),
 })
 
-export type LogSessionInput = z.infer<typeof logSessionSchema>
+export type LogSessionInput = z.input<typeof logSessionSchema>
 
 export async function logDogTrainingSession(input: LogSessionInput) {
   const user = await getCurrentUser()
@@ -54,41 +54,19 @@ export async function logDogTrainingSession(input: LogSessionInput) {
       select: { vacationStart: true, vacationEnd: true },
     })
 
-    // Load skill definitions for validation
-    const skillDefs = await tx.dogSkillDefinition.findMany({
-      where: { id: { in: data.skills.map((s) => s.skillDefinitionId) } },
-    })
-    if (skillDefs.length !== data.skills.length) {
+    // Load all definitions once; filter for validation, use client-provided recommendedSkillIds for bonus calc
+    const allDefs = await tx.dogSkillDefinition.findMany()
+    const requestedDefIds = new Set(data.skills.map((s) => s.skillDefinitionId))
+    const requestedDefs = allDefs.filter((d) => requestedDefIds.has(d.id))
+    if (requestedDefs.length !== data.skills.length) {
       throw new Error("Unbekannter Skill im Input")
     }
 
-    // Load all progresses + all definitions for daily challenge calc
+    // Load progresses for decay/boost calculations
     const allProgresses = await tx.dogSkillProgress.findMany({ where: { dogId: data.dogId } })
-    const allDefs = await tx.dogSkillDefinition.findMany()
 
-    const dailyChallenge = pickDailyChallenge({
-      dogId: data.dogId,
-      dogPhase: dog.phase as "puppy" | "adolescent" | "adult" | "senior" | "advanced",
-      skills: allDefs.map((def) => {
-        const p = allProgresses.find((x) => x.skillDefinitionId === def.id)
-        return {
-          skillDefinitionId: def.id,
-          status: (p?.status ?? "new") as "new" | "acquisition" | "fluency" | "proficiency" | "maintenance" | "mastery",
-          progress: p?.progress ?? 0,
-          trainedCount: p?.trainedCount ?? 0,
-          bestStatus: (p?.bestStatus ?? "new") as "new" | "acquisition" | "fluency" | "proficiency" | "maintenance" | "mastery",
-          lastTrainedAt: p?.lastTrainedAt ?? null,
-          phase: def.phase as "puppy" | "adolescent" | "adult" | "advanced",
-          prerequisiteIds: def.prerequisiteIds ? def.prerequisiteIds.split(",").filter(Boolean) : [],
-        }
-      }),
-      today: now,
-    })
-    const recommendedIds = [
-      dailyChallenge.maintenance?.skillDefinitionId,
-      dailyChallenge.progression?.skillDefinitionId,
-      dailyChallenge.discovery?.skillDefinitionId,
-    ].filter((x): x is string => Boolean(x))
+    // Use client-provided recommended skill IDs (avoids server-side drift vs UI preview)
+    const recommendedIds = data.recommendedSkillIds
 
     // Compute today's already-earned points for this dog
     const dayStart = new Date(now)
@@ -190,7 +168,7 @@ export async function logDogTrainingSession(input: LogSessionInput) {
       where: {
         categoryId: DOG_TRAINING_CATEGORY_ID,
         isSystem: true,
-        title: `🐕 ${dog.name} trainieren`,
+        dogId: data.dogId,
       },
     })
 

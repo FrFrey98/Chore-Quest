@@ -68,7 +68,7 @@ const makeTx = () => ({
           (t) =>
             t.categoryId === where.categoryId &&
             t.isSystem === where.isSystem &&
-            t.title === where.title,
+            (where.dogId !== undefined ? (t as any).dogId === where.dogId : t.title === where.title),
         ) ?? null
       )
     }),
