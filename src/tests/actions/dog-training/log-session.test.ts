@@ -23,6 +23,7 @@ const store = {
     id: string
     phase: string
     prerequisiteIds: string | null
+    categoryId?: string
   }>,
   skillProgresses: [] as Array<{
     dogId: string
@@ -39,6 +40,8 @@ const store = {
     dogId: string
     userId: string
     pointsAwarded: number
+    completedAt?: Date
+    withUserId?: string | null
   }>,
   tasks: [] as Array<{
     id: string
@@ -47,6 +50,8 @@ const store = {
     isSystem: boolean
   }>,
   taskCompletions: [] as Array<{ id: string; taskId: string; userId: string; points: number }>,
+  achievements: [] as Array<{ id: string; conditionType: string; conditionValue: number; conditionMeta: any }>,
+  userDogAchievements: [] as Array<{ id: string; userId: string; dogId: string; achievementId: string }>,
 }
 
 const makeTx = () => ({
@@ -85,6 +90,9 @@ const makeTx = () => ({
   },
   dogTrainingSession: {
     aggregate: vi.fn(async () => ({ _sum: { pointsAwarded: 0 } })),
+    findMany: vi.fn(async ({ where }: any) =>
+      store.sessions.filter((s) => s.dogId === where.dogId),
+    ),
     create: vi.fn(async ({ data }: any) => {
       const session = {
         id: `session-${store.sessions.length + 1}`,
@@ -96,9 +104,26 @@ const makeTx = () => ({
         sessionType: data.sessionType ?? null,
         notes: data.notes ?? null,
         taskCompletionId: data.taskCompletionId ?? null,
+        completedAt: data.completedAt ?? new Date(),
+        withUserId: data.withUserId ?? null,
       }
       store.sessions.push(session)
       return session
+    }),
+  },
+  dogAchievement: {
+    findMany: vi.fn(async () => store.achievements),
+  },
+  userDogAchievement: {
+    findMany: vi.fn(async ({ where }: any) =>
+      store.userDogAchievements.filter(
+        (u) => u.userId === where.userId && u.dogId === where.dogId,
+      ),
+    ),
+    create: vi.fn(async ({ data }: any) => {
+      const entry = { id: `uda-${store.userDogAchievements.length + 1}`, ...data }
+      store.userDogAchievements.push(entry)
+      return entry
     }),
   },
   task: {
@@ -135,6 +160,8 @@ function resetStore() {
   store.sessions.length = 0
   store.tasks.length = 0
   store.taskCompletions.length = 0
+  store.achievements.length = 0
+  store.userDogAchievements.length = 0
 }
 
 function seedDog(overrides: Partial<(typeof store.dogs)[0]> = {}) {
