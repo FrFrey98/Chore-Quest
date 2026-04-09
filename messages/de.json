@@ -762,6 +762,36 @@
         "advanced": "Fortgeschritten"
       }
     },
+    "tab": "Hunde",
+    "subtitle": "Trainingsfortschritt verfolgen",
+    "logTraining": "Training protokollieren",
+    "editDog": "Bearbeiten",
+    "empty": {
+      "title": "Noch kein Hund",
+      "subtitle": "Lege einen Hund an, um mit dem Training zu starten",
+      "action": "Hund hinzufügen"
+    },
+    "recommendations": {
+      "title": "Heute empfohlen",
+      "slot": {
+        "maintenance": "Auffrischung",
+        "progression": "Fortschritt",
+        "discovery": "Neu"
+      }
+    },
+    "pillars": {
+      "title": "Skill-Übersicht"
+    },
+    "history": {
+      "title": "Historie"
+    },
+    "phases": {
+      "puppy": "Welpe",
+      "adolescent": "Junghund",
+      "adult": "Erwachsen",
+      "senior": "Senior",
+      "advanced": "Fortgeschritten"
+    },
     "modal": {
       "title": "Training protokollieren",
       "dog": "Hund",

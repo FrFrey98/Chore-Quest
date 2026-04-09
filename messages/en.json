@@ -762,6 +762,36 @@
         "advanced": "Advanced"
       }
     },
+    "tab": "Dogs",
+    "subtitle": "Track training progress",
+    "logTraining": "Log training",
+    "editDog": "Edit",
+    "empty": {
+      "title": "No dogs yet",
+      "subtitle": "Add a dog to start training",
+      "action": "Add dog"
+    },
+    "recommendations": {
+      "title": "Recommended today",
+      "slot": {
+        "maintenance": "Refresh",
+        "progression": "Progress",
+        "discovery": "New"
+      }
+    },
+    "pillars": {
+      "title": "Skill Overview"
+    },
+    "history": {
+      "title": "History"
+    },
+    "phases": {
+      "puppy": "Puppy",
+      "adolescent": "Adolescent",
+      "adult": "Adult",
+      "senior": "Senior",
+      "advanced": "Advanced"
+    },
     "modal": {
       "title": "Log training session",
       "dog": "Dog",
