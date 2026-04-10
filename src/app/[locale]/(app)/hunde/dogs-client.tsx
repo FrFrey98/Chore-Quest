@@ -197,27 +197,45 @@ export function DogsClient({
           </div>
 
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
               {t("pillars.title")}
             </div>
-            <div className="space-y-3">
-              {overview?.pillars.map((p: any) => (
-                <Link
-                  key={p.category.id}
-                  href={`/hunde/${activeDog.id}/saule/${p.category.id}`}
-                  className="block"
-                >
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-                    {p.category.nameDe}
-                  </div>
-                  <div className="h-1 bg-muted rounded-sm">
-                    <div
-                      className={`h-full rounded-sm ${healthColor(p.health)}`}
-                      style={{ width: `${p.health}%` }}
-                    />
-                  </div>
-                </Link>
-              ))}
+            <div className="grid grid-cols-2 gap-3">
+              {overview?.pillars.map((p: any) => {
+                const totalSkills = p.skills.length
+                const trainedSkills = p.skills.filter((s: any) => s.trainedCount > 0).length
+                const masteredSkills = p.skills.filter((s: any) => s.effectiveStatus === "mastery").length
+                const color = healthColor(p.health)
+                const borderColor = healthBorderColor(p.health)
+                const bgColor = healthBgColor(p.health)
+
+                return (
+                  <Link
+                    key={p.category.id}
+                    href={`/hunde/${activeDog!.id}/saule/${p.category.id}`}
+                    className={`block rounded-lg p-3 border-l-[3px] transition-colors hover:bg-muted/50 ${borderColor} ${bgColor}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="text-sm font-bold">
+                        {p.category.emoji} {p.category.nameDe}
+                      </div>
+                      <div className={`text-xs font-bold ${healthTextColor(p.health)}`}>
+                        {Math.round(p.health)}%
+                      </div>
+                    </div>
+                    <div className="h-1 bg-muted/50 rounded-sm mt-2">
+                      <div
+                        className={`h-full rounded-sm transition-all duration-600 ease-out ${color}`}
+                        style={{ width: `${p.health}%` }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-1.5">
+                      {trainedSkills}/{totalSkills} Skills
+                      {masteredSkills > 0 && ` · ${masteredSkills} ⭐`}
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           </div>
 
@@ -271,8 +289,29 @@ export function DogsClient({
 }
 
 function healthColor(health: number): string {
-  if (health >= 75) return "bg-success"
-  if (health >= 40) return "bg-accent"
-  if (health >= 15) return "bg-warning"
-  return "bg-danger"
+  if (health >= 75) return "bg-green-500"
+  if (health >= 40) return "bg-blue-500"
+  if (health >= 15) return "bg-amber-500"
+  return "bg-red-500"
+}
+
+function healthBorderColor(health: number): string {
+  if (health >= 75) return "border-green-500/30"
+  if (health >= 40) return "border-blue-500/30"
+  if (health >= 15) return "border-amber-500/30"
+  return "border-red-500/30"
+}
+
+function healthBgColor(health: number): string {
+  if (health >= 75) return "bg-green-500/[0.04]"
+  if (health >= 40) return "bg-blue-500/[0.04]"
+  if (health >= 15) return "bg-amber-500/[0.04]"
+  return "bg-red-500/[0.04]"
+}
+
+function healthTextColor(health: number): string {
+  if (health >= 75) return "text-green-500"
+  if (health >= 40) return "text-blue-500"
+  if (health >= 15) return "text-amber-500"
+  return "text-red-500"
 }
