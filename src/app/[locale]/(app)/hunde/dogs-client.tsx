@@ -267,7 +267,7 @@ export function DogsClient({
               {t("pillars.title")}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {overview?.pillars.map((p: any) => {
+              {overview?.pillars.map((p: any, index: number) => {
                 const totalSkills = p.skills.length
                 const trainedSkills = p.skills.filter((s: any) => s.trainedCount > 0).length
                 const masteredSkills = p.skills.filter((s: any) => s.effectiveStatus === "mastery").length
@@ -279,7 +279,8 @@ export function DogsClient({
                   <Link
                     key={p.category.id}
                     href={`/hunde/${activeDog!.id}/saule/${p.category.id}`}
-                    className={`block rounded-lg p-3 border-l-[3px] transition-colors hover:bg-muted/50 ${borderColor} ${bgColor}`}
+                    className={`block rounded-lg p-3 border-l-[3px] transition-colors hover:bg-muted/50 animate-fade-in ${borderColor} ${bgColor}`}
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="flex items-start justify-between">
                       <div className="text-sm font-bold">
