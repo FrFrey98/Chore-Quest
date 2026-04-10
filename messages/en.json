@@ -772,17 +772,62 @@
       "subtitle": "Add a dog to start training",
       "action": "Add dog"
     },
+    "hero": {
+      "sessions": "Sessions",
+      "skills": "Skills",
+      "streak": "Streak"
+    },
+    "points": {
+      "today": "{earned}/{cap} points today",
+      "goalReached": "Daily goal reached!"
+    },
+    "skillTree": {
+      "notTrained": "Not trained yet",
+      "locked": "Locked",
+      "requires": "Requires: {skills}"
+    },
+    "skillDetail": {
+      "steps": "Step by Step",
+      "mistakes": "Common Mistakes",
+      "progression": "Progression",
+      "proTip": "Pro Tip",
+      "duration": "Duration",
+      "frequency": "Frequency",
+      "estimatedDays": "Learning Time",
+      "methodology": "Methodology",
+      "methodologies": {
+        "luring": "Luring",
+        "shaping": "Shaping",
+        "capturing": "Capturing",
+        "chaining": "Chaining",
+        "classical": "Classical Conditioning",
+        "protocol": "Protocol/Management",
+        "bat": "BAT (Behavior Adjustment Training)"
+      },
+      "durationUnit": "{min} min/session",
+      "frequencyUnit": "{count}×/day",
+      "estimatedDaysUnit": "~{days} days"
+    },
     "recommendations": {
       "title": "Recommended today",
       "slot": {
         "maintenance": "Refresh",
         "progression": "Progress",
         "discovery": "New"
+      },
+      "context": {
+        "daysAgo": "Trained {days} days ago",
+        "sessionsOf": "{done} of {needed} sessions",
+        "category": "{category}",
+        "locked": "Locked",
+        "requires": "Requires: {skills}"
       }
     },
     "pillars": {
       "title": "Skill Overview",
-      "health": "health"
+      "health": "health",
+      "skillCount": "{trained}/{total} skills",
+      "mastered": "{count} mastered"
     },
     "statusLabel": "Status",
     "skillInstructions": "Training instructions",
