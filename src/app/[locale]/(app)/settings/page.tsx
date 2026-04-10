@@ -13,7 +13,7 @@ export default async function SettingsPage() {
   if (!session?.user?.id) redirect('/login')
   if (!hasPermission(session.user.role, 'editSettings')) redirect('/')
 
-  const [config, users, categories, achievements, storeItems, tasks, currentUser, quests] = await Promise.all([
+  const [config, users, categories, achievements, storeItems, tasks, currentUser, quests, dogTrainingCfg] = await Promise.all([
     loadGameConfig(),
     prisma.user.findMany({
       select: { id: true, name: true, role: true, createdAt: true, vacationStart: true, vacationEnd: true },
@@ -43,6 +43,7 @@ export default async function SettingsPage() {
       },
       orderBy: { createdAt: 'desc' },
     }),
+    prisma.appConfig.findUnique({ where: { key: 'dog_training_enabled' } }),
   ])
 
   return (
@@ -62,6 +63,8 @@ export default async function SettingsPage() {
       ntfyConfigured={!!process.env.NTFY_URL}
       ntfyEnabled={currentUser?.ntfyEnabled ?? false}
       ntfyTopicUrl={process.env.NTFY_URL ? `${process.env.NTFY_URL.replace(/\/$/, '')}/${getNtfyTopic(session.user.id)}` : null}
+      dogTrainingEnabled={dogTrainingCfg?.value === 'true'}
+      isAdmin={session.user.role === 'admin'}
     />
   )
 }

@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { PrismaClient } from '../src/generated/prisma/client'
+import { seedDogTraining } from './seed-dog-training'
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import bcrypt from 'bcryptjs'
 
@@ -129,6 +130,9 @@ async function main() {
       await prisma.streakState.create({ data: { userId: user.id } })
     }
   }
+
+  // Dog training seed
+  await seedDogTraining(prisma)
 }
 
 main()

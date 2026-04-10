@@ -73,6 +73,10 @@ export async function POST(
     return NextResponse.json({ error: 'Task not found' }, { status: 404 })
   }
 
+  if (task.isSystem && task.categoryId === 'dog_training') {
+    return NextResponse.json({ error: 'Use dog training log modal' }, { status: 400 })
+  }
+
   const scheduleOpts = task.scheduleDays
     ? { scheduleDays: task.scheduleDays, overrides: task.scheduleOverrides.map((o) => ({ date: o.date, type: o.type as 'add' | 'skip' })) }
     : undefined

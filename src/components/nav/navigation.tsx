@@ -23,19 +23,23 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Scroll,
 }
 
-export function Navigation() {
+interface NavigationProps {
+  dogTrainingEnabled?: boolean
+}
+
+export function Navigation({ dogTrainingEnabled = false }: NavigationProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
   const t = useTranslations('nav')
   const role = session?.user?.role ?? 'child'
-  const navItems = getVisibleNavItems(role)
+  const navItems = getVisibleNavItems(role, dogTrainingEnabled)
 
   return (
     <>
       {/* Mobile bottom bar */}
       <nav aria-label={t('mainNav')} className="fixed bottom-0 left-0 right-0 bg-nav-bg border-t border-nav-border flex md:hidden z-50">
-        {navItems.map(({ href, icon, labelKey }) => {
-          const Icon = ICON_MAP[icon] ?? Home
+        {navItems.map(({ href, icon, emoji, labelKey }) => {
+          const Icon = ICON_MAP[icon]
           return (
             <Link
               key={href}
@@ -45,7 +49,11 @@ export function Navigation() {
                 isActive(pathname, href) ? 'text-accent font-bold' : 'text-nav-muted'
               }`}
             >
-              <Icon size={20} />
+              {emoji ? (
+                <span className="text-xl leading-none">{emoji}</span>
+              ) : Icon ? (
+                <Icon size={20} />
+              ) : null}
               <span>{t(labelKey)}</span>
             </Link>
           )
@@ -55,8 +63,8 @@ export function Navigation() {
       {/* Desktop sidebar */}
       <nav aria-label={t('sidebar')} className="hidden md:flex flex-col w-56 min-h-screen bg-nav-bg border-r border-nav-border p-4 gap-1">
         <div className="text-sm font-bold mb-6 px-3 uppercase tracking-wide text-nav-foreground">{t('brand')}</div>
-        {navItems.map(({ href, icon, labelKey }) => {
-          const Icon = ICON_MAP[icon] ?? Home
+        {navItems.map(({ href, icon, emoji, labelKey }) => {
+          const Icon = ICON_MAP[icon]
           return (
             <Link
               key={href}
@@ -68,7 +76,11 @@ export function Navigation() {
                   : 'text-nav-muted hover:text-nav-foreground hover:bg-white/5'
               }`}
             >
-              <Icon size={18} />
+              {emoji ? (
+                <span className="text-lg leading-none w-[18px] flex items-center justify-center">{emoji}</span>
+              ) : Icon ? (
+                <Icon size={18} />
+              ) : null}
               {t(labelKey)}
             </Link>
           )

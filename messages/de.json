@@ -71,6 +71,8 @@
     "profile": "Profil",
     "challenges": "Challenges",
     "quests": "Quests",
+    "goals": "Ziele",
+    "dogs": "Hunde",
     "mainNav": "Hauptnavigation",
     "sidebar": "Seitenleiste",
     "brand": "🏠 Chore-Quest",
@@ -394,7 +396,8 @@
       "store": "Store",
       "notifications": "Benachrichtigungen",
       "backup": "Backup",
-      "quests": "Quests"
+      "quests": "Quests",
+      "dogs": "Hunde"
     },
     "users": {
       "description": "Familienmitglieder verwalten",
@@ -714,5 +717,153 @@
     "noQuestsSubtitle": "Quests erscheinen hier, wenn ein Admin sie erstellt.",
     "progress": "Schritt {current} von {total}",
     "dashboardHeading": "Aktive Quests"
+  },
+  "goals": {
+    "heading": "Ziele",
+    "subtitle": "Challenges & Quests",
+    "challengesTab": "Challenges",
+    "questsTab": "Quests"
+  },
+  "dogTraining": {
+    "settings": {
+      "title": "Hundetraining",
+      "description": "Ein optionales Subsystem für Hundetraining mit 75 vorgefertigten Skills und KI-Erweiterung.",
+      "toggle": "Hundetraining aktivieren",
+      "adminOnly": "Nur Admins können das Feature aktivieren",
+      "managedInHundeTab": "Hunde werden im Hunde-Tab verwaltet",
+      "enabledToast": "Hundetraining aktiviert",
+      "disabledToast": "Hundetraining deaktiviert"
+    },
+    "dogForm": {
+      "createTitle": "Hund hinzufügen",
+      "editTitle": "Hund bearbeiten",
+      "name": "Name",
+      "photo": "Foto",
+      "emoji": "Emoji",
+      "breed": "Rasse",
+      "gender": "Geschlecht",
+      "genderMale": "Männlich",
+      "genderFemale": "Weiblich",
+      "genderOther": "Divers",
+      "birthDate": "Geburtsdatum",
+      "phase": "Phase",
+      "notes": "Notizen",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "archive": "Archivieren",
+      "saved": "Gespeichert",
+      "archived": "Archiviert",
+      "archiveConfirm": "Diesen Hund archivieren? Das kann nicht rückgängig gemacht werden.",
+      "phases": {
+        "puppy": "Welpe",
+        "adolescent": "Junghund",
+        "adult": "Erwachsen",
+        "senior": "Senior",
+        "advanced": "Fortgeschritten"
+      }
+    },
+    "tab": "Hunde",
+    "subtitle": "Trainingsfortschritt verfolgen",
+    "logTraining": "Training protokollieren",
+    "editDog": "Bearbeiten",
+    "empty": {
+      "title": "Noch kein Hund",
+      "subtitle": "Lege einen Hund an, um mit dem Training zu starten",
+      "action": "Hund hinzufügen"
+    },
+    "recommendations": {
+      "title": "Heute empfohlen",
+      "slot": {
+        "maintenance": "Auffrischung",
+        "progression": "Fortschritt",
+        "discovery": "Neu"
+      }
+    },
+    "pillars": {
+      "title": "Skill-Übersicht",
+      "health": "Gesund"
+    },
+    "statusLabel": "Status",
+    "skillInstructions": "Trainings-Anleitung",
+    "recentTraining": "Letzte Trainings",
+    "statuses": {
+      "new": "Ungelernt",
+      "acquisition": "Im Aufbau",
+      "fluency": "Erworben",
+      "proficiency": "Generalisiert",
+      "maintenance": "Gefestigt",
+      "mastery": "Überlernt"
+    },
+    "history": {
+      "title": "Historie",
+      "team": "Team-Übersicht",
+      "empty": "Noch keine Trainings protokolliert",
+      "sessions": "Sessions",
+      "thisMonth": "diesen Monat"
+    },
+    "phases": {
+      "puppy": "Welpe",
+      "adolescent": "Junghund",
+      "adult": "Erwachsen",
+      "senior": "Senior",
+      "advanced": "Fortgeschritten"
+    },
+    "modal": {
+      "title": "Training protokollieren",
+      "dog": "Hund",
+      "skills": "Skills",
+      "searchPlaceholder": "Skill suchen...",
+      "recommended": "Heute empfohlen",
+      "duration": "Dauer",
+      "moreDetails": "Mehr Details",
+      "lessDetails": "Weniger Details",
+      "withUser": "Gemeinsam mit",
+      "notes": "Notizen",
+      "mood": "Stimmung",
+      "sessionType": "Typ",
+      "sessionTypes": {
+        "daily": "Alltag",
+        "focused": "Gezielt",
+        "walk": "Spaziergang",
+        "scent": "Nasenarbeit"
+      },
+      "preview": "Vorschau",
+      "points": "Punkte",
+      "cap": "Tageslimit erreicht — zählt trotzdem für Skills",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "saved": "Training gespeichert",
+      "noSkillsError": "Mindestens einen Skill auswählen"
+    },
+    "skillExtensionOpen": "Skills per KI erweitern",
+    "skillExtension": {
+      "title": "Skills per KI erweitern",
+      "step1": "Prompt erzeugen",
+      "step2": "Antwort importieren",
+      "categories": "Kategorien",
+      "count": "Anzahl",
+      "difficulty": "Schwierigkeit",
+      "difficulties": {
+        "any": "egal",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced",
+        "mixed": "gemischt"
+      },
+      "focus": "Fokus (optional)",
+      "preview": "Prompt-Vorschau",
+      "copyPrompt": "Prompt kopieren",
+      "copied": "Kopiert",
+      "copyFailed": "Konnte nicht kopieren",
+      "goToImport": "Zum Import",
+      "helperText": "Füge den Prompt in ChatGPT, Claude oder ein anderes LLM ein und kopiere die Antwort zurück in Schritt 2.",
+      "pasteResponse": "Antwort einfügen",
+      "validateAndImport": "Validieren und Importieren",
+      "close": "Schließen",
+      "errors": "Fehler",
+      "warnings": "Hinweise",
+      "imported": "Importiert",
+      "importedCount": "{count} neue Skills importiert"
+    }
   }
 }

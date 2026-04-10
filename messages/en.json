@@ -71,6 +71,8 @@
     "profile": "Profile",
     "challenges": "Challenges",
     "quests": "Quests",
+    "goals": "Goals",
+    "dogs": "Dogs",
     "mainNav": "Main navigation",
     "sidebar": "Sidebar",
     "brand": "🏠 Chore-Quest",
@@ -394,7 +396,8 @@
       "store": "Store",
       "notifications": "Notifications",
       "backup": "Backup",
-      "quests": "Quests"
+      "quests": "Quests",
+      "dogs": "Dogs"
     },
     "users": {
       "description": "Manage family members",
@@ -714,5 +717,153 @@
     "noQuestsSubtitle": "Quests will appear here when an admin creates them.",
     "progress": "Step {current} of {total}",
     "dashboardHeading": "Active Quests"
+  },
+  "goals": {
+    "heading": "Ziele",
+    "subtitle": "Challenges & Quests",
+    "challengesTab": "Challenges",
+    "questsTab": "Quests"
+  },
+  "dogTraining": {
+    "settings": {
+      "title": "Dog Training",
+      "description": "An optional subsystem for dog training with 75 pre-built skills and AI extension.",
+      "toggle": "Enable dog training",
+      "adminOnly": "Only admins can enable this feature",
+      "managedInHundeTab": "Dogs are managed in the Dogs tab",
+      "enabledToast": "Dog training enabled",
+      "disabledToast": "Dog training disabled"
+    },
+    "dogForm": {
+      "createTitle": "Add Dog",
+      "editTitle": "Edit Dog",
+      "name": "Name",
+      "photo": "Photo",
+      "emoji": "Emoji",
+      "breed": "Breed",
+      "gender": "Gender",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "genderOther": "Other",
+      "birthDate": "Date of Birth",
+      "phase": "Phase",
+      "notes": "Notes",
+      "save": "Save",
+      "cancel": "Cancel",
+      "archive": "Archive",
+      "saved": "Saved",
+      "archived": "Archived",
+      "archiveConfirm": "Archive this dog? This cannot be undone.",
+      "phases": {
+        "puppy": "Puppy",
+        "adolescent": "Adolescent",
+        "adult": "Adult",
+        "senior": "Senior",
+        "advanced": "Advanced"
+      }
+    },
+    "tab": "Dogs",
+    "subtitle": "Track training progress",
+    "logTraining": "Log training",
+    "editDog": "Edit",
+    "empty": {
+      "title": "No dogs yet",
+      "subtitle": "Add a dog to start training",
+      "action": "Add dog"
+    },
+    "recommendations": {
+      "title": "Recommended today",
+      "slot": {
+        "maintenance": "Refresh",
+        "progression": "Progress",
+        "discovery": "New"
+      }
+    },
+    "pillars": {
+      "title": "Skill Overview",
+      "health": "health"
+    },
+    "statusLabel": "Status",
+    "skillInstructions": "Training instructions",
+    "recentTraining": "Recent training",
+    "statuses": {
+      "new": "New",
+      "acquisition": "Learning",
+      "fluency": "Fluent",
+      "proficiency": "Proficient",
+      "maintenance": "Maintained",
+      "mastery": "Mastered"
+    },
+    "history": {
+      "title": "History",
+      "team": "Team overview",
+      "empty": "No training sessions logged yet",
+      "sessions": "sessions",
+      "thisMonth": "this month"
+    },
+    "phases": {
+      "puppy": "Puppy",
+      "adolescent": "Adolescent",
+      "adult": "Adult",
+      "senior": "Senior",
+      "advanced": "Advanced"
+    },
+    "modal": {
+      "title": "Log training session",
+      "dog": "Dog",
+      "skills": "Skills",
+      "searchPlaceholder": "Search skills...",
+      "recommended": "Recommended today",
+      "duration": "Duration",
+      "moreDetails": "More details",
+      "lessDetails": "Less details",
+      "withUser": "Together with",
+      "notes": "Notes",
+      "mood": "Mood",
+      "sessionType": "Type",
+      "sessionTypes": {
+        "daily": "Daily routine",
+        "focused": "Focused",
+        "walk": "Walk",
+        "scent": "Scent work"
+      },
+      "preview": "Preview",
+      "points": "points",
+      "cap": "Daily cap reached — still counts for skills",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saved": "Training saved",
+      "noSkillsError": "Select at least one skill"
+    },
+    "skillExtensionOpen": "Extend skills via AI",
+    "skillExtension": {
+      "title": "Extend skills via AI",
+      "step1": "Generate prompt",
+      "step2": "Import response",
+      "categories": "Categories",
+      "count": "Count",
+      "difficulty": "Difficulty",
+      "difficulties": {
+        "any": "any",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced",
+        "mixed": "mixed"
+      },
+      "focus": "Focus (optional)",
+      "preview": "Prompt preview",
+      "copyPrompt": "Copy prompt",
+      "copied": "Copied",
+      "copyFailed": "Could not copy",
+      "goToImport": "Go to import",
+      "helperText": "Paste the prompt into ChatGPT, Claude, or another LLM and copy the response back into step 2.",
+      "pasteResponse": "Paste response",
+      "validateAndImport": "Validate and import",
+      "close": "Close",
+      "errors": "Errors",
+      "warnings": "Warnings",
+      "imported": "Imported",
+      "importedCount": "{count} new skills imported"
+    }
   }
 }

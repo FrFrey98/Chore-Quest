@@ -1,8 +1,15 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { getServerSession } from 'next-auth'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import type { Role } from '@/generated/prisma/enums'
+
+export async function getCurrentUser(): Promise<{ id: string; role: string } | null> {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return null
+  return { id: session.user.id, role: session.user.role }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
