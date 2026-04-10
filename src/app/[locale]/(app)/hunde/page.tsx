@@ -25,7 +25,7 @@ export default async function HundePage() {
   const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0)
   const dayEnd = new Date(); dayEnd.setHours(23, 59, 59, 999)
 
-  const [users, allSkills, categories, todayPointsAgg] = await Promise.all([
+  const [users, allSkills, categories, todayPointsAgg, sessionDates, trainedSkillCount, totalSessionCount] = await Promise.all([
     prisma.user.findMany({ select: { id: true, name: true } }),
     prisma.dogSkillDefinition.findMany({
       orderBy: { sortOrder: "asc" },
@@ -38,26 +38,27 @@ export default async function HundePage() {
           _sum: { pointsAwarded: true },
         })
       : Promise.resolve(null),
-  ])
-
-  const pointsEarnedTodayForDog = todayPointsAgg?._sum?.pointsAwarded ?? 0
-
-  const [sessionDates, trainedSkillCount, totalSessionCount] = activeDogId
-    ? await Promise.all([
-        prisma.dogTrainingSession.findMany({
+    activeDogId
+      ? prisma.dogTrainingSession.findMany({
           where: { dogId: activeDogId },
           select: { completedAt: true },
           orderBy: { completedAt: "desc" },
           take: 365,
-        }),
-        prisma.dogSkillProgress.count({
+        })
+      : Promise.resolve([] as { completedAt: Date }[]),
+    activeDogId
+      ? prisma.dogSkillProgress.count({
           where: { dogId: activeDogId, trainedCount: { gt: 0 } },
-        }),
-        prisma.dogTrainingSession.count({
+        })
+      : Promise.resolve(0),
+    activeDogId
+      ? prisma.dogTrainingSession.count({
           where: { dogId: activeDogId },
-        }),
-      ])
-    : [[] as { completedAt: Date }[], 0, 0]
+        })
+      : Promise.resolve(0),
+  ])
+
+  const pointsEarnedTodayForDog = todayPointsAgg?._sum?.pointsAwarded ?? 0
 
   const streak = calculateStreak(
     sessionDates.map((s) => s.completedAt),

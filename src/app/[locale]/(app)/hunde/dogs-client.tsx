@@ -150,8 +150,8 @@ export function DogsClient({
                     <div className="text-lg font-bold">{trainedSkillCount ?? 0}</div>
                     <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{t("hero.skills")}</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold">🔥 {streak ?? 0}</div>
+                  <div className="text-center" aria-label={t("hero.streak")}>
+                    <div className="text-lg font-bold"><span aria-hidden="true">🔥 </span>{streak ?? 0}</div>
                     <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{t("hero.streak")}</div>
                   </div>
                 </div>
