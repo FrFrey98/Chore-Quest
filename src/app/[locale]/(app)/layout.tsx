@@ -8,10 +8,16 @@ import { AuthProvider } from '@/components/auth-provider'
 import { prisma } from '@/lib/prisma'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const featureConfig = await prisma.appConfig.findUnique({
-    where: { key: 'dog_training_enabled' },
-  })
-  const dogTrainingEnabled = featureConfig?.value === 'true'
+  let dogTrainingEnabled = false
+  try {
+    const featureConfig = await prisma.appConfig.findUnique({
+      where: { key: 'dog_training_enabled' },
+    })
+    dogTrainingEnabled = featureConfig?.value === 'true'
+  } catch {
+    // DB not available during Docker build — default to disabled
+    dogTrainingEnabled = false
+  }
 
   return (
     <AuthProvider>
