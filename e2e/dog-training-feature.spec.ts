@@ -54,8 +54,11 @@ test.describe('Dog training happy path', () => {
       // ── Step 7: Click "Save" ────────────────────────────────────────────────
       await page.getByRole('button', { name: 'Save' }).click()
 
+      // Wait for save action to complete, then reload to pick up the new dog
+      await page.waitForTimeout(2000)
+      await page.goto('/hunde')
+
       // ── Step 8: Expect Betty to appear on the page ──────────────────────────
-      // Dog name is displayed uppercased via CSS but DOM text is "Betty"
       await expect(page.getByText('Betty')).toBeVisible({ timeout: 10000 })
     } else {
       // A dog already exists — verify the training button is present
