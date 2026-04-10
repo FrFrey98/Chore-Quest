@@ -1,15 +1,10 @@
 export function calculateStreak(sessionDates: Date[], now: Date): number {
   if (sessionDates.length === 0) return 0
 
-  const dateStrings = new Set(
-    sessionDates.map((d) => {
-      const local = new Date(d)
-      return `${local.getFullYear()}-${String(local.getMonth() + 1).padStart(2, "0")}-${String(local.getDate()).padStart(2, "0")}`
-    }),
-  )
-
   const toDateString = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+
+  const dateStrings = new Set(sessionDates.map(toDateString))
 
   let current = new Date(now)
   const today = toDateString(now)
