@@ -2,9 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { useTranslations } from "next-intl"
 import { DogFormSheet } from "@/components/dogs/dog-form-sheet"
 import { TrainingLogModal } from "@/components/dogs/training-log-modal"
@@ -171,7 +169,7 @@ export function DogsClient({
           </div>
 
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
               {t("recommendations.title")}
             </div>
             <div className="space-y-2">
@@ -179,22 +177,90 @@ export function DogsClient({
                 const rec = dailyChallenge?.[slot]
                 if (!rec) return null
                 const def = allSkills.find((s) => s.id === rec.skillDefinitionId)
+                if (!def) return null
+
+                const slotConfig = {
+                  maintenance: { icon: "🔄", bgClass: "bg-green-500/10", textClass: "text-green-500" },
+                  progression: { icon: "📈", bgClass: "bg-blue-500/10", textClass: "text-blue-500" },
+                  discovery: { icon: "✨", bgClass: "bg-purple-500/10", textClass: "text-purple-500" },
+                }[slot]
+
+                const subtitle = (() => {
+                  if (slot === "maintenance" && rec.lastTrainedAt) {
+                    const days = Math.floor((Date.now() - new Date(rec.lastTrainedAt).getTime()) / 86400000)
+                    return t("recommendations.context.daysAgo", { days })
+                  }
+                  if (slot === "progression") {
+                    return t("recommendations.context.sessionsOf", {
+                      done: rec.trainedCount,
+                      needed: 10,
+                    })
+                  }
+                  return def.categoryNameDe
+                })()
+
+                const statusLabel = rec.status === "new"
+                  ? t("statuses.new")
+                  : t(`statuses.${rec.status}`)
+
                 return (
-                  <Card key={slot}>
-                    <CardContent className="flex items-center gap-3 py-3">
-                      <Badge variant="default" className="uppercase text-xs">
-                        {t(`recommendations.slot.${slot}`)}
-                      </Badge>
-                      <div className="flex-1">{def?.nameDe}</div>
-                    </CardContent>
-                  </Card>
+                  <div key={slot} className="flex items-center gap-3 rounded-lg bg-card border border-border p-3">
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-base ${slotConfig.bgClass}`}>
+                      {slotConfig.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold truncate">{def.nameDe}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {t(`recommendations.slot.${slot}`)} · {subtitle}
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-[10px] ${slotConfig.textClass}`}>{statusLabel}</div>
+                      {slot !== "discovery" ? (
+                        <div className="h-[3px] w-10 bg-muted rounded-sm mt-1">
+                          <div
+                            className={`h-full rounded-sm ${slot === "maintenance" ? "bg-green-500" : "bg-blue-500"}`}
+                            style={{ width: `${rec.progress * 100}%` }}
+                          />
+                        </div>
+                      ) : (
+                        <div className={`text-[9px] mt-0.5 px-1.5 py-0.5 border rounded ${slotConfig.textClass} border-current/30`}>
+                          {def.difficulty === "beginner" ? "Anfänger" : def.difficulty === "intermediate" ? "Mittel" : "Fortgeschritten"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )
               })}
             </div>
-            <Button className="mt-3 w-full" onClick={() => setModalOpen(true)}>
-              {t("logTraining")}
-            </Button>
           </div>
+
+          <div className="flex items-center justify-between rounded-lg bg-card border border-border p-3">
+            <div className="text-sm font-medium">
+              {t("points.today", { earned: pointsEarnedTodayForDog, cap: 40 })}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-600 ease-out ${
+                    pointsEarnedTodayForDog >= 40
+                      ? "bg-green-500"
+                      : pointsEarnedTodayForDog >= 35
+                        ? "bg-amber-500"
+                        : "bg-blue-500"
+                  }`}
+                  style={{ width: `${Math.min(100, (pointsEarnedTodayForDog / 40) * 100)}%` }}
+                />
+              </div>
+              {pointsEarnedTodayForDog >= 40 && (
+                <span className="text-xs text-green-500 font-medium">{t("points.goalReached")}</span>
+              )}
+            </div>
+          </div>
+
+          <Button className="w-full" onClick={() => setModalOpen(true)}>
+            {t("logTraining")}
+          </Button>
 
           <div>
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
