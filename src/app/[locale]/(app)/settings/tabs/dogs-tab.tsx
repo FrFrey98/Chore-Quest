@@ -46,7 +46,7 @@ export function DogsTab({ initialEnabled, isAdmin }: Props) {
             onCheckedChange={handleToggle}
             disabled={!isAdmin || pending}
           />
-          <Label htmlFor="dog-training-toggle">{t("toggle")}</Label>
+          <Label htmlFor="dog-training-toggle">{enabled ? t("toggleDisable") : t("toggle")}</Label>
         </div>
         {!isAdmin && (
           <p className="text-xs text-muted-foreground">{t("adminOnly")}</p>

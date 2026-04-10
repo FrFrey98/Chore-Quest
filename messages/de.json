@@ -729,6 +729,7 @@
       "title": "Hundetraining",
       "description": "Ein optionales Subsystem für Hundetraining mit 75 vorgefertigten Skills und KI-Erweiterung.",
       "toggle": "Hundetraining aktivieren",
+      "toggleDisable": "Hundetraining deaktivieren",
       "adminOnly": "Nur Admins können das Feature aktivieren",
       "managedInHundeTab": "Hunde werden im Hunde-Tab verwaltet",
       "enabledToast": "Hundetraining aktiviert",

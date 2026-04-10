@@ -83,6 +83,15 @@ const makeTx = () => ({
       )
     }),
   },
+  dogSkillCategory: {
+    upsert: vi.fn(async ({ create }: any) => create),
+  },
+  dogSkillDefinition: {
+    upsert: vi.fn(async ({ create }: any) => create),
+  },
+  dogAchievement: {
+    upsert: vi.fn(async ({ create }: any) => create),
+  },
 })
 
 vi.mock("@/lib/prisma", () => ({

@@ -729,6 +729,7 @@
       "title": "Dog Training",
       "description": "An optional subsystem for dog training with 75 pre-built skills and AI extension.",
       "toggle": "Enable dog training",
+      "toggleDisable": "Disable dog training",
       "adminOnly": "Only admins can enable this feature",
       "managedInHundeTab": "Dogs are managed in the Dogs tab",
       "enabledToast": "Dog training enabled",
