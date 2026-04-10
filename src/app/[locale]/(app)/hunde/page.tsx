@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { getDogOverview } from "@/app/actions/dog-training/get-overview"
 import { getDailyChallenge } from "@/app/actions/dog-training/get-daily-challenge"
+import { calculateStreak } from "@/lib/dog-training/streak"
 import { DogsClient } from "./dogs-client"
 
 export default async function HundePage() {
@@ -41,6 +42,28 @@ export default async function HundePage() {
 
   const pointsEarnedTodayForDog = todayPointsAgg?._sum?.pointsAwarded ?? 0
 
+  const [sessionDates, trainedSkillCount, totalSessionCount] = activeDogId
+    ? await Promise.all([
+        prisma.dogTrainingSession.findMany({
+          where: { dogId: activeDogId },
+          select: { completedAt: true },
+          orderBy: { completedAt: "desc" },
+          take: 365,
+        }),
+        prisma.dogSkillProgress.count({
+          where: { dogId: activeDogId, trainedCount: { gt: 0 } },
+        }),
+        prisma.dogTrainingSession.count({
+          where: { dogId: activeDogId },
+        }),
+      ])
+    : [[] as { completedAt: Date }[], 0, 0]
+
+  const streak = calculateStreak(
+    sessionDates.map((s) => s.completedAt),
+    new Date(),
+  )
+
   return (
     <DogsClient
       dogs={dogs.map((d) => ({
@@ -73,6 +96,9 @@ export default async function HundePage() {
       }))}
       currentUserId={user.id}
       pointsEarnedTodayForDog={pointsEarnedTodayForDog}
+      streak={streak}
+      trainedSkillCount={trainedSkillCount}
+      totalSessionCount={totalSessionCount}
     />
   )
 }

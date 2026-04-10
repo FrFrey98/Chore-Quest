@@ -39,6 +39,9 @@ type Props = {
   dogTrainingCategories: ExtensionCategory[]
   currentUserId: string
   pointsEarnedTodayForDog?: number
+  streak?: number
+  trainedSkillCount?: number
+  totalSessionCount?: number
 }
 
 export function DogsClient({
@@ -51,6 +54,9 @@ export function DogsClient({
   dogTrainingCategories,
   currentUserId,
   pointsEarnedTodayForDog = 0,
+  streak,
+  trainedSkillCount,
+  totalSessionCount,
 }: Props) {
   const t = useTranslations("dogTraining")
   const [activeDogId, setActiveDogId] = useState<string | null>(initialActiveDogId)
@@ -116,27 +122,44 @@ export function DogsClient({
 
       {activeDog && (
         <>
-          <Card>
-            <CardContent className="flex items-center gap-3 py-4">
+          <div className="rounded-xl overflow-hidden bg-gradient-to-br from-primary/20 to-transparent border border-border">
+            <div className="flex items-center gap-4 p-5">
               {activeDog.photoBase64 ? (
                 <img
                   src={activeDog.photoBase64}
                   alt={activeDog.name}
-                  className="w-14 h-14 rounded-md object-cover"
+                  className="w-[90px] h-[90px] rounded-full object-cover border-2 border-white/20 flex-shrink-0"
                 />
               ) : (
-                <div className="w-14 h-14 rounded-md bg-muted flex items-center justify-center text-2xl">
+                <div className="w-[90px] h-[90px] rounded-full bg-muted flex items-center justify-center text-4xl border-2 border-white/20 flex-shrink-0">
                   {activeDog.emoji}
                 </div>
               )}
-              <div className="flex-1">
-                <div className="text-lg font-bold uppercase">{activeDog.name}</div>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <div className="text-xl font-bold uppercase tracking-wide">{activeDog.name}</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground">
                   {t(`phases.${activeDog.phase}`)}
+                  {activeDog.breed && ` · ${activeDog.breed}`}
+                </div>
+                <div className="flex gap-5 mt-3">
+                  <div className="text-center">
+                    <div className="text-lg font-bold">{totalSessionCount ?? 0}</div>
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{t("hero.sessions")}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold">{trainedSkillCount ?? 0}</div>
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{t("hero.skills")}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold">🔥 {streak ?? 0}</div>
+                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{t("hero.streak")}</div>
+                  </div>
                 </div>
               </div>
               <Button
                 variant="outline"
+                size="sm"
+                className="self-start"
                 onClick={() => {
                   setEditingDog(activeDog)
                   setFormOpen(true)
@@ -144,8 +167,8 @@ export function DogsClient({
               >
                 {t("editDog")}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <div>
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
