@@ -91,6 +91,8 @@ export async function logDogTrainingSession(input: LogSessionInput) {
     })
 
     // Apply boost to each trained skill
+    const levelUps: Array<{ skillId: string; skillName: string; oldStatus: string; newStatus: string }> = []
+
     for (const skillInput of data.skills) {
       const existing = allProgresses.find(
         (p) => p.skillDefinitionId === skillInput.skillDefinitionId,
@@ -134,6 +136,18 @@ export async function logDogTrainingSession(input: LogSessionInput) {
         rating: skillInput.rating,
         now,
       })
+
+      const oldStatus = decayed.status
+      const newStatus = boosted.status
+      if (oldStatus !== newStatus) {
+        const skillDef = requestedDefs.find((d) => d.id === skillInput.skillDefinitionId)
+        levelUps.push({
+          skillId: skillInput.skillDefinitionId,
+          skillName: skillDef?.nameDe ?? skillInput.skillDefinitionId,
+          oldStatus,
+          newStatus,
+        })
+      }
 
       await tx.dogSkillProgress.upsert({
         where: {
@@ -218,6 +232,7 @@ export async function logDogTrainingSession(input: LogSessionInput) {
       pointsAwarded: pointsResult.points,
       capped: pointsResult.capped,
       newAchievements,
+      levelUps,
     }
   })
 }
