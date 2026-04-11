@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import confetti from "canvas-confetti"
+import { useTranslations } from "next-intl"
 
 type LevelUp = {
   skillId: string
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export function LevelUpCelebration({ levelUps, onDone }: Props) {
+  const t = useTranslations("dogTraining")
   const fired = useRef(false)
 
   useEffect(() => {
@@ -31,7 +33,8 @@ export function LevelUpCelebration({ levelUps, onDone }: Props) {
 
     const timer = setTimeout(onDone, 3000)
     return () => clearTimeout(timer)
-  }, [levelUps, onDone])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelUps])
 
   if (levelUps.length === 0) return null
 
@@ -39,7 +42,7 @@ export function LevelUpCelebration({ levelUps, onDone }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in">
       <div className="bg-card rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4 text-center space-y-4">
         <div className="text-4xl">🎉</div>
-        <h2 className="text-lg font-bold">Level Up!</h2>
+        <h2 className="text-lg font-bold">{t("celebration.levelUp")}</h2>
         <div className="space-y-2">
           {levelUps.map((lu) => (
             <div key={lu.skillId} className="text-sm">
@@ -51,7 +54,7 @@ export function LevelUpCelebration({ levelUps, onDone }: Props) {
           ))}
         </div>
         <button onClick={onDone} className="text-sm text-muted-foreground underline">
-          Weiter
+          {t("celebration.continue")}
         </button>
       </div>
     </div>

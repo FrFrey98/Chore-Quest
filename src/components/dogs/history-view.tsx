@@ -27,7 +27,7 @@ export function HistoryView({ dog, sessions, teamStats, sessionCounts, weeklyPoi
       {sessionCounts && (
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-            Letzte 90 Tage
+            {t("last90Days")}
           </div>
           <TrainingHeatmap sessionCounts={sessionCounts} />
         </div>
@@ -36,7 +36,7 @@ export function HistoryView({ dog, sessions, teamStats, sessionCounts, weeklyPoi
       {weeklyPoints && weeklyPoints.length > 0 && (
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-            Punkte pro Woche
+            {t("pointsPerWeek")}
           </div>
           <ProgressChart weeklyPoints={weeklyPoints} />
         </div>

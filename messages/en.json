@@ -840,12 +840,19 @@
       "maintenance": "Maintained",
       "mastery": "Mastered"
     },
+    "celebration": {
+      "levelUp": "Level Up!",
+      "continue": "Continue",
+      "newAchievements": "New Achievements"
+    },
     "history": {
       "title": "History",
       "team": "Team overview",
       "empty": "No training sessions logged yet",
       "sessions": "sessions",
-      "thisMonth": "this month"
+      "thisMonth": "this month",
+      "last90Days": "Last 90 Days",
+      "pointsPerWeek": "Points per Week"
     },
     "phases": {
       "puppy": "Puppy",

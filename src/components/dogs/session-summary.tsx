@@ -61,7 +61,7 @@ export function SessionSummary({ pointsAwarded, capped, levelUps, newAchievement
       {newAchievements.length > 0 && (
         <div className="space-y-2">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">
-            Neue Achievements
+            {t("celebration.newAchievements")}
           </div>
           {newAchievements.map((a) => (
             <div key={a.id} className="flex items-center justify-center gap-2 text-sm">
@@ -76,7 +76,7 @@ export function SessionSummary({ pointsAwarded, capped, levelUps, newAchievement
         onClick={onClose}
         className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
       >
-        Weiter
+        {t("celebration.continue")}
       </button>
     </div>
   )
