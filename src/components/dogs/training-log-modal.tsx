@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslations } from "next-intl"
 import { useToast } from "@/components/toast-provider"
 import { logDogTrainingSession } from "@/app/actions/dog-training/log-session"
+import { SessionSummary } from "./session-summary"
 import { ALLOWED_DURATIONS } from "@/lib/dog-training/constants"
 import { calculateSessionPoints } from "@/lib/dog-training/points"
 
@@ -65,6 +66,12 @@ export function TrainingLogModal({
   const [sessionType, setSessionType] = useState<"daily" | "focused" | "walk" | "scent" | null>(null)
   const [search, setSearch] = useState("")
   const [pending, startTransition] = useTransition()
+  const [sessionResult, setSessionResult] = useState<{
+    pointsAwarded: number
+    capped: boolean
+    levelUps: Array<{ skillId: string; skillName: string; oldStatus: string; newStatus: string }>
+    newAchievements: Array<{ id: string; titleDe: string; emoji: string }>
+  } | null>(null)
 
   const grouped = useMemo(() => {
     const filtered = allSkills.filter((s) =>
@@ -119,7 +126,7 @@ export function TrainingLogModal({
     }
     startTransition(async () => {
       try {
-        await logDogTrainingSession({
+        const result = await logDogTrainingSession({
           dogId,
           skills: skillInputs,
           durationMinutes: duration,
@@ -129,8 +136,12 @@ export function TrainingLogModal({
           withUserId,
           recommendedSkillIds,
         })
-        toast(t("saved"), "success")
-        onOpenChange(false)
+        setSessionResult({
+          pointsAwarded: result.pointsAwarded,
+          capped: result.capped,
+          levelUps: result.levelUps ?? [],
+          newAchievements: result.newAchievements ?? [],
+        })
       } catch (e) {
         toast((e as Error).message, "error")
       }
@@ -138,12 +149,24 @@ export function TrainingLogModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) setSessionResult(null); onOpenChange(v) }}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
 
+        {sessionResult ? (
+          <SessionSummary
+            pointsAwarded={sessionResult.pointsAwarded}
+            capped={sessionResult.capped}
+            levelUps={sessionResult.levelUps}
+            newAchievements={sessionResult.newAchievements}
+            onClose={() => {
+              setSessionResult(null)
+              onOpenChange(false)
+            }}
+          />
+        ) : (<>
         <div className="space-y-4">
           {allDogs.length > 1 && (
             <div>
@@ -278,6 +301,7 @@ export function TrainingLogModal({
             </Button>
           </div>
         </DialogFooter>
+        </>)}
       </DialogContent>
     </Dialog>
   )

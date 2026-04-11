@@ -342,6 +342,18 @@ model DogSkillDefinition {
   nameEn           String
   descriptionDe    String
   descriptionEn    String
+  stepsDe          String?   // JSON array of strings
+  stepsEn          String?   // JSON array of strings
+  mistakesDe       String?   // JSON array of strings
+  mistakesEn       String?   // JSON array of strings
+  progressionDe    String?   // Escalation strategy text
+  progressionEn    String?
+  proTipDe         String?   // Expert tip text
+  proTipEn         String?
+  durationMin      Int?      // Recommended session duration in minutes
+  frequencyPerDay  Int?      // Recommended frequency per day
+  estimatedDays    Int?      // Estimated days to fluency
+  methodology      String?   // e.g. "luring", "shaping", "capturing", "chaining"
   difficulty       String
   phase            String
   prerequisiteIds  String?

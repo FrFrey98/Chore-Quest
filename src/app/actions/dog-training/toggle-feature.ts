@@ -46,22 +46,37 @@ export async function toggleDogTrainingFeature(enabled: boolean): Promise<void> 
         })
       }
 
+      const jsonOrNull = (v: unknown[] | undefined) => v ? JSON.stringify(v) : null
+
       for (const skill of ALL_DOG_SKILLS) {
+        const data = {
+          categoryId: skill.categoryId,
+          nameDe: skill.nameDe,
+          nameEn: skill.nameEn,
+          descriptionDe: skill.descriptionDe,
+          descriptionEn: skill.descriptionEn,
+          stepsDe: jsonOrNull(skill.stepsDe),
+          stepsEn: jsonOrNull(skill.stepsEn),
+          mistakesDe: jsonOrNull(skill.mistakesDe),
+          mistakesEn: jsonOrNull(skill.mistakesEn),
+          progressionDe: skill.progressionDe ?? null,
+          progressionEn: skill.progressionEn ?? null,
+          proTipDe: skill.proTipDe ?? null,
+          proTipEn: skill.proTipEn ?? null,
+          durationMin: skill.durationMin ?? null,
+          frequencyPerDay: skill.frequencyPerDay ?? null,
+          estimatedDays: skill.estimatedDays ?? null,
+          methodology: skill.methodology ?? null,
+          difficulty: skill.difficulty,
+          phase: skill.phase,
+          prerequisiteIds: skill.prerequisiteIds,
+          sortOrder: skill.sortOrder,
+          isSystem: true,
+        }
         await tx.dogSkillDefinition.upsert({
           where: { id: skill.id },
-          create: { ...skill, isSystem: true },
-          update: {
-            categoryId: skill.categoryId,
-            nameDe: skill.nameDe,
-            nameEn: skill.nameEn,
-            descriptionDe: skill.descriptionDe,
-            descriptionEn: skill.descriptionEn,
-            difficulty: skill.difficulty,
-            phase: skill.phase,
-            prerequisiteIds: skill.prerequisiteIds,
-            sortOrder: skill.sortOrder,
-            isSystem: true,
-          },
+          create: { id: skill.id, ...data },
+          update: data,
         })
       }
 

@@ -772,17 +772,62 @@
       "subtitle": "Lege einen Hund an, um mit dem Training zu starten",
       "action": "Hund hinzufügen"
     },
+    "hero": {
+      "sessions": "Sessions",
+      "skills": "Skills",
+      "streak": "Streak"
+    },
+    "points": {
+      "today": "{earned}/{cap} Punkte heute",
+      "goalReached": "Tagesziel erreicht!"
+    },
+    "skillTree": {
+      "notTrained": "Noch nicht geübt",
+      "locked": "Gesperrt",
+      "requires": "Braucht: {skills}"
+    },
+    "skillDetail": {
+      "steps": "Schritt für Schritt",
+      "mistakes": "Häufige Fehler",
+      "progression": "Steigerung",
+      "proTip": "Profi-Tipp",
+      "duration": "Dauer",
+      "frequency": "Frequenz",
+      "estimatedDays": "Lernzeit",
+      "methodology": "Methodik",
+      "methodologies": {
+        "luring": "Locken (Luring)",
+        "shaping": "Formen (Shaping)",
+        "capturing": "Einfangen (Capturing)",
+        "chaining": "Verkettung (Chaining)",
+        "classical": "Klassische Konditionierung",
+        "protocol": "Protokoll/Management",
+        "bat": "BAT (Behavior Adjustment Training)"
+      },
+      "durationUnit": "{min} Min./Einheit",
+      "frequencyUnit": "{count}×/Tag",
+      "estimatedDaysUnit": "~{days} Tage"
+    },
     "recommendations": {
       "title": "Heute empfohlen",
       "slot": {
         "maintenance": "Auffrischung",
         "progression": "Fortschritt",
         "discovery": "Neu"
+      },
+      "context": {
+        "daysAgo": "Geübt vor {days} Tagen",
+        "sessionsOf": "{done} von {needed} Sessions",
+        "category": "{category}",
+        "locked": "Gesperrt",
+        "requires": "Braucht: {skills}"
       }
     },
     "pillars": {
       "title": "Skill-Übersicht",
-      "health": "Gesund"
+      "health": "Gesund",
+      "skillCount": "{trained}/{total} Skills",
+      "mastered": "{count} gemeistert"
     },
     "statusLabel": "Status",
     "skillInstructions": "Trainings-Anleitung",
@@ -795,12 +840,19 @@
       "maintenance": "Gefestigt",
       "mastery": "Überlernt"
     },
+    "celebration": {
+      "levelUp": "Level Up!",
+      "continue": "Weiter",
+      "newAchievements": "Neue Achievements"
+    },
     "history": {
       "title": "Historie",
       "team": "Team-Übersicht",
       "empty": "Noch keine Trainings protokolliert",
       "sessions": "Sessions",
-      "thisMonth": "diesen Monat"
+      "thisMonth": "diesen Monat",
+      "last90Days": "Letzte 90 Tage",
+      "pointsPerWeek": "Punkte pro Woche"
     },
     "phases": {
       "puppy": "Welpe",

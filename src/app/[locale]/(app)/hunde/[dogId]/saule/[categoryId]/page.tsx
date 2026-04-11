@@ -22,5 +22,22 @@ export default async function SkillTreePage({ params }: PageProps) {
     include: { skillsTrained: true },
   })
 
-  return <SkillTreeView dog={overview.dog} pillar={pillar} recentSessions={recentSessions} />
+  const allSkillStatuses: Record<string, { bestStatus: string }> = {}
+  for (const p of overview.pillars) {
+    for (const s of p.skills) {
+      allSkillStatuses[s.definition.id] = {
+        bestStatus: s.progressRow?.bestStatus ?? "new",
+      }
+    }
+  }
+
+  return (
+    <SkillTreeView
+      dog={overview.dog}
+      pillar={pillar}
+      allPillars={overview.pillars}
+      recentSessions={recentSessions}
+      allSkillStatuses={allSkillStatuses}
+    />
+  )
 }
