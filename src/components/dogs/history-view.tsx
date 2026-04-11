@@ -4,14 +4,18 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useTranslations } from "next-intl"
+import { TrainingHeatmap } from "./training-heatmap"
+import { ProgressChart } from "./progress-chart"
 
 type Props = {
   dog: any
   sessions: any[]
   teamStats: any[]
+  sessionCounts?: Record<string, number>
+  weeklyPoints?: Array<{ weekLabel: string; points: number }>
 }
 
-export function HistoryView({ dog, sessions, teamStats }: Props) {
+export function HistoryView({ dog, sessions, teamStats, sessionCounts, weeklyPoints }: Props) {
   const t = useTranslations("dogTraining.history")
 
   return (
@@ -19,6 +23,24 @@ export function HistoryView({ dog, sessions, teamStats }: Props) {
       <Link href={`/hunde`} className="text-sm text-muted-foreground underline">
         ← {dog.name}
       </Link>
+
+      {sessionCounts && (
+        <div>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            Letzte 90 Tage
+          </div>
+          <TrainingHeatmap sessionCounts={sessionCounts} />
+        </div>
+      )}
+
+      {weeklyPoints && weeklyPoints.length > 0 && (
+        <div>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            Punkte pro Woche
+          </div>
+          <ProgressChart weeklyPoints={weeklyPoints} />
+        </div>
+      )}
 
       <div>
         <h1 className="text-2xl font-light uppercase tracking-wide mb-2">{t("title")}</h1>
