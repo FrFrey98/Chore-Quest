@@ -88,7 +88,8 @@ test.describe('Dog training happy path', () => {
     // ── Step 12: Click "Save" ─────────────────────────────────────────────────
     await dialog.getByRole('button', { name: 'Save' }).click()
 
-    // ── Step 13: Expect success toast ─────────────────────────────────────────
-    await expect(page.getByText('Training saved')).toBeVisible({ timeout: 6000 })
+    // ── Step 13: Expect session summary (replaces toast after UI overhaul) ────
+    // After saving, the modal shows a session summary with a "Continue" button
+    await expect(dialog.getByRole('button', { name: 'Continue' })).toBeVisible({ timeout: 10000 })
   })
 })
