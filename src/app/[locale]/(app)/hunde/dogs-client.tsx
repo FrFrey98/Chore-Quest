@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl"
 import { DogFormSheet } from "@/components/dogs/dog-form-sheet"
 import { TrainingLogModal } from "@/components/dogs/training-log-modal"
 import { SkillExtensionSheet, type ExtensionCategory } from "@/components/dogs/skill-extension-sheet"
+import { AchievementsWidget } from "@/components/dogs/achievements-widget"
 
 type Dog = {
   id: string
@@ -40,6 +41,7 @@ type Props = {
   streak?: number
   trainedSkillCount?: number
   totalSessionCount?: number
+  recentAchievements?: Array<{ id: string; titleDe: string; emoji: string; unlockedAt: Date }>
 }
 
 export function DogsClient({
@@ -55,6 +57,7 @@ export function DogsClient({
   streak,
   trainedSkillCount,
   totalSessionCount,
+  recentAchievements,
 }: Props) {
   const t = useTranslations("dogTraining")
   const [activeDogId, setActiveDogId] = useState<string | null>(initialActiveDogId)
@@ -257,6 +260,10 @@ export function DogsClient({
               )}
             </div>
           </div>
+
+          {recentAchievements && recentAchievements.length > 0 && (
+            <AchievementsWidget achievements={recentAchievements} />
+          )}
 
           <Button className="w-full" onClick={() => setModalOpen(true)}>
             {t("logTraining")}

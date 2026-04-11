@@ -25,7 +25,7 @@ export default async function HundePage() {
   const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0)
   const dayEnd = new Date(); dayEnd.setHours(23, 59, 59, 999)
 
-  const [users, allSkills, categories, todayPointsAgg, sessionDates, trainedSkillCount, totalSessionCount] = await Promise.all([
+  const [users, allSkills, categories, todayPointsAgg, sessionDates, trainedSkillCount, totalSessionCount, recentAchievements] = await Promise.all([
     prisma.user.findMany({ select: { id: true, name: true } }),
     prisma.dogSkillDefinition.findMany({
       orderBy: { sortOrder: "asc" },
@@ -56,6 +56,14 @@ export default async function HundePage() {
           where: { dogId: activeDogId },
         })
       : Promise.resolve(0),
+    activeDogId
+      ? prisma.userDogAchievement.findMany({
+          where: { dogId: activeDogId },
+          orderBy: { unlockedAt: "desc" },
+          take: 3,
+          include: { achievement: true },
+        })
+      : Promise.resolve([]),
   ])
 
   const pointsEarnedTodayForDog = todayPointsAgg?._sum?.pointsAwarded ?? 0
@@ -100,6 +108,12 @@ export default async function HundePage() {
       streak={streak}
       trainedSkillCount={trainedSkillCount}
       totalSessionCount={totalSessionCount}
+      recentAchievements={recentAchievements.map((a: any) => ({
+        id: a.achievement.id,
+        titleDe: a.achievement.titleDe,
+        emoji: a.achievement.emoji,
+        unlockedAt: a.unlockedAt,
+      }))}
     />
   )
 }
